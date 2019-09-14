@@ -1,8 +1,8 @@
 <?php
 
-namespace FlexiCreative\Repositories;
+namespace Emrad\Repositories;
 
-use FlexiCreative\Repositories\Contracts\BaseRepositoryInterface;
+use Emrad\Repositories\Contracts\BaseRepositoryInterface;
 
 class BaseRepository  implements BaseRepositoryInterface
 {

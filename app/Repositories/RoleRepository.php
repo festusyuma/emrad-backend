@@ -1,9 +1,9 @@
 <?php  
 
-namespace FlexiCreative\Repositories;
+namespace Emrad\Repositories;
 
-use FlexiCreative\Models\Role;
-use FlexiCreative\Repositories\Contracts\RoleRepositoryInterface;
+use Emrad\Models\Role;
+use Emrad\Repositories\Contracts\RoleRepositoryInterface;
 
 
 class RoleRepository extends BaseRepository implements RoleRepositoryInterface {

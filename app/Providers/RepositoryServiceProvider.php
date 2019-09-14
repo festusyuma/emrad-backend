@@ -1,14 +1,14 @@
 <?php
 
-namespace FlexiCreative\Providers;
+namespace Emrad\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use FlexiCreative\Repositories\RoleRepository;
-use FlexiCreative\Repositories\ImageRepository;
-use FlexiCreative\Repositories\PermissionRepository;
-use FlexiCreative\Repositories\Contracts\RoleRepositoryInterface;
-use FlexiCreative\Repositories\Contracts\ImageRepositoryInterface;
-use FlexiCreative\Repositories\Contracts\PermissionRepositoryInterface;
+use Emrad\Repositories\RoleRepository;
+use Emrad\Repositories\ImageRepository;
+use Emrad\Repositories\PermissionRepository;
+use Emrad\Repositories\Contracts\RoleRepositoryInterface;
+use Emrad\Repositories\Contracts\ImageRepositoryInterface;
+use Emrad\Repositories\Contracts\PermissionRepositoryInterface;
 
 class RepositoryServiceProvider extends ServiceProvider
 {

@@ -1,8 +1,8 @@
 <?php
-namespace FlexiCreative\Services;
+namespace Emrad\Services;
 
-use FlexiCreative\Models\Role;
-use FlexiCreative\Repositories\Contracts\RoleRepositoryInterface;
+use Emrad\Models\Role;
+use Emrad\Repositories\Contracts\RoleRepositoryInterface;
 
 class RolesServices
 {

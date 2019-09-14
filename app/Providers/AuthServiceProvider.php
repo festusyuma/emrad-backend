@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexiCreative\Providers;
+namespace Emrad\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -13,7 +13,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        // 'FlexiCreative\Model' => 'FlexiCreative\Policies\ModelPolicy',
+        // 'Emrad\Model' => 'Emrad\Policies\ModelPolicy',
     ];
 
     /**

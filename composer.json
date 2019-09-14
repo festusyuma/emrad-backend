@@ -12,7 +12,8 @@
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.0",
         "laravel/helpers": "^1.1",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "spatie/laravel-permission": "^3.0"
     },
     "require-dev": {
         "andrey-helldar/laravel-app": "^1.0",
@@ -34,7 +35,7 @@
     },
     "autoload": {
         "psr-4": {
-            "FlexiCreative\\": "app/"
+            "Emrad\\": "app/"
         },
         "classmap": [
             "database/seeds",

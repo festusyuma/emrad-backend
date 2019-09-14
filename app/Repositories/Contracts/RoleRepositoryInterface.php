@@ -1,6 +1,6 @@
 <?php  
 
-namespace FlexiCreative\Repositories\Contracts;
+namespace Emrad\Repositories\Contracts;
 
 
 interface RoleRepositoryInterface extends BaseRepositoryInterface {

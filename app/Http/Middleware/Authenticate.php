@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexiCreative\Http\Middleware;
+namespace Emrad\Http\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 

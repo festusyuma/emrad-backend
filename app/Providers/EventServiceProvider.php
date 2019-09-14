@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexiCreative\Providers;
+namespace Emrad\Providers;
 
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;

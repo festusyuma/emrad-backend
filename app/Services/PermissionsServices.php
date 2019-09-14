@@ -1,8 +1,8 @@
 <?php
-namespace FlexiCreative\Services;
+namespace Emrad\Services;
 
-use FlexiCreative\Models\Permission;
-use FlexiCreative\Repositories\Contracts\PermissionRepositoryInterface;
+use Emrad\Models\Permission;
+use Emrad\Repositories\Contracts\PermissionRepositoryInterface;
 
 class PermissionsServices
 {
@@ -22,7 +22,7 @@ class PermissionsServices
      *
      * @param Request $request
      *
-     * @return FlexiCreative\Models\Permission $permission
+     * @return Emrad\Models\Permission $permission
      */
     public function createPermission($request)
     {
@@ -69,7 +69,7 @@ class PermissionsServices
      * @param Illuminate\Http\Request $request
      * @param Int|String $id
      *
-     * @return FlexiCreative\Models\Permission
+     * @return Emrad\Models\Permission
      */
     public function updatePermission($request, $permission)
     {

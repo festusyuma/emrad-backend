@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexiCreative\Providers;
+namespace Emrad\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

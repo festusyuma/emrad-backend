@@ -68,7 +68,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => FlexiCreative\User::class,
+            'model' => Emrad\User::class,
         ],
 
         // 'users' => [

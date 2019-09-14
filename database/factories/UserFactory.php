@@ -1,7 +1,7 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-use FlexiCreative\User;
+use Emrad\User;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 

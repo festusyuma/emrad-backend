@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexiCreative\Http\Middleware;
+namespace Emrad\Http\Middleware;
 
 use Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode as Middleware;
 

@@ -169,11 +169,12 @@ return [
         /*
          * Application Service Providers...
          */
-        FlexiCreative\Providers\AppServiceProvider::class,
-        FlexiCreative\Providers\AuthServiceProvider::class,
-        // FlexiCreative\Providers\BroadcastServiceProvider::class,
-        FlexiCreative\Providers\EventServiceProvider::class,
-        FlexiCreative\Providers\RouteServiceProvider::class,
+        Emrad\Providers\AppServiceProvider::class,
+        Emrad\Providers\AuthServiceProvider::class,
+        // Emrad\Providers\BroadcastServiceProvider::class,
+        Emrad\Providers\EventServiceProvider::class,
+        Emrad\Providers\RouteServiceProvider::class,
+        Emrad\Providers\RepositoryServiceProvider::class,
 
     ],
 

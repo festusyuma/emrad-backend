@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexiCreative\Models;
+namespace Emrad\Models;
 
 use Spatie\Permission\Guard;
 use Illuminate\Support\Collection;

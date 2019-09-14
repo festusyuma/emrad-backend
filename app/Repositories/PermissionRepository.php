@@ -1,9 +1,9 @@
 <?php  
 
-namespace FlexiCreative\Repositories;
+namespace Emrad\Repositories;
 
-use FlexiCreative\Models\Permission;
-use FlexiCreative\Repositories\Contracts\PermissionRepositoryInterface;
+use Emrad\Models\Permission;
+use Emrad\Repositories\Contracts\PermissionRepositoryInterface;
 
 
 class PermissionRepository extends BaseRepository implements PermissionRepositoryInterface {

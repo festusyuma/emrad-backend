@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexiCreative\Services;
+namespace Emrad\Services;
 
 use Illuminate\Support\Facades\Storage;
 

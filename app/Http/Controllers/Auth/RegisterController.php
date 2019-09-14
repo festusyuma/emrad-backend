@@ -1,9 +1,9 @@
 <?php
 
-namespace FlexiCreative\Http\Controllers\Auth;
+namespace Emrad\Http\Controllers\Auth;
 
-use FlexiCreative\Http\Controllers\Controller;
-use FlexiCreative\User;
+use Emrad\Http\Controllers\Controller;
+use Emrad\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -59,7 +59,7 @@ class RegisterController extends Controller
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
-     * @return \FlexiCreative\User
+     * @return \Emrad\User
      */
     protected function create(array $data)
     {

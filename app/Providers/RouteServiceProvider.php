@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexiCreative\Providers;
+namespace Emrad\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +14,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $namespace = 'FlexiCreative\Http\Controllers';
+    protected $namespace = 'Emrad\Http\Controllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.

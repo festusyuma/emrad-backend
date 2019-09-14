@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexiCreative\Http\Middleware;
+namespace Emrad\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;

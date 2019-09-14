@@ -1,8 +1,8 @@
 <?php
 
-namespace FlexiCreative\Http\Controllers\Auth;
+namespace Emrad\Http\Controllers\Auth;
 
-use FlexiCreative\Http\Controllers\Controller;
+use Emrad\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 
 class ForgotPasswordController extends Controller

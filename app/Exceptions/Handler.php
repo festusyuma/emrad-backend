@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexiCreative\Exceptions;
+namespace Emrad\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;

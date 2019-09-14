@@ -1,9 +1,9 @@
 <?php
 
-namespace FlexiCreative\Services;
+namespace Emrad\Services;
 
-use FlexiCreative\Models\Image;
-use FlexiCreative\Repositories\Contracts\ImageRepositoryInterface;
+use Emrad\Models\Image;
+use Emrad\Repositories\Contracts\ImageRepositoryInterface;
 
 class ImagesServices
 {
@@ -23,7 +23,7 @@ class ImagesServices
      * @param String $imagePath
      * @param String $productID
      *
-     * @return FlexiCreative\Models\Product
+     * @return Emrad\Models\Product
      */
 
     public function createImage(
@@ -51,7 +51,7 @@ class ImagesServices
      * @param String $imagePath
      * @param String $productID
      *
-     * @return FlexiCreative\Models\Product
+     * @return Emrad\Models\Product
      */
 
     public function updateImage(

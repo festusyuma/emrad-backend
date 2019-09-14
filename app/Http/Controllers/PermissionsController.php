@@ -1,13 +1,13 @@
 <?php
 
-namespace FlexiCreative\Http\Controllers;
+namespace Emrad\Http\Controllers;
 
 use Illuminate\Http\Request;
-use FlexiCreative\Models\Permission;
-use FlexiCreative\Http\Controllers\Controller;
-use FlexiCreative\Services\PermissionsServices;
-use FlexiCreative\Http\Requests\PermissionRequest;
-use FlexiCreative\Http\Resources\PermissionsResource;
+use Emrad\Models\Permission;
+use Emrad\Http\Controllers\Controller;
+use Emrad\Services\PermissionsServices;
+use Emrad\Http\Requests\PermissionRequest;
+use Emrad\Http\Resources\PermissionsResource;
 
 class PermissionsController extends Controller
 {
@@ -36,7 +36,7 @@ class PermissionsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  FlexiCreative\Http\Requests\PermissionRequest  $request
+     * @param  Emrad\Http\Requests\PermissionRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function createPermission(PermissionRequest $request)
@@ -70,7 +70,7 @@ class PermissionsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  FlexiCreative\Permission $permission
+     * @param  int  Emrad\Permission $permission
      * @return \Illuminate\Http\Response
      */
     public function deletePermission(Permission $permission)
