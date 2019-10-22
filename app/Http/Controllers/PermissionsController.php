@@ -58,7 +58,6 @@ class PermissionsController extends Controller
      */
     public function updatePermission(Request $request, Permission $permission)
     {
-        return $permission;
         $permission = $this->permissionsServices->updatePermission($request, $permission);
         return response()->json([
             'status' => 'success',

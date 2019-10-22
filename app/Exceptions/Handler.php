@@ -3,7 +3,18 @@
 namespace Emrad\Exceptions;
 
 use Exception;
+use ErrorException;
+use BadMethodCallException;
+use Illuminate\Support\Facades\App;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -13,7 +24,10 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        AuthorizationException::class,
+        HttpException::class,
+        ModelNotFoundException::class,
+        ValidationException::class,
     ];
 
     /**
@@ -46,6 +60,59 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if (App::environment('production'))
+        {
+            if($exception instanceof NotFoundHttpException) {
+                return response([
+                                    'status'=> 'fail',
+                                    'error'=> 'Route not found',
+                                    'data' => []
+                                ],400);
+            }
+            else if ($exception instanceof UnauthorizedException) {
+                return response([
+                    'status' => 'fail',
+                    'error' => $exception->getMessage(),
+                    'data' => []
+                ], 403);
+            }
+            else if ($exception instanceof ModelNotFoundException) {
+                return response([
+                                    'status' => 'fail',
+                                    'error' => 'Entry for not found',
+                                    'data' => []
+                                ], 404);
+            }
+            else if ($exception instanceof BadMethodCallException) {
+                return response([
+                                    'status' => 'fail',
+                                    'error' => 'Call to undefined method',
+                                    'data' => []
+                                ], 500);
+            }
+            else if ($exception instanceof ErrorException) {
+                return response([
+                                    'status' => 'fail',
+                                    'error' => 'property not found',
+                                    'data' => []
+                                ], 500);
+            }
+            else if ($exception instanceof AuthorizationException) {
+                return response([
+                                    'status' => 'fail',
+                                    'error' => 'Not authorized to make the request',
+                                    'data' => []
+                                ], 403);
+            }
+            else if ($exception instanceof AuthenticationException) {
+                return response([
+                                    'status' => 'fail',
+                                    'error' => 'Not authenticated to make the request',
+                                    'data' => []
+                                ], 403);
+            }
+        }
         return parent::render($request, $exception);
     }
 }
+
