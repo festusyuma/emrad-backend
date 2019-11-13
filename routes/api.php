@@ -14,6 +14,13 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{role}', 'RolesController@getActivePermissions');
     });
 
+    Route::group(['prefix' => 'category'], function () {
+        Route::get('/', 'CategoriesController@getCategories');
+        Route::get('/{category}', 'CategoriesController@getSingleCategory');
+        Route::post('/', 'CategoriesController@createCategory');
+        Route::put('/{category}', 'CategoriesController@updatecategory');
+    });
+
     Route::group(['prefix' => 'permissions'], function () {
         Route::get('/', 'PermissionsController@getPermissions');
         Route::post('/', 'PermissionsController@createPermission');
