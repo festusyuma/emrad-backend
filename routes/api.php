@@ -44,6 +44,14 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('/', 'UsersController@createUser')->middleware(['auth:api']);
         Route::delete('/{userId}', 'UsersController@deleteUser')->middleware(['auth:api', 'verified','permission:delete-user']);
     });
+
+    Route::group(['prefix' => 'products'], function () {
+        Route::get('/', 'ProductsController@getProducts')->name('list-products');
+        Route::get('/{product}', 'ProductsController@getSingleProduct')->name('product-detials');
+        Route::post('/', 'ProductsController@createProduct')->middleware('auth:api');
+        Route::put('/{product}', 'ProductsController@updateProduct')->middleware('auth:api');
+    });
+
 });
 
 
