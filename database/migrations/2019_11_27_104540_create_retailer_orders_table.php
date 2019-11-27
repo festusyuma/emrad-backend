@@ -14,7 +14,12 @@ class CreateRetailerOrdersTable extends Migration
     public function up()
     {
         Schema::create('retailer_orders', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
+            $table->string('product_id');
+            $table->string('company_id'); 
+            $table->string('created_by');   
+            $table->integer('quantity');
+            $table->string('order_amount');
             $table->timestamps();
         });
     }
