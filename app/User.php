@@ -43,4 +43,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(\Emrad\Models\Company::class);
     }
+
+    public function order()
+    {
+        return $this->hasMany(\Emrad\User::class);
+    }
 }
