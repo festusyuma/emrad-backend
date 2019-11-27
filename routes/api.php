@@ -14,6 +14,13 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{role}', 'RolesController@getActivePermissions');
     });
 
+    Route::group(['prefix' => 'category'], function () {
+        Route::get('/', 'CategoriesController@getCategories');
+        Route::get('/{category}', 'CategoriesController@getSingleCategory');
+        Route::post('/', 'CategoriesController@createCategory');
+        Route::put('/{category}', 'CategoriesController@updatecategory');
+    });
+
     Route::group(['prefix' => 'permissions'], function () {
         Route::get('/', 'PermissionsController@getPermissions');
         Route::post('/', 'PermissionsController@createPermission');
@@ -37,6 +44,14 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('/', 'UsersController@createUser')->middleware(['auth:api']);
         Route::delete('/{userId}', 'UsersController@deleteUser')->middleware(['auth:api', 'verified','permission:delete-user']);
     });
+
+    Route::group(['prefix' => 'products'], function () {
+        Route::get('/', 'ProductsController@getProducts')->name('list-products');
+        Route::get('/{product}', 'ProductsController@getSingleProduct')->name('product-detials');
+        Route::post('/', 'ProductsController@createProduct')->middleware('auth:api');
+        Route::put('/{product}', 'ProductsController@updateProduct')->middleware('auth:api');
+    });
+
 });
 
 
