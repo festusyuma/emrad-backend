@@ -3,11 +3,9 @@
 namespace Emrad\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Emrad\Services\RolesServices;
-use Emrad\Services\UsersServices;
-use Emrad\Facade\UsersServicesFacade;
-use Emrad\Http\Resources\UsersResource;
-use Emrad\Services\PermissionsServices;
+use Emrad\Http\Requests\MakeRetailerOrder;
+use Emrad\Http\Resources\RetailerOrderCollection;
+use Emrad\Models\RetailerOrder;
 
 class RetailerOrderController extends Controller
 {
@@ -69,6 +67,34 @@ class RetailerOrderController extends Controller
     public function getOrder()
     {
         return $this->order;
+    }
+
+    /**
+     * Display a listing of the retailer-order resource collection.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllRetailerOrder()
+    {
+        $retailerOrders = RetailerOrder::all();
+        return new RetailerOrderCollection($retailerOrders);
+    }
+
+    public function makeOrder(MakeRetailerOrder $request)
+    {
+
+        $orders = request()->all();
+
+        foreach ($orders as $order) {
+            $retailerOrder = RetailerOrder::create([
+                'product_id' => $order->product_id,
+                'company_id' => $order->company_id,
+                'quantity' => $order->quantity,
+                'unit_price' => $order->unit_price,
+                'order_amount' => $order->quantity * $order->unit_price,
+                'created_by' => $order->created_by
+            ]);
+        }
     }
 
     public function order(Request $request)

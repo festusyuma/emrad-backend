@@ -12,4 +12,5 @@ interface ImageRepositoryInterface extends BaseRepositoryInterface {
      * @return Image $image
      */
     public function findByProductId($productId);
+    
 }

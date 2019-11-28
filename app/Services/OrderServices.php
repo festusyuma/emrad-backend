@@ -1,61 +1,61 @@
 <?php
 namespace Emrad\Services;
 
-use Emrad\Models\Order;
+use Emrad\Models\RetailerOrder;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 
 class OrderServices
 {
     /**
-     * @var $roleRepositoryInterface
+     * @var $orderRepositoryInterface
      */
 
     public $orderRepositoryInterface;
 
     public function __construct(OrderRepositoryInterface $orderRepositoryInterface)
     {
-        $this->roleRepositoryInterface = $orderRepositoryInterface;
+        $this->orderRepositoryInterface = $orderRepositoryInterface;
     }
 
     /**
-     * Create a new role
+     * Create a new order
      *
      * @param Request $request
      *
-     * @return \Spatie\Permission\Models\Role $role
+     * @return \Emrad\Models\RetailerOrder $order
      */
-    public function createRole($request)
+    public function createOrder($request)
     {
-        $role = new Role;
-        $role->name = $request->name;
-        $role->guard_name = 'api';
-        $role->save();
+        $retailerOrder = new RetailerOrder;
+        $retailerOrder->name = $request->name;
+        $retailerOrder->guard_name = 'api';
+        $retailerOrder->save();
 
-        return $role;
+        return $retailerOrder;
     }
 
     /**
-     * Get all roles
+     * Get all orders
      *
-     * @param \Collection $role
+     * @param \Collection $order
      */
-    public function getRoles()
+    public function getOrders()
     {
-        return $this->roleRepositoryInterface->all();
+        return $this->orderRepositoryInterface->all();
     }
 
     /**
-     * Get all roles
+     * Get all orders
      *
-     * @param \Collection $roleName
+     * @param \Collection $orderName
      */
-    public function findByName($roleName)
+    public function findByName($orderName)
     {
-        return $this->roleRepositoryInterface->findByName($roleName);
+        return $this->orderRepositoryInterface->findByName($orderName);
     }
 
     /**
-     * Delete the requested role
+     * Delete the requested order
      *
      * @param Int|String $id
      *
@@ -63,52 +63,52 @@ class OrderServices
      */
     public function delete($id)
     {
-        $role = $this->roleRepositoryInterface->find($id);
+        $order = $this->orderRepositoryInterface->find($id);
 
-        $role->delete();
+        $order->delete();
     }
 
     /**
-     * Fine the requested role by Id
-     * Then Update the role with the $request
+     * Fine the requested order by Id
+     * Then Update the order with the $request
      *
      * @param Object $request
      * @param Int|String $id
      *
-     * @return \Spatie\Permission\Models\Role
+     * @return \Spatie\Permission\Models\Order
      */
-    public function updateRole($request, $role)
+    public function updateOrder($request, $order)
     {
-        $role->name = $request->name;
-        $role->guard_name = 'api';
-        $role->save();
+        $order->name = $request->name;
+        $order->guard_name = 'api';
+        $order->save();
 
-        return $role;
+        return $order;
 
     }
 
     /**
      * AttachPermissions
-     * @param \Spatie\Permission\Models\Role $role
+     * @param \Spatie\Permission\Models\Order $order
      * @param Array $permissions
      *
      * @return
      */
-    public function attachPermissions($role,  $permissions)
+    public function attachPermissions($order,  $permissions)
     {
-        return $role->syncPermissions($permissions);
+        return $order->syncPermissions($permissions);
     }
 
     /**
-     * Get array of the specified role permissions
+     * Get array of the specified order permissions
      *
-     * @param \Spatie\Permission\Models\Role $role
+     * @param \Spatie\Permission\Models\Order $order
      *
      * @return Array $permissionsId
      */
-    public function getActivePermissions($role)
+    public function getActivePermissions($order)
     {
-        $collection = collect($role->permissions);
+        $collection = collect($order->permissions);
 
         $plucked = $collection->pluck('id');
 
