@@ -1,15 +1,16 @@
 <?php
+
 namespace Emrad\Services;
 
 use Emrad\Models\RetailerOrder;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
+use Exception;
 
 class OrderServices
 {
     /**
      * @var $orderRepositoryInterface
      */
-
     public $orderRepositoryInterface;
 
     public function __construct(OrderRepositoryInterface $orderRepositoryInterface)
@@ -24,14 +25,31 @@ class OrderServices
      *
      * @return \Emrad\Models\RetailerOrder $order
      */
-    public function createOrder($request)
+    public function makeRetailerOrder($orders)
     {
-        $retailerOrder = new RetailerOrder;
-        $retailerOrder->name = $request->name;
-        $retailerOrder->guard_name = 'api';
-        $retailerOrder->save();
+        try {
+            foreach ($orders as $order) {
+                $retailerOrder = RetailerOrder::create([
+                    'product_id' => $order['product_id'],
+                    'company_id' => $order['company_id'],
+                    'quantity' => $order['quantity'],
+                    'unit_price' => $order['unit_price'],
+                    'order_amount' => $order['quantity'] * $order['unit_price'],
+                    'created_by' => $order['created_by']
+                ]);
+            }
+            return "Order created successfully!";
+        } catch (Exception $e) {
+            return $e;
+        }
 
-        return $retailerOrder;
+        
+    }
+
+
+    public function getSingleRetailerOrder($order_id)
+    {
+        return $this->orderRepositoryInterface->findRetailerOrderById($order_id);        
     }
 
     /**
@@ -39,9 +57,9 @@ class OrderServices
      *
      * @param \Collection $order
      */
-    public function getOrders()
+    public function getAllRetailerOrders()
     {
-        return $this->orderRepositoryInterface->all();
+        return $this->orderRepositoryInterface->getAllRetailerOrders();
     }
 
     /**

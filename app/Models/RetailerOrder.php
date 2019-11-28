@@ -10,7 +10,7 @@ class RetailerOrder extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'product_id', 'company_id', 'created_by', 'quantity', 'unit_price', 'order_amount'
+        'product_id', 'company_id', 'quantity', 'unit_price', 'order_amount', 'created_by'
     ];
 
     public function company()

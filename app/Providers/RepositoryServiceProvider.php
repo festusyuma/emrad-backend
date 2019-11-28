@@ -12,6 +12,7 @@ use Emrad\Repositories\CompanyRepository;
 use Emrad\Repositories\ProductRepository;
 use Emrad\Repositories\CategoryRepository;
 use Emrad\Repositories\PermissionRepository;
+use Emrad\Repositories\OrderRepository;
 use Emrad\Repositories\Contracts\RoleRepositoryInterface;
 use Emrad\Repositories\Contracts\UserRepositoryInterface;
 use Emrad\Repositories\Contracts\ImageRepositoryInterface;
@@ -19,6 +20,7 @@ use Emrad\Repositories\Contracts\CompanyRepositoryInterface;
 use Emrad\Repositories\Contracts\ProductRepositoryInterface;
 use Emrad\Repositories\Contracts\CategoryRepositoryInterface;
 use Emrad\Repositories\Contracts\PermissionRepositoryInterface;
+use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -36,6 +38,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+        $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind('fc-users-repo-interface', function ($app){ return $app->make(UserRepositoryInterface::class); });
         $this->app->bind('fc-users-services', function ($app){ return $app->make(UsersServices::class); });
         $this->app->bind('fc-company-repo-interface', function ($app){ return $app->make(CompanyRepositoryInterface::class); });

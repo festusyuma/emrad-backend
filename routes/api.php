@@ -52,6 +52,11 @@ Route::group(['prefix' => 'v1'], function () {
         Route::put('/{product}', 'ProductsController@updateProduct')->middleware('auth:api');
     });
 
+    Route::group(['prefix' => 'retail-orders'], function () {
+        Route::get('/', 'RetailerOrderController@getAllRetailerOrder')->name('list-orders');
+        Route::get('/{order_id}', 'RetailerOrderController@getSingleRetailerOrder')->name('get-order');
+        Route::post('/', 'RetailerOrderController@makeRetailerOrder')->name('make-order');
+    });
 });
 
 
