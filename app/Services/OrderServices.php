@@ -46,14 +46,18 @@ class OrderServices
         
     }
 
-
+    /**
+     * Get single retailer-order
+     *
+     * @param $order_id
+     */
     public function getSingleRetailerOrder($order_id)
     {
         return $this->orderRepositoryInterface->findRetailerOrderById($order_id);        
     }
 
     /**
-     * Get all orders
+     * Get all retailer orders
      *
      * @param \Collection $order
      */
@@ -62,15 +66,6 @@ class OrderServices
         return $this->orderRepositoryInterface->getAllRetailerOrders();
     }
 
-    /**
-     * Get all orders
-     *
-     * @param \Collection $orderName
-     */
-    public function findByName($orderName)
-    {
-        return $this->orderRepositoryInterface->findByName($orderName);
-    }
 
     /**
      * Delete the requested order
@@ -79,9 +74,9 @@ class OrderServices
      *
      * @return void
      */
-    public function delete($id)
+    public function delete($order_id)
     {
-        $order = $this->orderRepositoryInterface->find($id);
+        $order = $this->orderRepositoryInterface->find($order_id);
 
         $order->delete();
     }
@@ -103,33 +98,5 @@ class OrderServices
 
         return $order;
 
-    }
-
-    /**
-     * AttachPermissions
-     * @param \Spatie\Permission\Models\Order $order
-     * @param Array $permissions
-     *
-     * @return
-     */
-    public function attachPermissions($order,  $permissions)
-    {
-        return $order->syncPermissions($permissions);
-    }
-
-    /**
-     * Get array of the specified order permissions
-     *
-     * @param \Spatie\Permission\Models\Order $order
-     *
-     * @return Array $permissionsId
-     */
-    public function getActivePermissions($order)
-    {
-        $collection = collect($order->permissions);
-
-        $plucked = $collection->pluck('id');
-
-        return $plucked->all();
     }
 }
