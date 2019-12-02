@@ -60,7 +60,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if (App::environment('locall'))
+        if (App::environment('local'))
         {
             if($exception instanceof NotFoundHttpException) {
                 return response([
@@ -79,7 +79,7 @@ class Handler extends ExceptionHandler
             else if ($exception instanceof ModelNotFoundException) {
                 return response([
                                     'status' => 'fail',
-                                    'error' => 'Entry for not found',
+                                    'error' => 'Entry for ' . str_replace('Emrad\\Models\\', '', $exception->getModel()) . ' not found',
                                     'data' => []
                                 ], 404);
             }
@@ -114,5 +114,6 @@ class Handler extends ExceptionHandler
         }
         return parent::render($request, $exception);
     }
+
 }
 
