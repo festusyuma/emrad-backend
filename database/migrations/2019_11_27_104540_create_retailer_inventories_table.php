@@ -16,11 +16,12 @@ class CreateRetailerInventoriesTable extends Migration
         Schema::create('retailer_inventories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('product_id')->unsigned();
-            $table->integer('in_stock')->unsigned();
+            $table->integer('quantity')->unsigned();
             $table->string('cost_price');
-            $table->string('selling_price');
-            $table->string('created_by');   
-            $table->string('updated_at');
+            $table->string('selling_price');  
+            $table->boolean('in_stock');
+            $table->boolean('out_of_stock');
+            $table->boolean('reserved');
             $table->softDeletes();
             $table->timestamps();
         });

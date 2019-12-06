@@ -10,7 +10,7 @@ class RetailerInventory extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'product_id', 'company_id', 'quantity', 'unit_price', 'order_amount', 'created_by'
+        'product_id', 'in_stock', 'cost_price', 'selling_price', 'in_stock', 'out_of_stock', 'reserved'
     ];
 
     public function company()
