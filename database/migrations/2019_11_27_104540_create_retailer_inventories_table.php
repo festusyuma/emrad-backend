@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRetailerOrdersTable extends Migration
+class CreateRetailerInventoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,13 @@ class CreateRetailerOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('retailer_orders', function (Blueprint $table) {
+        Schema::create('retailer_inventories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('product_id')->unsigned();
-            $table->integer('company_id')->unsigned(); 
-            $table->integer('quantity')->unsigned()->default(1);
-            $table->string('unit_price');
-            $table->string('order_amount');
-            $table->string('created_by');   
-            $table->boolean('is_confirmed')->default(false);   
+            $table->integer('quantity')->unsigned();
+            $table->string('cost_price');
+            $table->string('selling_price');  
+            $table->boolean('is_in_stock')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });

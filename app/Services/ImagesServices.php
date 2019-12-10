@@ -7,7 +7,7 @@ use Emrad\Repositories\Contracts\ImageRepositoryInterface;
 
 class ImagesServices
 {
-  /**
+    /**
      * @var $imageRepositoryInterface
      */
     public $imageRepositoryInterface;

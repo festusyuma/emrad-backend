@@ -2,7 +2,9 @@
 
 namespace Emrad\Services;
 
+use Emrad\Services\InventoryServices;
 use Emrad\Models\RetailerOrder;
+use Emrad\Models\RetailerInventory;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 use Exception;
 
@@ -38,6 +40,9 @@ class OrderServices
                     'created_by' => $order['created_by']
                 ]);
             }
+
+            $updateInventory = updateInventory();
+
             return "Order created successfully!";
         } catch (Exception $e) {
             return $e;
@@ -90,13 +95,41 @@ class OrderServices
      *
      * @return \Spatie\Permission\Models\Order
      */
-    public function updateOrder($request, $order)
+    public function confirmRetailerOrder($order_id)
     {
-        $order->name = $request->name;
-        $order->guard_name = 'api';
-        $order->save();
+        try {
+            $retailerOrder = RetailerOrder::find($order_id);
 
-        return $order;
+            $isNull = is_null($retailerOrder);
 
+            if($isNull)
+                throw new Exception("Order not found!");
+
+            if($retailerOrder->is_confirmed == true)
+                throw new Exception("Order already confirmed");
+            
+            $retailerOrder->is_confirmed = true;
+            $retailerOrder->save();
+
+            $this->updateInventory($retailerOrder);
+
+            return "Order confirmed successfully!";
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+
+    }
+
+    public function updateInventory($retailerOrder) {
+
+        $retailerInventory = RetailerInventory::firstOrNew([
+            'product_id' => $retailerOrder->product_id
+        ]);
+
+        $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
+        $retailerInventory->cost_price = $retailerOrder->unit_price;
+        $retailerInventory->selling_price = $retailerOrder->unit_price;
+        $retailerInventory->is_in_stock = $retailerOrder->quantity = 0 ?: 1;
+        $retailerInventory->save();
     }
 }
