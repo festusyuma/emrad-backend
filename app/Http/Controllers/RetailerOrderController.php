@@ -34,7 +34,7 @@ class RetailerOrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAllRetailerOrder()
+    public function getAllRetailerOrders()
     {
         
         $retailerOrders = $this->orderServices->getAllRetailerOrders();

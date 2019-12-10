@@ -3,45 +3,45 @@
 namespace Emrad\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Emrad\Http\Requests\MakeRetailerOrder;
-use Emrad\Http\Resources\RetailerOrderCollection;
-use Emrad\Http\Resources\RetailerOrderResource;
+use Emrad\Http\Requests\MakeRetailerInventory;
+use Emrad\Http\Resources\RetailerInventoryCollection;
+use Emrad\Http\Resources\RetailerInventoryResource;
 use Emrad\Models\RetailerInventory;
-use Emrad\Services\OrderServices;
+use Emrad\Services\InventoryServices;
 
 
 class RetailerInventoryController extends Controller
 {
     
     /**
-     * @var OrderServices $orderServices
+     * @var InventoryServices $inventoryServices
      */
-    public $orderServices;
+    public $inventoryServices;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(OrderServices $orderServices) 
+    public function __construct(InventoryServices $InventoryServices) 
     {
-        $this->orderServices = $orderServices;
+        $this->inventoryServices = $InventoryServices;
     }
 
     
     /**
-     * Display a listing of the retailer-order resource collection.
+     * Display a listing of the retailer-inventory resource collection.
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAllRetailerOrder()
+    public function getAllRetailerInventories()
     {
         
-        $retailerOrders = $this->orderServices->getAllRetailerOrders();
+        $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
 
         return response([
             'status' => 'success',
-            'data' => new RetailerOrderCollection($retailerOrders)
+            'data' => new RetailerInventoryCollection($retailerInventories)
         ], 200);
     }
 
@@ -49,31 +49,31 @@ class RetailerInventoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Emrad\Models\RetailerOrder  $product
+     * @param  \Emrad\Models\RetailerInventory  $product
      * @return \Illuminate\Http\Response
      */
-    public function getSingleRetailerOrder($order_id)
+    public function getSingleRetailerInventory($inventory_id)
     {
-        $retailerOrder = $this->orderServices->getSingleRetailerOrder($order_id);
+        $retailerInventory = $this->inventoryServices->getSingleRetailerInventory($inventory_id);
 
         return response([
             'status' => 'success',
-            'data' => new RetailerOrderResource($retailerOrder)
+            'data' => new RetailerInventoryResource($retailerInventory)
         ], 200);
         
     }
 
 
     /**
-     * Create new multiple retailer-orders in database.
+     * Create new multiple retailer-inventories in database.
      *
-     * @param MakeRetailOrder $request
+     * @param MakeRetailInventory $request
      */
-    public function makeRetailerOrder(MakeRetailerOrder $request)
+    public function makeRetailerInventory(MakeRetailerInventory $request)
     {
-        $orders = $request->orders;
+        $inventories = $request->inventories;
 
-        $result = $this->orderServices->makeRetailerOrder($orders);
+        $result = $this->inventoryServices->makeRetailerInventory($inventories);
 
         return response([
             'status' => 'success',
