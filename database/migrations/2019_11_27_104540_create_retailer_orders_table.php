@@ -21,6 +21,7 @@ class CreateRetailerOrdersTable extends Migration
             $table->string('unit_price');
             $table->string('order_amount');
             $table->string('created_by');   
+            $table->boolean('is_confirmed')->default(false);   
             $table->softDeletes();
             $table->timestamps();
         });

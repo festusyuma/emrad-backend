@@ -19,7 +19,7 @@ class RetailerInventoriesTableSeeder extends Seeder
         'quantity' => 2,
         'cost_price' => 5000,
         'selling_price' => 7000,
-        'in_stock' => 1,
+        'is_in_stock' => 1,
       ],
 
       [
@@ -27,7 +27,7 @@ class RetailerInventoriesTableSeeder extends Seeder
         'quantity' => 6,
         'cost_price' => 12900,
         'selling_price' => 17000,
-        'in_stock' => 1,
+        'is_in_stock' => 1,
       ],
     ];
 

@@ -80,4 +80,14 @@ class RetailerOrderController extends Controller
             'message' => $result
         ], 200);
     }
+
+    public function confirmRetailerOrder($order_id)
+    {
+        $result = $this->orderServices->confirmRetailerOrder($order_id);
+
+        return response([
+            'status' => 'success',
+            'message' => $result
+        ], 200);
+    }
 }

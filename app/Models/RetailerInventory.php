@@ -10,7 +10,7 @@ class RetailerInventory extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'product_id', 'quantity', 'cost_price', 'selling_price', 'in_stock'
+        'product_id', 'quantity', 'cost_price', 'selling_price', 'is_in_stock'
     ];
 
     public function company()
@@ -20,6 +20,6 @@ class RetailerInventory extends Model
 
     public function product()
     {
-        return $this->belongsTo(\Emrad\Models\Product::class);  
+        return $this->belongsTo(\Emrad\Models\Product::class);
     }
 }

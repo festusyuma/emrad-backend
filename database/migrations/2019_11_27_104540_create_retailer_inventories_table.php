@@ -19,7 +19,7 @@ class CreateRetailerInventoriesTable extends Migration
             $table->integer('quantity')->unsigned();
             $table->string('cost_price');
             $table->string('selling_price');  
-            $table->boolean('in_stock')->default(false);
+            $table->boolean('is_in_stock')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });
