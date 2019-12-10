@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class MakeRetailerInventory extends FormRequest
+class UpdateRetailerInventoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,7 @@ class MakeRetailerInventory extends FormRequest
     public function rules()
     {
         return [
-            //
+            'selling_price' => 'required|numeric'
         ];
     }
 

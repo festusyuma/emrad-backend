@@ -2,6 +2,7 @@
 
 namespace Emrad\Services;
 
+use Emrad\Services\InventoryServices;
 use Emrad\Models\RetailerOrder;
 use Emrad\Models\RetailerInventory;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
@@ -106,7 +107,7 @@ class OrderServices
 
             if($retailerOrder->is_confirmed == true)
                 throw new Exception("Order already confirmed");
-
+            
             $retailerOrder->is_confirmed = true;
             $retailerOrder->save();
 

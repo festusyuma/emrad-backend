@@ -49,9 +49,9 @@ class InventoryServices
     /**
      * Get single retailer-inventory
      *
-     * @param $inventory_id
+     * @param int $inventory_id
      */
-    public function getSingleRetailerInventory($inventory_id)
+    public function getSingleRetailerInventory(int $inventory_id)
     {
         return $this->inventoryRepositoryInterface->findRetailerInventoryById($inventory_id);        
     }
@@ -66,23 +66,8 @@ class InventoryServices
         return $this->inventoryRepositoryInterface->getAllRetailerInventories();
     }
 
-
     /**
-     * Delete the requested inventory
-     *
-     * @param Int|String $id
-     *
-     * @return void
-     */
-    public function delete($inventory_id)
-    {
-        $inventory = $this->inventoryRepositoryInterface->find($inventory_id);
-
-        $inventory->delete();
-    }
-
-    /**
-     * Fine the requested inventory by Id
+     * Find the requested inventory by Id
      * Then Update the inventory with the $request
      *
      * @param Object $request
@@ -90,13 +75,19 @@ class InventoryServices
      *
      * @return \Spatie\Permission\Models\Inventory
      */
-    public function updateInventories($request, $inventory)
+    public function updateRetailerInventory(int $inventory_id, $inventorySellingPrice)
     {
-        $inventory->name = $request->name;
-        $inventory->guard_name = 'api';
-        $inventory->save();
+        try {
+            $inventory = $this->inventoryRepositoryInterface->findRetailerInventoryById($inventory_id);
 
-        return $inventory;
+            $inventory->selling_price = $inventorySellingPrice;
 
+            $inventory->save();
+
+            return "Inventory updated successfully!";
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+        
     }
 }

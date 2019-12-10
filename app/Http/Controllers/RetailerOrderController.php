@@ -3,7 +3,7 @@
 namespace Emrad\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Emrad\Http\Requests\MakeRetailerOrder;
+use Emrad\Http\Requests\MakeRetailerOrderRequest;
 use Emrad\Http\Resources\RetailerOrderCollection;
 use Emrad\Http\Resources\RetailerOrderResource;
 use Emrad\Models\RetailerOrder;
@@ -69,7 +69,7 @@ class RetailerOrderController extends Controller
      *
      * @param MakeRetailOrder $request
      */
-    public function makeRetailerOrder(MakeRetailerOrder $request)
+    public function makeRetailerOrder(MakeRetailerOrderRequest $request)
     {
         $orders = $request->orders;
 

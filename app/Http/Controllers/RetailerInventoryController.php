@@ -3,7 +3,7 @@
 namespace Emrad\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Emrad\Http\Requests\MakeRetailerInventory;
+use Emrad\Http\Requests\UpdateRetailerInventoryRequest;
 use Emrad\Http\Resources\RetailerInventoryCollection;
 use Emrad\Http\Resources\RetailerInventoryResource;
 use Emrad\Models\RetailerInventory;
@@ -69,11 +69,11 @@ class RetailerInventoryController extends Controller
      *
      * @param MakeRetailInventory $request
      */
-    public function makeRetailerInventory(MakeRetailerInventory $request)
+    public function updateRetailerInventory(int $inventory_id, UpdateRetailerInventoryRequest $request)
     {
-        $inventories = $request->inventories;
+        $inventorySellingPrice = $request->selling_price;
 
-        $result = $this->inventoryServices->makeRetailerInventory($inventories);
+        $result = $this->inventoryServices->updateRetailerInventory($inventory_id, $inventorySellingPrice);
 
         return response([
             'status' => 'success',

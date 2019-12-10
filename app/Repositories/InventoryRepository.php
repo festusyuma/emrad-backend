@@ -40,4 +40,9 @@ class InventoryRepository extends BaseRepository implements InventoryRepositoryI
         return $this->retailerInventory->all();
     }
 
+    public function updateRetailerInventory($inventory_id)
+    {
+        
+    }
+
 }
