@@ -30,11 +30,7 @@ class UsersServices
      * @param String $phoneNumber
      * @param String $email
      * @param String $password
-     * @param String $bvn
-     * @param String $middleName
-     * @param String $dob
      * @param String $address
-     * @param String $location
      * @param Bool $rememberToken
      *
      * return Emrad\User
@@ -80,22 +76,15 @@ class UsersServices
     /**
      * update an existing User
      *
-     * @param String $username
      * @param String $firstName
      * @param String $middleName
      * @param String $lastName
      * @param String $gender
      * @param String $pathToAvater
      * @param String $phoneNumber
-     * @param String $bvn
      * @param String $email
-     * @param String $dob
-     * @param String $address
      * @param String $password
-     * @param String $location
-     * @param String $skills
-     * @param String $website
-     * @param String $bio
+     * @param String $address
      * @param Bool $rememberToken
      *
      * @return Emrad\User
@@ -104,46 +93,29 @@ class UsersServices
       public function updateUser(
         User $user,
         ?String $firstName,
-        ?String $middleName,
         ?String $lastName,
         ?String $gender,
         ?String $pathToAvater,
         ?String $phoneNumber,
-        ?String $bvn,
         ?String $email,
-        ?String $dob,
         ?String $address,
         ?String $password,
-        ?String $location,
-        ?String $skills,
-        ?String $website,
-        ?String $bio,
         ?String $rememberToken = null
     )
     {
         try {
             $user->first_name = $firstName;
-            $user->middle_name = $middleName;
             $user->last_name =$lastName;
             $user->phone_number =$phoneNumber;
-            $user->bvn =$bvn ;
             $user->gender =$gender;
             if(!$pathToAvater == null ||!$pathToAvater == "") {
                 $user->avater = $pathToAvater;
             }
             $user->email = $email;
-            if($dob == "null") {
-            }else {
-                $user->dob = $dob;
-            }
             $user->address = $address;
             if(!$password == null || !$password == "") {
                 $user->password = bcrypt($password);
             }
-            $user->location = $location;
-            $user->skill =$skills;
-            $user->website =$website;
-            $user->bio =$bio;
             $user->remember_token = $rememberToken;
 
             $user->save();

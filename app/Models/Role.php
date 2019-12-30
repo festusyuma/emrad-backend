@@ -15,9 +15,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Model implements RoleContract
 {
+
     use HasPermissions;
     use RefreshesPermissionCache;
 
+    protected $table = "roles";
     protected $guarded = ['id'];
 
     public function __construct(array $attributes = [])

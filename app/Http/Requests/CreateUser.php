@@ -35,8 +35,8 @@ class CreateUser extends FormRequest
             'phoneNumber' => 'required',
             'email' => 'required|unique:users',
             'dob' => 'date|nullable',
-            'location' => 'required|string',
-            'password' => 'required|confirmed|string'
+            'password' => 'required|confirmed|string',
+            'userType' => 'required|exists:roles,name'
         ];
     }
 

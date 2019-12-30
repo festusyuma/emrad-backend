@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Emrad\Facade\UsersServicesFacade;
 use Emrad\Http\Requests\ResetPassword;
+use Emrad\Http\Resources\RolesResource;
 use Emrad\Http\Resources\UsersResource;
 use Emrad\Facade\CompaniesServicesFacade;
 use Illuminate\Auth\Events\PasswordReset;
@@ -30,8 +31,8 @@ class AuthController extends Controller
             $user = Auth::user();
             $success['token'] =  $user->createToken('Timbala')->accessToken;
             $success['details'] =  new UsersResource($user);
-            $success['roles'] =  [];
-            $success['permissions'] =  [];
+            $success['roles'] =  RolesResource::collection($user->roles);
+            $success['permissions'] =  $user->permissions;
             return response()->json(['status' => 'success', 'data' => $success], 200);
         }
         else{
@@ -63,6 +64,8 @@ class AuthController extends Controller
 
 
         event(new NewCompanyCreated($user, $company));
+
+        $user->assignRole('Retailer');
 
         $message = 'Please confirm yourself by clicking on verify user button sent to your email';
 
