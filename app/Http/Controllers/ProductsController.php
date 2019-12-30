@@ -91,7 +91,7 @@ class ProductsController extends Controller
                                                             $request->inStockCount
                                                         );
         // attach product to image
-        $image = $this->imagesServices->createImage($pathToFile, $product->id);
+        $this->imagesServices->createImage($pathToFile, $product->id);
         $product->tools()->sync($request->tools);
         return response([
                             'status' => 'success',

@@ -60,55 +60,61 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if (App::environment('locall'))
+        if (App::environment('local'))
         {
             if($exception instanceof NotFoundHttpException) {
                 return response([
                                     'status'=> 'fail',
                                     'error'=> 'Route not found',
-                                    'data' => []
+                                    'data' => [],
+                                    'message' => $exception->getMessage()
                                 ],400);
             }
             else if ($exception instanceof UnauthorizedException) {
                 return response([
-                    'status' => 'fail',
-                    'error' => $exception->getMessage(),
-                    'data' => []
-                ], 403);
+                                    'status' => 'fail',
+                                    'error' => $exception->getMessage(),
+                                    'data' => []
+                                ], 403);
             }
             else if ($exception instanceof ModelNotFoundException) {
                 return response([
                                     'status' => 'fail',
                                     'error' => 'Entry for not found',
-                                    'data' => []
+                                    'data' => [],
+                                    'message' => $exception->getMessage()
                                 ], 404);
             }
             else if ($exception instanceof BadMethodCallException) {
                 return response([
                                     'status' => 'fail',
                                     'error' => 'Call to undefined method',
-                                    'data' => []
+                                    'data' => [],
+                                    'message' => $exception->getMessage()
                                 ], 500);
             }
             else if ($exception instanceof ErrorException) {
                 return response([
                                     'status' => 'fail',
                                     'error' => 'property not found',
-                                    'data' => []
+                                    'data' => [],
+                                    'message' => $exception->getMessage()
                                 ], 500);
             }
             else if ($exception instanceof AuthorizationException) {
                 return response([
                                     'status' => 'fail',
                                     'error' => 'Not authorized to make the request',
-                                    'data' => []
+                                    'data' => [],
+                                    'message' => $exception->getMessage()
                                 ], 403);
             }
             else if ($exception instanceof AuthenticationException) {
                 return response([
                                     'status' => 'fail',
                                     'error' => 'Not authenticated to make the request',
-                                    'data' => []
+                                    'data' => [],
+                                    'message' => $exception->getMessage()
                                 ], 403);
             }
         }

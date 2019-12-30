@@ -1,4 +1,4 @@
-<?php  
+<?php
 
 namespace Emrad\Repositories;
 
@@ -9,15 +9,15 @@ use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface {
 
     public $retailerOrder;
-    
+
     /**
      * OrderRepository Constructor
-     * 
+     *
      * @param Emrad\Models\RetailerOrder $retailerOrder
       */
     public function __construct(RetailerOrder $retailerOrder)
     {
-        $this->retailerOrder = $retailerOrder;
+        $this->model = $retailerOrder;
     }
 
     /**
@@ -29,7 +29,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
      */
     public function findRetailerOrderById($order_id, $relations = [])
     {
-        return $this->retailerOrder
+        return $this->model
             ->where('id', $order_id)
             ->with($relations)
             ->first();
@@ -37,7 +37,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function getAllRetailerOrders()
     {
-        return $this->retailerOrder->all();
+        return $this->model->all();
     }
 
 }

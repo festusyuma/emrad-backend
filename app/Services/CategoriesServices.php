@@ -100,6 +100,7 @@ class CategoriesServices
     public function getSingleCategory($slug)
     {
         return $this->categoryRepositoryInterface->findBySlug($slug);
+
     }
 
     /**

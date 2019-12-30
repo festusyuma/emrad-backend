@@ -110,7 +110,7 @@ class RolesController extends Controller
         return response()->json([
             "status" => "success",
             'message' => 'list of Permissions synced with the role',
-            'data' => ['rolePermissions'=>$rolePermissions],
+            'data' => ['rolePermissions'=> $rolePermissions],
         ]);
     }
 }

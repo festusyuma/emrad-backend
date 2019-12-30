@@ -12,7 +12,7 @@ use Emrad\Services\OrderServices;
 
 class RetailerOrderController extends Controller
 {
-    
+
     /**
      * @var OrderServices $orderServices
      */
@@ -23,12 +23,12 @@ class RetailerOrderController extends Controller
      *
      * @return void
      */
-    public function __construct(OrderServices $orderServices) 
+    public function __construct(OrderServices $orderServices)
     {
         $this->orderServices = $orderServices;
     }
 
-    
+
     /**
      * Display a listing of the retailer-order resource collection.
      *
@@ -36,7 +36,6 @@ class RetailerOrderController extends Controller
      */
     public function getAllRetailerOrder()
     {
-        
         $retailerOrders = $this->orderServices->getAllRetailerOrders();
 
         return response([
@@ -60,7 +59,6 @@ class RetailerOrderController extends Controller
             'status' => 'success',
             'data' => new RetailerOrderResource($retailerOrder)
         ], 200);
-        
     }
 
 
