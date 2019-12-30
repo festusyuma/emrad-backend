@@ -3,7 +3,7 @@
 namespace Emrad\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Emrad\Http\Requests\MakeRetailerOrder;
+use Emrad\Http\Requests\MakeRetailerOrderRequest;
 use Emrad\Http\Resources\RetailerOrderCollection;
 use Emrad\Http\Resources\RetailerOrderResource;
 use Emrad\Models\RetailerOrder;
@@ -34,7 +34,7 @@ class RetailerOrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAllRetailerOrder()
+    public function getAllRetailerOrders()
     {
         $retailerOrders = $this->orderServices->getAllRetailerOrders();
 
@@ -67,11 +67,21 @@ class RetailerOrderController extends Controller
      *
      * @param MakeRetailOrder $request
      */
-    public function makeRetailerOrder(MakeRetailerOrder $request)
+    public function makeRetailerOrder(MakeRetailerOrderRequest $request)
     {
         $orders = $request->orders;
 
         $result = $this->orderServices->makeRetailerOrder($orders);
+
+        return response([
+            'status' => 'success',
+            'message' => $result
+        ], 200);
+    }
+
+    public function confirmRetailerOrder($order_id)
+    {
+        $result = $this->orderServices->confirmRetailerOrder($order_id);
 
         return response([
             'status' => 'success',

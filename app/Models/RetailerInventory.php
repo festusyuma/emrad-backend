@@ -5,12 +5,12 @@ namespace Emrad\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class RetailerOrder extends Model
+class RetailerInventory extends Model
 {
     use SoftDeletes;
 
     protected $fillable = [
-        'product_id', 'company_id', 'quantity', 'unit_price', 'order_amount', 'created_by', 'is_confirmed'
+        'product_id', 'quantity', 'cost_price', 'selling_price', 'is_in_stock'
     ];
 
     public function company()
@@ -22,5 +22,4 @@ class RetailerOrder extends Model
     {
         return $this->belongsTo(\Emrad\Models\Product::class);
     }
-
 }

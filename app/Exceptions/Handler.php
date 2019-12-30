@@ -80,9 +80,8 @@ class Handler extends ExceptionHandler
             else if ($exception instanceof ModelNotFoundException) {
                 return response([
                                     'status' => 'fail',
-                                    'error' => 'Entry for not found',
-                                    'data' => [],
-                                    'message' => $exception->getMessage()
+                                    'error' => 'Entry for ' . str_replace('Emrad\\Models\\', '', $exception->getModel()) . ' not found',
+                                    'data' => []
                                 ], 404);
             }
             else if ($exception instanceof BadMethodCallException) {
@@ -120,5 +119,6 @@ class Handler extends ExceptionHandler
         }
         return parent::render($request, $exception);
     }
+
 }
 

@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class MakeRetailerOrder extends FormRequest
+class MakeRetailerOrderRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,11 @@ class MakeRetailerOrder extends FormRequest
     public function rules()
     {
         return [
-            //
+            'product_id' => 'required|numeric',
+            'company_id' => 'required|numeric',
+            'quantity' => 'required|numeric',
+            'unit_price' => 'required|numeric',
+            'created_by' => 'required'
         ];
     }
 

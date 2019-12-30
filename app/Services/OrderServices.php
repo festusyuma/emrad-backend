@@ -2,7 +2,9 @@
 
 namespace Emrad\Services;
 
+use Emrad\Services\InventoryServices;
 use Emrad\Models\RetailerOrder;
+use Emrad\Models\RetailerInventory;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 use Exception;
 
@@ -31,6 +33,9 @@ class OrderServices
             foreach ($orders as $order) {
                 $this->createOrder($order);
             }
+
+            $updateInventory = updateInventory();
+
             return "Order created successfully!";
         } catch (Exception $e) {
             return $e;
@@ -40,38 +45,84 @@ class OrderServices
     }
 
     /**
-     * create order from the payload
+     * Get single retailer-order
      *
-     * @param array $order
-     *
-     * @return null
+     * @param $order_id
      */
-    public function createOrder(array $order)
-    {
-        RetailerOrder::create([
-            'product_id' => $order['product_id'],
-            'company_id' => $order['company_id'],
-            'quantity' => $order['quantity'],
-            'unit_price' => $order['unit_price'],
-            'order_amount' => $order['quantity'] * $order['unit_price'],
-            'created_by' => $order['created_by']
-        ]);
-    }
-
-
     public function getSingleRetailerOrder($order_id)
     {
-        $test =  $this->orderRepositoryInterface->find($order_id);
-        dd($test);
+        return $this->orderRepositoryInterface->findRetailerOrderById($order_id);
     }
 
     /**
-     * Get all orders
+     * Get all retailer orders
      *
      * @param \Collection $order
      */
     public function getAllRetailerOrders()
     {
         return $this->orderRepositoryInterface->getAllRetailerOrders();
+    }
+
+
+    /**
+     * Delete the requested order
+     *
+     * @param Int|String $id
+     *
+     * @return void
+     */
+    public function delete($order_id)
+    {
+        $order = $this->orderRepositoryInterface->find($order_id);
+
+        $order->delete();
+    }
+
+    /**
+     * Fine the requested order by Id
+     * Then Update the order with the $request
+     *
+     * @param Object $request
+     * @param Int|String $id
+     *
+     * @return \Spatie\Permission\Models\Order
+     */
+    public function confirmRetailerOrder($order_id)
+    {
+        try {
+            $retailerOrder = RetailerOrder::find($order_id);
+
+            $isNull = is_null($retailerOrder);
+
+            if($isNull)
+                throw new Exception("Order not found!");
+
+            if($retailerOrder->is_confirmed == true)
+                throw new Exception("Order already confirmed");
+
+            $retailerOrder->is_confirmed = true;
+            $retailerOrder->save();
+
+            $this->updateInventory($retailerOrder);
+
+            return "Order confirmed successfully!";
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+
+    }
+
+    public function updateInventory($retailerOrder) {
+
+        $retailerInventory = RetailerInventory::firstOrNew([
+            'product_id' => $retailerOrder->product_id
+        ]);
+
+        $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
+        $retailerInventory->cost_price = $retailerOrder->unit_price;
+        $retailerInventory->selling_price = $retailerOrder->unit_price;
+        $retailerInventory->is_in_stock = $retailerOrder->quantity = 0 ?: 1;
+        $retailerInventory->save();
     }
 }
