@@ -50,7 +50,7 @@ class ProductsController extends Controller
     public function getProducts(ProductFilters $filters)
     {
         // filters base on the resquest parameters
-        return $products = Product::filter($filters)->get();
+        $products = Product::filter($filters)->get();
         // ->orderBy('id', 'desc')->paginate(16)
         // ->setPath(route('list-products', Input::except('page')));
 
