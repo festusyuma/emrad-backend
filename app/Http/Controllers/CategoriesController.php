@@ -63,10 +63,11 @@ class CategoriesController extends Controller
      */
     public function createCategory(Request $request)
     {
-        return $category = $this->categoriesServices->createCategory(  $request->categoryName,
+        $category = $this->categoriesServices->createCategory(  $request->categoryName,
                                                                 $request->categoryDescription,
                                                                 $request->categoryLogo
                                                             );
+                                                            dd($categories);
         return response()->json([
             'status' => 'success',
             'message' => 'category created successfully ',
