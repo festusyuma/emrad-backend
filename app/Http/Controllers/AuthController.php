@@ -13,6 +13,7 @@ use Emrad\Http\Resources\RolesResource;
 use Emrad\Http\Resources\UsersResource;
 use Emrad\Facade\CompaniesServicesFacade;
 use Illuminate\Auth\Events\PasswordReset;
+use Emrad\Http\Resources\PermissionsResource;
 use Symfony\Component\HttpFoundation\Request;
 
 class AuthController extends Controller
@@ -29,10 +30,10 @@ class AuthController extends Controller
         if(Auth::attempt(['email' => request('email'), 'password' => request('password')])
         || Auth::attempt(['email' => request('email'), 'password' => request('password')])){
             $user = Auth::user();
-            $success['token'] =  $user->createToken('Timbala')->accessToken;
+            $success['token'] =  $user->createToken('Emrad')->accessToken;
             $success['details'] =  new UsersResource($user);
             $success['roles'] =  RolesResource::collection($user->roles);
-            $success['permissions'] =  $user->permissions;
+            $success['permissions'] = PermissionsResource::collection($user->permissions);
             return response()->json(['status' => 'success', 'data' => $success], 200);
         }
         else{

@@ -30,12 +30,12 @@ class CreateUser extends FormRequest
             'firstName' => 'required|string|max:20',
             'lastName' => 'required|string|max:30',
             'middleName' => 'string',
-            'gender' => 'required',
+            'gender' => 'nullable',
             'pathToAvater' => 'nullable',
-            'phoneNumber' => 'required',
+            'phoneNumber' => 'nullable',
             'email' => 'required|unique:users',
             'dob' => 'date|nullable',
-            'password' => 'required|confirmed|string',
+            'password' => 'required|string',
             'userType' => 'required|exists:roles,name'
         ];
     }

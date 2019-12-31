@@ -37,16 +37,16 @@ class UsersServices
       */
 
     public function createUser(
-        ?String $companyId,
-        ?String $firstName,
-        String $lastName,
-        String $gender,
-        $pathToAvater = "https://creative.flexi.ng/default-user-icon.jpg",
-        String $phoneNumber,
-        String $email,
-        String $password,
-        ?String $address = NULL,
-        String $rememberToken = NULL
+        $companyId,
+        $firstName,
+        $lastName,
+        $gender,
+        $pathToAvater = "https://emrad-test.flexi.ng/default-user-icon.jpg",
+        $phoneNumber,
+        $email,
+        $password,
+        $address = NULL,
+        $rememberToken = NULL
     )
     {
         // dd($firstName);
@@ -57,7 +57,7 @@ class UsersServices
             $user->company_id = $companyId;
             $user->first_name = $firstName;
             $user->last_name = $lastName;
-            $user->gender = $gender;
+            $user->gender = $gender ?? "male";
             $user->avater = $pathToAvater;
             $user->phone_number = $phoneNumber;
             $user->email = $email;
