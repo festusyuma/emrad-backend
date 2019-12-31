@@ -67,7 +67,6 @@ class CategoriesController extends Controller
                                                                 $request->categoryDescription,
                                                                 $request->categoryLogo
                                                             );
-                                                            dd($category);
         return response()->json([
             'status' => 'success',
             'message' => 'category created successfully ',
