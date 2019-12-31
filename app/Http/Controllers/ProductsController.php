@@ -14,7 +14,6 @@ use Emrad\Http\Requests\CreateProduct;
 use Emrad\Http\Resources\ProductsResource;
 use Emrad\Http\Resources\ProductCollection;
 use Emrad\Http\Requests\UpdateProductRequest;
-use Emrad\Http\Resources\ProductDetailsResource;
 
 class ProductsController extends Controller
 {
@@ -71,7 +70,7 @@ class ProductsController extends Controller
         return response([
             'status' => 'success',
             'message' => 'product detail',
-            'data' => new ProductDetailsResource($product)
+            'data' => new ProductsResource($product)
         ], 200);
     }
 
