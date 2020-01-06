@@ -15,13 +15,13 @@ class RetailerInventoryResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'inventory_id' => $this->id,
-            'product_id' => $this->product_id,
-            'cost_price' => $this->cost_price,
-            'selling_price' => $this->selling_price,
-            'is_in_stock' => $this->is_in_stock,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'inventoryId' => $this->id,
+            'inventoryProduct' => new ProductsResource($this->product),
+            'costPrice' => $this->cost_price,
+            'sellingPrice' => $this->selling_price,
+            'isInStock' => $this->is_in_stock,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at
         ];
         // return parent::toArray($request);
     }

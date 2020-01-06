@@ -40,6 +40,7 @@ class RetailerOrderController extends Controller
 
         return response([
             'status' => 'success',
+            'message' => 'Orders retrieved successfully',
             'data' => new RetailerOrderCollection($retailerOrders)
         ], 200);
     }
@@ -57,6 +58,7 @@ class RetailerOrderController extends Controller
 
         return response([
             'status' => 'success',
+            'message' => 'Order retrieved succesfully',
             'data' => new RetailerOrderResource($retailerOrder)
         ], 200);
     }

@@ -15,15 +15,15 @@ class RetailerOrderResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'order_id' => $this->id,
-            'product_id' => $this->product_id,
+            'orderId' => $this->id,
+            'orderProduct' => new ProductsResource($this->product),
             'quantity' => $this->quantity,
-            'unit_price' => $this->unit_price,
-            'order_amount' => $this->order_amount,
-            'created_by' => $this->created_by,
-            'is_confirmed' => $this->is_confirmed,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'unitPrice' => $this->unit_price,
+            'orderAmount' => $this->order_amount,
+            'createdBy' => $this->created_by,
+            'isConfirmed' => $this->is_confirmed,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at
         ];
         // return parent::toArray($request);
     }

@@ -122,7 +122,7 @@ class OrderServices
         $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
         $retailerInventory->cost_price = $retailerOrder->unit_price;
         $retailerInventory->selling_price = $retailerOrder->unit_price;
-        $retailerInventory->is_in_stock = $retailerOrder->quantity = 0 ?: 1;
+        $retailerInventory->is_in_stock = $retailerOrder->quantity == 0 ?: 1;
         $retailerInventory->save();
     }
 }
