@@ -41,6 +41,7 @@ class RetailerInventoryController extends Controller
 
         return response([
             'status' => 'success',
+            'message' => 'Inventories retrieved succesfully',
             'data' => new RetailerInventoryCollection($retailerInventories)
         ], 200);
     }
@@ -58,6 +59,7 @@ class RetailerInventoryController extends Controller
 
         return response([
             'status' => 'success',
+            'message' => 'Inventory retrieved succesfully',
             'data' => new RetailerInventoryResource($retailerInventory)
         ], 200);
         
