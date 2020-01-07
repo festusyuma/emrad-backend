@@ -57,7 +57,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{order_id}', 'RetailerOrderController@getSingleRetailerOrder')->name('get-order');
         Route::post('/', 'RetailerOrderController@makeRetailerOrder')->name('make-order');
         Route::patch('/confirm/{order_id}', 'RetailerOrderController@confirmRetailerOrder')->name('confirm-order');
-        
+
     });
 
     Route::group(['prefix' => 'retail-inventories'], function () {
@@ -65,6 +65,11 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{inventory_id}', 'RetailerInventoryController@getSingleRetailerInventory')->name('get-inventory');
         Route::patch('/update/{inventory_id}', 'RetailerInventoryController@updateRetailerInventory')->name('update-inventory');
     });
+
+    Route::group(['prefix' => 'offers'], function () {
+        Route::get('/', 'OfferController@getOffers');
+    });
+
 });
 
 
