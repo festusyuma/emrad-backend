@@ -60,7 +60,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if (App::environment('local'))
+        if (!App::environment('local'))
         {
             if($exception instanceof NotFoundHttpException) {
                 return response([

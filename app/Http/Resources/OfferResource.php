@@ -16,12 +16,12 @@ class OfferResource extends JsonResource
     {
         return [
             "offerId" => $this->id,
-            "offerProduct" => new ProductsResource($this->product),
             "offerTitle" => $this->title,
             "offerImage" => $this->image,
             "offerDescription" => $this->description,
             "offerStartDate" => $this->start_date,
             "offerEndDate" => $this->end_date,
+            "offerProduct" => new ProductsResource($this->product),
         ];
     }
 }

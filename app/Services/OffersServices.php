@@ -18,64 +18,79 @@ class OffersServices
     }
 
     /**
-     * Create a new category Instance
+     * Create a new offer Instance
      *
-     * @param String $categoryName
-     * @param String $categoryDescription
-     * @param String $categoryLogo
+     * @param String $productId
+     * @param String $offerTitle
+     * @param String $offerDescription
+     * @param String $pathToFile
+     * @param String $offerStartDate
+     * @param String $offerStartDate
      *
      * @return Emrad\Models\Offer
      */
 
-    public function createCategory(
-        $categoryName,
-        $categoryDescription,
-        $categoryLogo
+    public function createOffer(
+        $productId,
+        $offerTitle,
+        $offerDescription,
+        $pathToFile,
+        $offerStartDate,
+        $offerEndDate
     )
     {
         // instatiate a new class
-        $category = new Offer();
+        $offer = new Offer();
 
         try {
-            $category->name = $categoryName;
-            $category->slug = str_slug($categoryName, '-');
-            $category->description = $categoryDescription;
-            $category->logo = $categoryLogo;
-            $category->save();
+            $offer->product_id = $productId;
+            $offer->title = $offerTitle;
+            $offer->image = $pathToFile;
+            $offer->description = $offerDescription;
+            $offer->start_date = $offerStartDate;
+            $offer->end_date = $offerEndDate;
+            $offer->save();
 
-            return $category;
+            return $offer;
         } catch (\Exception $e) {
             return $e;
         }
     }
 
     /**
-     * Update an existing category Instance
+     * Update an existing offer Instance
      *
-     * @param Emrad\Models\Category $category
-     * @param String $categoryName
-     * @param String $categoryDescription
-     * @param String $categoryLogo
+     * @param Emrad\Models\Offer $offer
+     * @param String $productId
+     * @param String $offerTitle
+     * @param String $offerDescription
+     * @param String $pathToFile
+     * @param String $offerStartDate
+     * @param String $offerStartDate
      *
-     * @return Emrad\Models\Category
+     * @return Emrad\Models\offer
       */
 
-      public function updatecategory(
-        Offer $category,
-        $categoryName,
-        $categoryDescription,
-        $categoryLogo
+      public function updateOffer(
+        Offer $offer,
+        $productId,
+        $offerTitle,
+        $offerDescription,
+        $pathToFile,
+        $offerStartDate,
+        $offerEndDate
     )
     {
         try {
-            $category->name = $categoryName;
-            $category->slug = str_slug($categoryName, '-');
-            $category->description = $categoryDescription;
-            $category->logo = $categoryLogo;
-            $category->save();
+            $offer->product_id = $productId;
+            $offer->title = $offerTitle;
+            $offer->image = $pathToFile;
+            $offer->description = $offerDescription;
+            $offer->start_date = $offerStartDate;
+            $offer->end_date = $offerEndDate;
+            $offer->save();
 
-            return $category;
-
+            return $offer;
         } catch (\Exception $e) {
             return $e;
         }
@@ -93,24 +108,14 @@ class OffersServices
     }
 
     /**
-     * return all find category
+     * return all find offer
      *
-     * @param \Collection $category
+     * @param \Collection $offer
      */
-    public function getSingleCategory($slug)
+    public function getSingleOffer($id)
     {
-        return $this->offerRepositoryInterface->findBySlug($slug);
+        return $this->offerRepositoryInterface->findById($id);
 
-    }
-
-    /**
-     * return category by name
-     *
-     * @param \Collection $category
-     */
-    public function getByName($name)
-    {
-        return $this->offerRepositoryInterface->getByName($name);
     }
 }
 

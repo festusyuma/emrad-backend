@@ -83,15 +83,13 @@ class ProductsController extends Controller
         $pathToFile = $this->filesServices->uploadBase64($request->image, 's3');
 
         $product = $this->productsServices->createProduct(
-                                                            auth()->user()->merchant->id,
                                                             $request->categoryId,
-                                                            $request->name,
-                                                            $request->description,
-                                                            $request->inStockCount
+                                                            $request->productName,
+                                                            $request->productDescription,
+                                                            $request->productPrice,
+                                                            $request->productSize,
+                                                            $pathToFile
                                                         );
-        // attach product to image
-        $this->imagesServices->createImage($pathToFile, $product->id);
-        $product->tools()->sync($request->tools);
         return response([
                             'status' => 'success',
                             'message' => 'product created successfully',
@@ -112,18 +110,13 @@ class ProductsController extends Controller
 
         $product = $this->productsServices->updateProduct(
                                                             $product,
-                                                            auth('api')->user()->merchant->id,
                                                             $request->categoryId,
-                                                            $request->name,
-                                                            $request->description,
-                                                            $request->inStockCount
+                                                            $request->productName,
+                                                            $request->productDescription,
+                                                            $request->productPrice,
+                                                            $request->productSize,
+                                                            $request->productImage
                                                         );
-        // attach product to image
-        if($pathToFile) {
-            $image = $this->imagesServices->findImage($product->id);
-            $this->imagesServices->updateImage($image, $pathToFile, $product->id);
-        }
-        $product->tools()->sync($request->tools);
         return response([
                             'status' => 'success',
                             'message' => 'product updated successfully',

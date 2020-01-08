@@ -30,6 +30,7 @@ class ProductsServices
      */
 
     public function createProduct(
+        $categoryId,
         $productName,
         $productDescription,
         $productPrice,
@@ -41,6 +42,7 @@ class ProductsServices
         $product = new Product;
 
         try {
+            $product->category_id = $categoryId;
             $product->name = $productName;
             $product->description = $productDescription;
             $product->price = $productPrice;
@@ -48,7 +50,6 @@ class ProductsServices
             $product->image = $productImage;
 
             $product->save();
-
             return $product;
         } catch (\Exception $e) {
             return $e;
@@ -59,6 +60,7 @@ class ProductsServices
      * Update an existing merchant Instance
      *
      * @param Emrad\Models\Product $product
+     * @param String $categoryId
      * @param String $productName
      * @param String $productDescription
      * @param String $productPrice
@@ -70,6 +72,7 @@ class ProductsServices
 
       public function updateProduct(
         Product $product,
+        $categoryId,
         $productName,
         $productDescription,
         $productPrice,
@@ -78,6 +81,7 @@ class ProductsServices
     )
     {
         try {
+            $product->category_id = $categoryId;
             $product->name = $productName;
             $product->description = $productDescription;
             $product->price = $productPrice;

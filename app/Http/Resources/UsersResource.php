@@ -19,13 +19,13 @@ class UsersResource extends JsonResource
             'userFirstName' => $this->first_name,
             'userLastName' => $this->last_name,
             'userGender' => $this->gender,
-            'userCompany' => $this->company_id,
             'userPhoneNumber' => $this->phone_number,
             'userEmail' => $this->email,
             'userAvater' => $this->avater,
             'userAddress' => $this->address,
             'userPermissions' => $this->permissions,
-            'createdAt' => $this->created_at
+            'createdAt' => $this->created_at,
+            'userCompany' => new CompanyResource($this->company_id),
         ];
     }
 }

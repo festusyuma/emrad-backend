@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class OffersDatabaseSeeder extends Seeder
+class OffersTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,6 +11,6 @@ class OffersDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        //
+        factory(\Emrad\Models\Offer::class, 50)->create();
     }
 }
