@@ -14,7 +14,6 @@ use Emrad\Http\Requests\CreateProduct;
 use Emrad\Http\Resources\ProductsResource;
 use Emrad\Http\Resources\ProductCollection;
 use Emrad\Http\Requests\UpdateProductRequest;
-use Emrad\Http\Resources\ProductDetailsResource;
 
 class ProductsController extends Controller
 {
@@ -50,7 +49,7 @@ class ProductsController extends Controller
     public function getProducts(ProductFilters $filters)
     {
         // filters base on the resquest parameters
-        return $products = Product::filter($filters)->get();
+        $products = Product::filter($filters)->get();
         // ->orderBy('id', 'desc')->paginate(16)
         // ->setPath(route('list-products', Input::except('page')));
 
@@ -71,7 +70,7 @@ class ProductsController extends Controller
         return response([
             'status' => 'success',
             'message' => 'product detail',
-            'data' => new ProductDetailsResource($product)
+            'data' => new ProductsResource($product)
         ], 200);
     }
 
