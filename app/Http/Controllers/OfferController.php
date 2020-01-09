@@ -104,13 +104,13 @@ class OfferController extends Controller
      * @param  \Emrad\Offer  $offer
      * @return \Illuminate\Http\Response
      */
-    public function getSingleOffer(Offer $offer)
+    public function getSingleOffer($offer)
     {
         $offer = $this->offersServices->getSingleOffer($offer);
 
         return response([
             'status' => 'success',
-            'message' => 'Offer detail',
+            'message' => 'Offer retrieved successfully',
             'data' => new OfferResource($offer)
         ], 200);
     }
