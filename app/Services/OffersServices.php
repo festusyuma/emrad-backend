@@ -114,8 +114,7 @@ class OffersServices
      */
     public function getSingleOffer($id)
     {
-        return $this->offerRepositoryInterface->findById($id);
-
+        return $this->offerRepositoryInterface->find($id);
     }
 }
 
