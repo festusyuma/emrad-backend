@@ -71,6 +71,7 @@ class RetailerOrderController extends Controller
      */
     public function makeRetailerOrder(MakeRetailerOrderRequest $request)
     {
+        dd('i got here');
         $orders = $request->orders;
 
         $result = $this->orderServices->makeRetailerOrder($orders);

@@ -30,7 +30,6 @@ class MakeRetailerOrderRequest extends FormRequest
             'company_id' => 'required|numeric',
             'quantity' => 'required|numeric',
             'unit_price' => 'required|numeric',
-            'created_by' => 'required'
         ];
     }
 

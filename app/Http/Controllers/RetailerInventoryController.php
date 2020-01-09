@@ -34,24 +34,35 @@ class RetailerInventoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAllRetailerInventories(InventoryFilters $filters)
+    public function getAllRetailerInventories()
     {
-        // filters base on the resquest parameters
-        $products = Product::filter($filters)->get();
-        // ->orderBy('id', 'desc')->paginate(16)
-        // ->setPath(route('list-products', Input::except('page')));
+        $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
 
-        // ->appends(Input::except('page'));
-        return new ProductCollection($products);
-
-        // $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
-
-        // return response([
-        //     'status' => 'success',
-        //     'message' => 'Inventories retrieved succesfully',
-        //     'data' => new RetailerInventoryCollection($retailerInventories)
-        // ], 200);
+        return response([
+            'status' => 'success',
+            'message' => 'Inventories retrieved succesfully',
+            'data' => new RetailerInventoryCollection($retailerInventories)
+        ], 200);
     }
+
+    // public function getAllRetailerInventories(InventoryFilters $filters)
+    // {
+    //     // filters base on the resquest parameters
+    //     $products = Product::filter($filters)->get();
+    //     // ->orderBy('id', 'desc')->paginate(16)
+    //     // ->setPath(route('list-products', Input::except('page')));
+
+    //     // ->appends(Input::except('page'));
+    //     return new ProductCollection($products);
+
+    //     // $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
+
+    //     // return response([
+    //     //     'status' => 'success',
+    //     //     'message' => 'Inventories retrieved succesfully',
+    //     //     'data' => new RetailerInventoryCollection($retailerInventories)
+    //     // ], 200);
+    // }
 
 
     /**

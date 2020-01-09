@@ -12,27 +12,29 @@ class RetailerInventoriesTableSeeder extends Seeder
    */
   public function run()
   {
+    factory(\Emrad\Models\RetailerInventory::class, 50)->create();
+
     //
-    $retailerInventories = [
-      [
-        'product_id' => 2,
-        'quantity' => 2,
-        'cost_price' => 5000,
-        'selling_price' => 7000,
-        'is_in_stock' => 1,
-      ],
+    //   $retailerInventories = [
+    //     [
+    //       'product_id' => 2,
+    //       'quantity' => 2,
+    //       'cost_price' => 5000,
+    //       'selling_price' => 7000,
+    //       'is_in_stock' => 1,
+    //     ],
 
-      [
-        'product_id' => 3,
-        'quantity' => 6,
-        'cost_price' => 12900,
-        'selling_price' => 17000,
-        'is_in_stock' => 1,
-      ],
-    ];
+    //     [
+    //       'product_id' => 3,
+    //       'quantity' => 6,
+    //       'cost_price' => 12900,
+    //       'selling_price' => 17000,
+    //       'is_in_stock' => 1,
+    //     ],
+    //   ];
 
-    foreach ($retailerInventories as $retailerInventory) {
-      RetailerInventory::create($retailerInventory);
-    }
+    //   foreach ($retailerInventories as $retailerInventory) {
+    //     RetailerInventory::create($retailerInventory);
+    //   }
   }
 }
