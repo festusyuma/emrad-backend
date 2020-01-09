@@ -72,7 +72,10 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     Route::group(['prefix' => 'offers'], function () {
-        Route::get('/', 'OfferController@getOffers');
+        Route::get('/', 'OfferController@getOffers')->name("list-offers");
+        Route::get('/{offer}', 'OfferController@getSingleOffer');
+        Route::post('/', 'OfferController@createOffer');
+        Route::put('/{offer}', 'OfferController@updateOffer');
     });
 
 });

@@ -5,8 +5,12 @@ namespace Emrad\Http\Controllers;
 use Emrad\Models\Offer;
 use Illuminate\Http\Request;
 use Emrad\Filters\OfferFilters;
+use Emrad\Services\FilesServices;
 use Emrad\Services\OffersServices;
+use Emrad\Http\Requests\CreateOffer;
+use Emrad\Http\Resources\OfferResource;
 use Emrad\Http\Resources\OfferCollection;
+use Symfony\Component\Console\Input\Input;
 
 class OfferController extends Controller
 {
@@ -16,13 +20,20 @@ class OfferController extends Controller
     public $offersServices;
 
     /**
+     * @var filesServices $filesServices
+     */
+    public $filesServices;
+
+    /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(OffersServices $offersServices)
+    public function __construct(OffersServices $offersServices, FilesServices $filesServices)
     {
-        $this->OffersServices = $offersServices;
+
+        $this->filesServices = $filesServices;
+        $this->offersServices = $offersServices;
     }
 
     /**
@@ -33,8 +44,8 @@ class OfferController extends Controller
     public function getOffers(OfferFilters $filters)
     {
         // filters base on the resquest parameters
-        $products = Offer::filter($filters)->get();
-        return new OfferCollection($products);
+        $offers = Offer::filter($filters)->orderBy('id', 'desc')->paginate(16);
+        return new OfferCollection($offers);
     }
 
     /**
@@ -42,20 +53,49 @@ class OfferController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function createOffer(CreateOffer $request)
     {
-        //
+        $pathToFile = $this->filesServices->uploadBase64($request->image, 's3');
+
+        $offers = $this->offersServices->createOffer(
+                                                        $request->productId,
+                                                        $request->offerTitle,
+                                                        $pathToFile,
+                                                        $request->offerDescription,
+                                                        $request->offerStartDate,
+                                                        $request->offerEndDate
+                                                    );
+        return response([
+            'status' => 'success',
+            'message' => 'offers created successfully',
+            'data' => new OfferResource($offers)
+        ], 200);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function updateOffer(Request $request, Offer $offer)
     {
-        //
+        $pathToFile = $this->filesServices->uploadBase64($request->image, 's3');
+
+        $offers = $this->offersServices->updateOffer(
+                                                        $offer,
+                                                        $request->productId,
+                                                        $request->offerTitle,
+                                                        $pathToFile,
+                                                        $request->offerDescription,
+                                                        $request->offerStartDate,
+                                                        $request->offerEndDate
+                                                    );
+        return response([
+            'status' => 'success',
+            'message' => 'offers created successfully',
+            'data' => new OfferResource($offers)
+        ], 200);
     }
 
     /**
@@ -64,42 +104,14 @@ class OfferController extends Controller
      * @param  \Emrad\Offer  $offer
      * @return \Illuminate\Http\Response
      */
-    public function show(Offer $offer)
+    public function getSingleOffer(Offer $offer)
     {
-        //
-    }
+        $offer = $this->offersServices->getSingleOffer($offer);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \Emrad\Offer  $offer
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Offer $offer)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Emrad\Offer  $offer
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Offer $offer)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \Emrad\Offer  $offer
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Offer $offer)
-    {
-        //
+        return response([
+            'status' => 'success',
+            'message' => 'Offer detail',
+            'data' => new OfferResource($offer)
+        ], 200);
     }
 }

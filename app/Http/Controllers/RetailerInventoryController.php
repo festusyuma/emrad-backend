@@ -12,7 +12,7 @@ use Emrad\Services\InventoryServices;
 
 class RetailerInventoryController extends Controller
 {
-    
+
     /**
      * @var InventoryServices $inventoryServices
      */
@@ -23,27 +23,34 @@ class RetailerInventoryController extends Controller
      *
      * @return void
      */
-    public function __construct(InventoryServices $InventoryServices) 
+    public function __construct(InventoryServices $InventoryServices)
     {
         $this->inventoryServices = $InventoryServices;
     }
 
-    
+
     /**
      * Display a listing of the retailer-inventory resource collection.
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAllRetailerInventories()
+    public function getAllRetailerInventories(InventoryFilters $filters)
     {
-        
-        $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
+        // filters base on the resquest parameters
+        $products = Product::filter($filters)->get();
+        // ->orderBy('id', 'desc')->paginate(16)
+        // ->setPath(route('list-products', Input::except('page')));
 
-        return response([
-            'status' => 'success',
-            'message' => 'Inventories retrieved succesfully',
-            'data' => new RetailerInventoryCollection($retailerInventories)
-        ], 200);
+        // ->appends(Input::except('page'));
+        return new ProductCollection($products);
+
+        // $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
+
+        // return response([
+        //     'status' => 'success',
+        //     'message' => 'Inventories retrieved succesfully',
+        //     'data' => new RetailerInventoryCollection($retailerInventories)
+        // ], 200);
     }
 
 
@@ -62,7 +69,7 @@ class RetailerInventoryController extends Controller
             'message' => 'Inventory retrieved succesfully',
             'data' => new RetailerInventoryResource($retailerInventory)
         ], 200);
-        
+
     }
 
 
