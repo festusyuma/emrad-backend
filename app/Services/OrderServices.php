@@ -128,10 +128,10 @@ class OrderServices
 
     }
 
-    public function updateInventory($retailerOrder) {
-
+    public function updateInventory($retailerOrder) 
+    {
         $retailerInventory = RetailerInventory::firstOrNew([
-            'product_id' => $retailerOrder->product_id
+            'product_id', $retailerOrder->product_id
         ]);
 
         $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;

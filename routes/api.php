@@ -66,6 +66,11 @@ Route::group(['prefix' => 'v1'], function () {
         Route::patch('/update/{inventory_id}', 'RetailerInventoryController@updateRetailerInventory')->name('update-inventory');
     });
 
+    Route::group(['prefix' => 'retail-sales'], function () {
+        Route::get('/', 'RetailerSaleController@getAllRetailerSales')->name('list-sales');
+        Route::get('/{sale_id}', 'RetailerSaleController@getSingleRetailerSale')->name('get-sale');
+    });
+
     Route::group(['prefix' => 'offers'], function () {
         Route::get('/', 'OfferController@getOffers');
     });
