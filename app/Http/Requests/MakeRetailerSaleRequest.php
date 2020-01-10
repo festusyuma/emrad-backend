@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class MakeRetailerOrderRequest extends FormRequest
+class MakeRetailerSaleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,6 +30,7 @@ class MakeRetailerOrderRequest extends FormRequest
             'company_id' => 'required|numeric',
             'quantity' => 'required|numeric',
             'unit_price' => 'required|numeric',
+            'created_by' => 'required'
         ];
     }
 
