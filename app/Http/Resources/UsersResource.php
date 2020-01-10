@@ -25,7 +25,7 @@ class UsersResource extends JsonResource
             'userAddress' => $this->address,
             'userPermissions' => $this->permissions,
             'createdAt' => $this->created_at,
-            'userCompany' => new CompanyResource($this->company_id),
+            'userCompany' => new CompanyResource($this->company),
         ];
     }
 }
