@@ -73,6 +73,8 @@ Route::group(['prefix' => 'v1'], function () {
 
     Route::group(['prefix' => 'offers'], function () {
         Route::get('/', 'OfferController@getOffers')->name("list-offers");
+        Route::post('/apply', 'OfferController@applyForOffer')->middleware("auth:api");
+        Route::get('/mine', 'OfferController@myOffers')->middleware("auth:api");
         Route::get('/{offer}', 'OfferController@getSingleOffer');
         Route::post('/', 'OfferController@createOffer');
         Route::put('/{offer}', 'OfferController@updateOffer');

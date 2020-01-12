@@ -14,9 +14,19 @@ class OfferRepository extends BaseRepository implements OfferRepositoryInterface
      * OfferRepository Constructor
      *
      * @param Emrad\Models\Offer $offer
-      */
+     */
     public function __construct(Offer $offer)
     {
         $this->model = $offer;
+    }
+
+    /**
+     * get list of user offers
+     *
+     * @param user $user
+     */
+    public function myOffers($user)
+    {
+        return $user->offers()->paginate(10);
     }
 }

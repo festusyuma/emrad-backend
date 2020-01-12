@@ -116,6 +116,18 @@ class OffersServices
     {
         return $this->offerRepositoryInterface->find($id);
     }
+
+    /**
+     * Get the authenticated user offers
+     *
+     * @param user $user
+     *
+     * @return Offer $offer
+     */
+    public function myOffers($user)
+    { 
+        return  $this->offerRepositoryInterface->myOffers($user);
+    }
 }
 
 

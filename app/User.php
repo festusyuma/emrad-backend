@@ -22,7 +22,7 @@ class User extends Authenticatable
     ];
 
     protected $guard_name = 'api';
-    
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -49,5 +49,15 @@ class User extends Authenticatable
     public function order()
     {
         return $this->hasMany(\Emrad\User::class);
+    }
+
+    /**
+     * user belongs to offer
+     *
+     * @return void
+     */
+    public function offers()
+    {
+        return $this->belongsToMany(\Emrad\Models\Offer::class);
     }
 }

@@ -10,7 +10,6 @@ use Emrad\Services\OffersServices;
 use Emrad\Http\Requests\CreateOffer;
 use Emrad\Http\Resources\OfferResource;
 use Emrad\Http\Resources\OfferCollection;
-use Symfony\Component\Console\Input\Input;
 
 class OfferController extends Controller
 {
@@ -111,6 +110,30 @@ class OfferController extends Controller
         return response([
             'status' => 'success',
             'message' => 'Offer retrieved successfully',
+            'data' => new OfferResource($offer)
+        ], 200);
+    }
+
+    public function myOffers()
+    {
+        $offers = $this->offersServices->myOffers(auth("api")->user());
+
+        return response([
+            'status' => 'success',
+            'message' => 'user offers retrieved successfully',
+            'data' => new OfferCollection($offers)
+        ], 200);
+    }
+
+    public function applyForOffer(Request $request)
+    {
+        $offer = $this->offersServices->getSingleOffer($request->offerId);
+
+        $offer->users()->sync(auth("api")->user());
+
+        return response([
+            'status' => 'success',
+            'message' => 'offer applied for successfully',
             'data' => new OfferResource($offer)
         ], 200);
     }

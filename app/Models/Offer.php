@@ -22,4 +22,14 @@ class Offer extends Model
     {
         return $filters->apply($query);
     }
+
+    /**
+     * user belongs to offer
+     *
+     * @return void
+     */
+    public function users()
+    {
+        return $this->belongsToMany(\Emrad\User::class);
+    }
 }
