@@ -118,9 +118,9 @@ class OrderServices
             $retailerOrder->is_confirmed = true;
             $retailerOrder->save();
 
-            $this->updateInventory($retailerOrder);
-
             return "Order confirmed successfully!";
+            
+            $this->updateInventory($retailerOrder);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -129,14 +129,18 @@ class OrderServices
 
     public function updateInventory($retailerOrder) 
     {
-        $retailerInventory = RetailerInventory::firstOrNew([
-            'retailer_inventories.product_id', $retailerOrder->product_id
+        $retailerInventory = RetailerInventory::firstOrCreate([
+         'product_id'   , $retailerOrder->product_id
+        ], [
+            "quantity" => $retailerInventory->quantity + $retailerOrder->quantity,
+            "cost_price" => $retailerOrder->unit_price,
+            "selling_price" => $retailerOrder->unit_price,
+            "is_in_stock" => $retailerOrder->quantity == 0 ?: 1
         ]);
-
-        $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
-        $retailerInventory->cost_price = $retailerOrder->unit_price;
-        $retailerInventory->selling_price = $retailerOrder->unit_price;
-        $retailerInventory->is_in_stock = $retailerOrder->quantity == 0 ?: 1;
-        $retailerInventory->save();
+            // $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
+            // $retailerInventory->cost_price = $retailerOrder->unit_price;
+            // $retailerInventory->selling_price = $retailerOrder->unit_price;
+            // $retailerInventory->is_in_stock = $retailerOrder->quantity == 0 ?: 1;
+            // $retailerInventory->save();
     }
 }
