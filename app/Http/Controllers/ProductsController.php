@@ -82,13 +82,17 @@ class ProductsController extends Controller
     {
         $pathToFile = $this->filesServices->uploadBase64($request->image, 's3');
 
+        $productSku = base_convert(microtime(true), 10, 36);
+
         $product = $this->productsServices->createProduct(
                                                             $request->categoryId,
+                                                            auth("api")->user()->id,
                                                             $request->productName,
                                                             $request->productDescription,
                                                             $request->productPrice,
                                                             $request->productSize,
-                                                            $pathToFile
+                                                            $pathToFile,
+                                                            $productSku
                                                         );
         return response([
                             'status' => 'success',
@@ -111,11 +115,13 @@ class ProductsController extends Controller
         $product = $this->productsServices->updateProduct(
                                                             $product,
                                                             $request->categoryId,
+                                                            auth("api")->user()->id,
                                                             $request->productName,
                                                             $request->productDescription,
                                                             $request->productPrice,
                                                             $request->productSize,
-                                                            $request->productImage
+                                                            $request->productImage,
+                                                            $request->productSku
                                                         );
         return response([
                             'status' => 'success',

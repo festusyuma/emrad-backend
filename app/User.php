@@ -54,10 +54,20 @@ class User extends Authenticatable
     /**
      * user belongs to offer
      *
-     * @return void
+     * @return \Emrad\Models\Offer
      */
     public function offers()
     {
         return $this->belongsToMany(\Emrad\Models\Offer::class);
+    }
+
+    /**
+     * users products
+     *
+     * @return \Emrad\Models\Product
+     */
+    public function products()
+    {
+        return $this->hasMany(\Emrad\Models\Product::class);
     }
 }

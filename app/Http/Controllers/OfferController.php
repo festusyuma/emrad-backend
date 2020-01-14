@@ -30,7 +30,6 @@ class OfferController extends Controller
      */
     public function __construct(OffersServices $offersServices, FilesServices $filesServices)
     {
-
         $this->filesServices = $filesServices;
         $this->offersServices = $offersServices;
     }
@@ -56,10 +55,11 @@ class OfferController extends Controller
     {
         $pathToFile = $this->filesServices->uploadBase64($request->image, 's3');
 
-        $offers = $this->offersServices->createOffer(
+        $offer = $this->offersServices->createOffer(
                                                         $request->productId,
                                                         $request->offerTitle,
                                                         $pathToFile,
+                                                        $request->offerProfitMargin,
                                                         $request->offerDescription,
                                                         $request->offerStartDate,
                                                         $request->offerEndDate
@@ -67,7 +67,7 @@ class OfferController extends Controller
         return response([
             'status' => 'success',
             'message' => 'offers created successfully',
-            'data' => new OfferResource($offers)
+            'data' => new OfferResource($offer)
         ], 200);
     }
 
@@ -86,6 +86,7 @@ class OfferController extends Controller
                                                         $request->productId,
                                                         $request->offerTitle,
                                                         $pathToFile,
+                                                        $request->offerProfitMargin,
                                                         $request->offerDescription,
                                                         $request->offerStartDate,
                                                         $request->offerEndDate
@@ -127,6 +128,10 @@ class OfferController extends Controller
 
     public function applyForOffer(Request $request)
     {
+        $request->validate([
+            'offerId' => 'required|exists:offers,id',
+        ]);
+
         $offer = $this->offersServices->getSingleOffer($request->offerId);
 
         $offer->users()->sync(auth("api")->user());

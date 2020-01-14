@@ -16,8 +16,20 @@ class OfferFilters extends QueryFilter
      *
      * @return Builder $builder
      */
-    public function productName($name = ' ')
+    public function offerTitle($name = ' ')
     {
-        return $this->builder->Where('name','like', '%'. $name .'%');
+        return $this->builder->Where('title','like', '%'. $name .'%');
+    }
+
+    /**
+     * Offer by discount range
+     *
+     * @param string $range
+     *
+     * @return Builder $builder
+     */
+    public function profitMargin($range = "")
+    {
+        return $this->builder->where("profit_margin", ">" , (int)$range);
     }
 }

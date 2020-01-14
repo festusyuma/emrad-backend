@@ -53,7 +53,7 @@ class InventoryServices
      */
     public function getSingleRetailerInventory(int $inventory_id)
     {
-        return $this->inventoryRepositoryInterface->findRetailerInventoryById($inventory_id);
+        return $this->inventoryRepositoryInterface->find($inventory_id);
     }
 
     /**
@@ -63,7 +63,7 @@ class InventoryServices
      */
     public function getAllRetailerInventories()
     {
-        return $this->inventoryRepositoryInterface->getAllRetailerInventories();
+        return $this->inventoryRepositoryInterface->paginate(10);
     }
 
     /**

@@ -37,7 +37,7 @@ class RetailerInventoryController extends Controller
     public function getAllRetailerInventories()
     {
         $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
-
+        return new RetailerInventoryCollection($retailerInventories);
         return response([
             'status' => 'success',
             'message' => 'Inventories retrieved succesfully',

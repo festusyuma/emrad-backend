@@ -17,6 +17,7 @@ class CreateOffersTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger("product_id")->index();
             $table->string("title");
+            $table->string("profit_margin")->nullable();
             $table->text("image");
             $table->text("description");
             $table->date("start_date");

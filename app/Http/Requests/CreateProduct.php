@@ -26,7 +26,10 @@ class CreateProduct extends FormRequest
     public function rules()
     {
         return [
-            //
+            'categoryId' => 'required',
+            'productName' => 'required|unique:products,name',
+            'productPrice' => 'required',
+            'productSize' => 'nullable',
         ];
     }
 

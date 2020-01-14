@@ -33,8 +33,9 @@ class OffersServices
     public function createOffer(
         $productId,
         $offerTitle,
-        $offerDescription,
         $pathToFile,
+        $offerProfitMargin,
+        $offerDescription,
         $offerStartDate,
         $offerEndDate
     )
@@ -46,6 +47,7 @@ class OffersServices
             $offer->product_id = $productId;
             $offer->title = $offerTitle;
             $offer->image = $pathToFile;
+            $offer->profit_margin = $offerProfitMargin;
             $offer->description = $offerDescription;
             $offer->start_date = $offerStartDate;
             $offer->end_date = $offerEndDate;
@@ -77,6 +79,7 @@ class OffersServices
         $offerTitle,
         $offerDescription,
         $pathToFile,
+        $offerProfitMargin,
         $offerStartDate,
         $offerEndDate
     )
@@ -85,6 +88,7 @@ class OffersServices
             $offer->product_id = $productId;
             $offer->title = $offerTitle;
             $offer->image = $pathToFile;
+            $offer->profit_margin = $offerProfitMargin;
             $offer->description = $offerDescription;
             $offer->start_date = $offerStartDate;
             $offer->end_date = $offerEndDate;
@@ -125,7 +129,7 @@ class OffersServices
      * @return Offer $offer
      */
     public function myOffers($user)
-    { 
+    {
         return  $this->offerRepositoryInterface->myOffers($user);
     }
 }

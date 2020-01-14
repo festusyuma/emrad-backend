@@ -26,7 +26,11 @@ class UpdateProductRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'categoryId' => 'required',
+            'productName' => 'required|unique:products,name'.$this->product->name,
+            'productSku' => 'required|unique:products,sku',
+            'productPrice' => 'required',
+            'productSize' => 'nullable',
         ];
     }
 

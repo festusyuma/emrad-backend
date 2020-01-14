@@ -24,4 +24,9 @@ class Product extends Model
     {
         return $this->belongsTo(\Emrad\Models\Category::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(\Emrad\User::class);
+    }
 }

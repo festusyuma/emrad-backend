@@ -3,6 +3,8 @@
 namespace Emrad\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CreateOffer extends FormRequest
 {
@@ -24,7 +26,14 @@ class CreateOffer extends FormRequest
     public function rules()
     {
         return [
-            //
+            "productId" => "required|exists:products,id",
+            "offerTitle" => "required|string",
+            "offerProfitMargin" => "required|int"
         ];
+    }
+
+
+    protected function failedValidation(Validator $validator) {
+        throw new HttpResponseException(response()->json($validator->errors()->all(), 422));
     }
 }

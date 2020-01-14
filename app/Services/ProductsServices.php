@@ -21,21 +21,25 @@ class ProductsServices
      * Create a new Product Instance
      *
      * @param String $productName
+     * @param String $userId
      * @param String $productDescription
      * @param String $productPrice
      * @param String $productSize
      * @param String $productImage
+     * @param String $productSku
      *
      * @return Emrad\Models\Product
      */
 
     public function createProduct(
         $categoryId,
+        $userId,
         $productName,
         $productDescription,
         $productPrice,
         $productSize,
-        $productImage
+        $productImage,
+        $productSku
     )
     {
         // instatiate a new class
@@ -43,11 +47,13 @@ class ProductsServices
 
         try {
             $product->category_id = $categoryId;
+            $product->user_id = $userId;
             $product->name = $productName;
             $product->description = $productDescription;
             $product->price = $productPrice;
             $product->size = $productSize;
             $product->image = $productImage;
+            $product->sku = $productSku;
 
             $product->save();
             return $product;
@@ -61,6 +67,7 @@ class ProductsServices
      *
      * @param Emrad\Models\Product $product
      * @param String $categoryId
+     * @param String $userId
      * @param String $productName
      * @param String $productDescription
      * @param String $productPrice
@@ -73,6 +80,7 @@ class ProductsServices
       public function updateProduct(
         Product $product,
         $categoryId,
+        $userId,
         $productName,
         $productDescription,
         $productPrice,
@@ -82,6 +90,7 @@ class ProductsServices
     {
         try {
             $product->category_id = $categoryId;
+            $product->user_id = $userId;
             $product->name = $productName;
             $product->description = $productDescription;
             $product->price = $productPrice;
