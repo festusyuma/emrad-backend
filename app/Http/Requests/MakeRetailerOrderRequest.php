@@ -26,10 +26,10 @@ class MakeRetailerOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'product_id' => 'required|numeric',
-            'company_id' => 'required|numeric',
-            'quantity' => 'required|numeric',
-            'unit_price' => 'required|numeric',
+            // 'product_id' => 'required|numeric',
+            // 'company_id' => 'nullable',
+            // 'quantity' => 'required|numeric',
+            // 'unit_price' => 'required|numeric',
         ];
     }
 

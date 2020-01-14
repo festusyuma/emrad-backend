@@ -3,7 +3,7 @@
 Route::group(['prefix' => 'v1'], function () {
 
     Route::get('/', function () {
-        return response(['message'=> 'welcome to Emrad api version 1.0 :) ']);
+        return response(['message' => 'welcome to Emrad api version 1.0 :) ']);
     });
 
     Route::group(['prefix' => 'roles'], function () {
@@ -53,17 +53,17 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     Route::group(['prefix' => 'retail-orders'], function () {
-        Route::get('/', 'RetailerOrderController@getAllRetailerOrders')->name('list-orders');
-        Route::get('/{order_id}', 'RetailerOrderController@getSingleRetailerOrder')->name('get-order');
-        Route::post('/', 'RetailerOrderController@makeRetailerOrder')->name('make-order');
-        Route::patch('/confirm/{order_id}', 'RetailerOrderController@confirmRetailerOrder')->name('confirm-order');
+        Route::get('/', 'RetailerOrderController@getAllRetailerOrders')->middleware('auth:api');
+        Route::get('/{order_id}', 'RetailerOrderController@getSingleRetailerOrder')->middleware('auth:api');
+        Route::post('/', 'RetailerOrderController@makeRetailerOrder')->middleware('auth:api');
+        Route::patch('/confirm/{order_id}', 'RetailerOrderController@confirmRetailerOrder')->middleware('auth:api');
 
     });
 
     Route::group(['prefix' => 'retail-inventories'], function () {
-        Route::get('/', 'RetailerInventoryController@getAllRetailerInventories')->name('list-inventories');
-        Route::get('/{inventory_id}', 'RetailerInventoryController@getSingleRetailerInventory')->name('get-inventory');
-        Route::patch('/update/{inventory_id}', 'RetailerInventoryController@updateRetailerInventory')->name('update-inventory');
+        Route::get('/', 'RetailerInventoryController@getAllRetailerInventories')->middleware('auth:api');
+        Route::get('/{inventory_id}', 'RetailerInventoryController@getSingleRetailerInventory')->middleware('auth:api');
+        Route::patch('/update/{inventory_id}', 'RetailerInventoryController@updateRetailerInventory')->middleware('auth:api');
     });
 
     Route::group(['prefix' => 'retail-sales'], function () {
