@@ -30,6 +30,6 @@ class OfferFilters extends QueryFilter
      */
     public function profitMargin($range = "")
     {
-        return $this->builder->where("profit_margin", ">" , (int)$range);
+        return $this->builder->where("profit_margin", ">=" , (int)$range);
     }
 }
