@@ -27,17 +27,17 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
      *
      * @return RetailerOrder $retailOrder
      */
-    public function findRetailerOrderById($order_id, $relations = [])
-    {
-        return $this->model
-            ->where('id', $order_id)
-            ->with($relations)
-            ->firstOrFail();
-    }
+    // public function findRetailerOrderById($order_id, $relations = [])
+    // {
+    //     return $this->model
+    //         ->where('id', $order_id)
+    //         ->with($relations)
+    //         ->firstOrFail();
+    // }
 
-    public function getAllRetailerOrders()
-    {
-        return $this->model->all();
-    }
+    // public function getAllRetailerOrders()
+    // {
+    //     return $this->model->all();
+    // }
 
 }

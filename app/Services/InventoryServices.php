@@ -78,13 +78,13 @@ class InventoryServices
     public function updateRetailerInventory(int $inventory_id, $inventorySellingPrice)
     {
         try {
-            $inventory = $this->inventoryRepositoryInterface->findRetailerInventoryById($inventory_id);
+                $inventory = $this->inventoryRepositoryInterface->findRetailerInventoryById($inventory_id);
 
-            $inventory->selling_price = $inventorySellingPrice;
+                $inventory->selling_price = $inventorySellingPrice;
 
-            $inventory->save();
+                $inventory->save();
 
-            return "Inventory updated successfully!";
+                return "Inventory updated successfully!";
         } catch (Exception $e) {
             return $e->getMessage();
         }

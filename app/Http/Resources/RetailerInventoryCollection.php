@@ -16,8 +16,8 @@ class RetailerInventoryCollection extends ResourceCollection
     {
         return [
             'status' => 'success',
-            'message' => 'Inventories retrieved succesfully',
-            'data' => RetailerInventoryResource::collection($this->collection)
+            'message' => 'Inventories retrieved succesfully', 
+            'data' => RetailerInventoryResource::collection($this->collection) 
         ];
     }
 }
