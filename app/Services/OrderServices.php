@@ -65,7 +65,7 @@ class OrderServices
      */
     public function getSingleRetailerOrder($order_id)
     {
-        return $this->orderRepositoryInterface->findRetailerOrderById($order_id);
+        return $this->orderRepositoryInterface->find($order_id);
     }
 
     /**
@@ -75,7 +75,7 @@ class OrderServices
      */
     public function getAllRetailerOrders()
     {
-        return $this->orderRepositoryInterface->getAllRetailerOrders();
+        return $this->orderRepositoryInterface->paginate(10);
     }
 
 
