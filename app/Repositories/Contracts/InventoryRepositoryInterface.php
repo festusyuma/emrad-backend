@@ -12,6 +12,6 @@ interface InventoryRepositoryInterface extends BaseRepositoryInterface {
    *
    * @return RetailerInventory $retailInventory
    */
-  public function findRetailerInventoryById($inventory_id, $relations = []);
+  // public function findRetailerInventoryById($inventory_id, $relations = []);
   
 }

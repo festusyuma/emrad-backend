@@ -38,11 +38,14 @@ class RetailerInventoryController extends Controller
     {
         $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
 
-        return response([
-            'status' => 'success',
-            'message' => 'Inventories retrieved succesfully',
-            'data' => new RetailerInventoryCollection($retailerInventories)
-        ], 200);
+        return new RetailerInventoryCollection($retailerInventories);
+
+        // return response([
+        //     // 'status' => 'success',
+        //     // 'message' => 'Inventories retrieved succesfully',
+        //     // // 'data' => $retailerInventories
+        //     'data' => RetailerInventoryResource::collection($retailerInventories)
+        // ], 200);
     }
 
     // public function getAllRetailerInventories(InventoryFilters $filters)

@@ -14,6 +14,10 @@ class RetailerInventoryCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return RetailerInventoryResource::collection($this->collection);
+        return [
+            'status' => 'success',
+            'message' => 'Inventories retrieved succesfully', 
+            'data' => RetailerInventoryResource::collection($this->collection) 
+        ];
     }
 }

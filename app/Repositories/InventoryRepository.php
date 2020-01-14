@@ -17,7 +17,7 @@ class InventoryRepository extends BaseRepository implements InventoryRepositoryI
       */
     public function __construct(RetailerInventory $retailerInventory)
     {
-        $this->retailerInventory = $retailerInventory;
+        $this->model = $retailerInventory;
     }
 
     /**
@@ -27,22 +27,22 @@ class InventoryRepository extends BaseRepository implements InventoryRepositoryI
      *
      * @return RetailerInventory $retailInventory
      */
-    public function findRetailerInventoryById($inventory_id, $relations = [])
-    {
-        return $this->retailerInventory
-            ->where('id', $inventory_id)
-            ->with($relations)
-            ->first();
-    }
+    // public function findRetailerInventoryById($inventory_id, $relations = [])
+    // {
+    //     return $this->retailerInventory
+    //         ->where('id', $inventory_id)
+    //         ->with($relations)
+    //         ->first();
+    // }
 
-    public function getAllRetailerInventories()
-    {
-        return $this->retailerInventory->all();
-    }
+    // public function getAllRetailerInventories()
+    // {
+    //     return $this->retailerInventory->all();
+    // }
 
-    public function updateRetailerInventory($inventory_id)
-    {
+    // public function updateRetailerInventory($inventory_id)
+    // {
         
-    }
+    // }
 
 }

@@ -3,7 +3,7 @@
 Route::group(['prefix' => 'v1'], function () {
 
     Route::get('/', function () {
-        return response(['message'=> 'welcome to Emrad api version 1.0 :) ']);
+        return response(['message' => 'welcome to Emrad api version 1.0 :) ']);
     });
 
     Route::group(['prefix' => 'roles'], function () {

@@ -12,6 +12,6 @@ interface OrderRepositoryInterface extends BaseRepositoryInterface {
    *
    * @return RetailerOrder $retailOrder
    */
-  public function findRetailerOrderById($order_id, $relations = []);
+  // public function findRetailerOrderById($order_id, $relations = []);
   
 }

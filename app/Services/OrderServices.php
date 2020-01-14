@@ -28,14 +28,14 @@ class OrderServices
      * @return \Emrad\Models\RetailerOrder $order
      */
 
-    public function createRetailerOrder() 
+    public function createRetailerOrder($order) 
     {
         $retailerOrder = new RetailerOrder;
-        $retailerOrder->product_id = $request->productId;
-        $retailerOrder->company_id = $request->companyId;
-        $retailerOrder->unit_price = $request->quantity;
-        $retailerOrder->order_amount = $request->orderAmount;
-        $retailerOrder->created_by = user()->id();
+        $retailerOrder->product_id = $order['product_id'];
+        $retailerOrder->company_id = $order['company_id'];
+        $retailerOrder->unit_price = $order['quantity'];
+        $retailerOrder->order_amount = $order['unit_price'];
+        $retailerOrder->created_by = 1;
         $retailerOrder->save();
 
         return $retailerOrder;
@@ -47,12 +47,11 @@ class OrderServices
     {
         try {
             foreach ($orders as $order) {
-                $this->createOrder($order);
+                $retailerOrder = $this->createRetailerOrder($order);
             }
 
-            $updateInventory = updateInventory();
-
             return "Order created successfully!";
+
         } catch (Exception $e) {
             return $e;
         }
@@ -131,7 +130,7 @@ class OrderServices
     public function updateInventory($retailerOrder) 
     {
         $retailerInventory = RetailerInventory::firstOrNew([
-            'product_id', $retailerOrder->product_id
+            'retailer_inventories.product_id', $retailerOrder->product_id
         ]);
 
         $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
