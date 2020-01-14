@@ -118,12 +118,7 @@ class OfferController extends Controller
     public function myOffers()
     {
         $offers = $this->offersServices->myOffers(auth("api")->user());
-
-        return response([
-            'status' => 'success',
-            'message' => 'user offers retrieved successfully',
-            'data' => new OfferCollection($offers)
-        ], 200);
+        return new OfferCollection($offers);
     }
 
     public function applyForOffer(Request $request)
