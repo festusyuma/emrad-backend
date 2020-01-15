@@ -65,7 +65,7 @@ class AuthController extends Controller
 
 
         event(new NewCompanyCreated($user, $company));
-
+                            // dd('test');
         $user->assignRole('Retailer');
 
         $message = 'Please confirm yourself by clicking on verify user button sent to your email';

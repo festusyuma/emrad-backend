@@ -91,5 +91,5 @@ Route::post('/resetpassword', 'AuthController@setPassword')->middleware('auth:ap
 Route::post('/forgetpassword', 'ForgotPasswordController@sendResetLinkEmail');
 Route::post('/password/reset', 'ResetPasswordController@reset');
 
-Route::post('email/verify', 'VerificationApiController@verify')->name('verificationapi.verify');
+Route::post('email/verify/', 'VerificationApiController@verify')->name('verificationapi.verify');
 Route::post('email/resend', 'VerificationApiController@resend')->middleware('auth:api')->name('verificationapi.resend');

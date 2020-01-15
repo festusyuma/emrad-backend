@@ -2,6 +2,8 @@
 
 namespace Emrad\Events;
 
+use Emrad\Models\Company;
+use Emrad\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -14,14 +16,19 @@ class NewCompanyCreated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $user;
+    public $company;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(User $user, Company $company)
     {
-        //
+        // dd($user, $company);
+        $this->user = $user;
+        $this->company = $company;
     }
 
     /**
