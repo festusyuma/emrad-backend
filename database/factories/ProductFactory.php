@@ -7,7 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Product::class, function (Faker $faker) {
     return [
-        "name" => $faker->name,
+        "name" => $faker->firstNameMale,
         "category_id" => factory(\Emrad\Models\Category::class, 1)->create()->first()->id,
         "user_id" => factory(\Emrad\User::class, 1)->create()->first()->id,
         "sku" => base_convert(microtime(true), 10, 36),
