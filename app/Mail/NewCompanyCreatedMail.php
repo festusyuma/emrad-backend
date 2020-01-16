@@ -46,7 +46,7 @@ class NewCompanyCreatedMail extends Mailable
                                                         'user' => $this->user,
                                                         'company' => $this->company,
                                                         // 'url' => URL::signedRoute('verificationapi.verify', ['user' => $this->user->id])
-                                                        'url' => "https://emrad.now.sh/verification?token={{ $this->user->id }}"
+                                                        'url' => "https://emrad.now.sh/verification?token=".$this->user->id
                                                     ]);
     }
 }
