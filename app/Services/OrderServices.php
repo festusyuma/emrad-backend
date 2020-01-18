@@ -24,18 +24,20 @@ class OrderServices
      * Create a new order
      *
      * @param Request $request
+     * @param user_id
      *
      * @return \Emrad\Models\RetailerOrder $order
      */
 
-    public function createRetailerOrder($order) 
+    public function createRetailerOrder($order, $user_id) 
     {
         $retailerOrder = new RetailerOrder;
         $retailerOrder->product_id = $order['product_id'];
         $retailerOrder->company_id = $order['company_id'];
-        $retailerOrder->unit_price = $order['quantity'];
-        $retailerOrder->order_amount = $order['unit_price'];
-        $retailerOrder->created_by = 1;
+        $retailerOrder->unit_price = $order['unit_price'];
+        $retailerOrder->quantity = $order['quantity'];
+        $retailerOrder->order_amount = $retailerOrder->unit_price * $retailerOrder->quantity;
+        $retailerOrder->created_by = $user_id;
         $retailerOrder->save();
 
         return $retailerOrder;
@@ -43,17 +45,17 @@ class OrderServices
     
 
 
-    public function makeRetailerOrder($orders)
+    public function makeRetailerOrder($orders, $user_id)
     {
         try {
             foreach ($orders as $order) {
-                $retailerOrder = $this->createRetailerOrder($order);
+                $retailerOrder = $this->createRetailerOrder($order, $user_id);
             }
 
             return "Order created successfully!";
 
         } catch (Exception $e) {
-            return $e;
+            return $e->getMessage();
         }
 
     }
@@ -112,35 +114,40 @@ class OrderServices
             if($isNull)
                 throw new Exception("Order not found!");
 
-            if($retailerOrder->is_confirmed == true)
+            if($retailerOrder->is_confirmed)
                 throw new Exception("Order already confirmed");
-
+                
+            $updateInventory = $this->updateInventory($retailerOrder);
+            
+            if($updateInventory)
+                throw new Exception("Inventory not updated");
+            
             $retailerOrder->is_confirmed = true;
             $retailerOrder->save();
-
-            return "Order confirmed successfully!";
             
-            $this->updateInventory($retailerOrder);
+            return "Order confirmed, inventory updated!";
+            
         } catch (Exception $e) {
             return $e->getMessage();
         }
-
     }
 
     public function updateInventory($retailerOrder) 
     {
-        $retailerInventory = RetailerInventory::firstOrCreate([
-         'product_id'   , $retailerOrder->product_id
-        ], [
-            "quantity" => $retailerInventory->quantity + $retailerOrder->quantity,
-            "cost_price" => $retailerOrder->unit_price,
-            "selling_price" => $retailerOrder->unit_price,
-            "is_in_stock" => $retailerOrder->quantity == 0 ?: 1
-        ]);
-            // $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
-            // $retailerInventory->cost_price = $retailerOrder->unit_price;
-            // $retailerInventory->selling_price = $retailerOrder->unit_price;
-            // $retailerInventory->is_in_stock = $retailerOrder->quantity == 0 ?: 1;
-            // $retailerInventory->save();
+        try {
+            
+            $retailerInventory = RetailerInventory::firstOrNew([
+                'product_id' => $retailerOrder->product_id
+            ]);
+
+            $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
+            $retailerInventory->cost_price = $retailerOrder->unit_price;
+            $retailerInventory->selling_price = $retailerOrder->unit_price;
+            $retailerInventory->is_in_stock = $retailerOrder->quantity == 0 ? 0 : 1;
+            $retailerInventory->save();
+
+        } catch(Exception $e) {
+            return true;
+        }
     }
 }

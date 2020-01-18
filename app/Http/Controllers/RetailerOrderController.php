@@ -45,8 +45,6 @@ class RetailerOrderController extends Controller
         //     'message' => 'Orders retrieved successfully',
         //     'data' => new RetailerOrderCollection($retailerOrders)
         // ], 200);
-
-
     }
 
 
@@ -77,7 +75,7 @@ class RetailerOrderController extends Controller
     {
         $orders = $request->orders;
 
-        $result = $this->orderServices->makeRetailerOrder($orders);
+        $result = $this->orderServices->makeRetailerOrder($orders, auth()->id());
 
         return response([
             'status' => 'success',

@@ -53,22 +53,24 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     Route::group(['prefix' => 'retail-orders'], function () {
-        Route::get('/', 'RetailerOrderController@getAllRetailerOrders');
-        Route::get('/{order_id}', 'RetailerOrderController@getSingleRetailerOrder');
-        Route::post('/', 'RetailerOrderController@makeRetailerOrder');
-        Route::patch('/confirm/{order_id}', 'RetailerOrderController@confirmRetailerOrder');
+        Route::get('/', 'RetailerOrderController@getAllRetailerOrders')->middleware('auth:api');
+        Route::get('/{order_id}', 'RetailerOrderController@getSingleRetailerOrder')->middleware('auth:api');
+        Route::post('/', 'RetailerOrderController@makeRetailerOrder')->middleware('auth:api');
+        Route::patch('/confirm/{order_id}', 'RetailerOrderController@confirmRetailerOrder')->middleware('auth:api');
 
     });
 
     Route::group(['prefix' => 'retail-inventories'], function () {
-        Route::get('/', 'RetailerInventoryController@getAllRetailerInventories');
-        Route::get('/{inventory_id}', 'RetailerInventoryController@getSingleRetailerInventory');
-        Route::patch('/update/{inventory_id}', 'RetailerInventoryController@updateRetailerInventory');
+        Route::get('/', 'RetailerInventoryController@getAllRetailerInventories')->middleware('auth:api');
+        Route::get('/{inventory_id}', 'RetailerInventoryController@getSingleRetailerInventory')->middleware('auth:api');
+        Route::patch('/update/{inventory_id}', 'RetailerInventoryController@updateRetailerInventory')->middleware('auth:api');
     });
 
     Route::group(['prefix' => 'retail-sales'], function () {
-        Route::get('/', 'RetailerSaleController@getAllRetailerSales')->name('list-sales');
-        Route::get('/{sale_id}', 'RetailerSaleController@getSingleRetailerSale')->name('get-sale');
+        Route::get('/', 'RetailerSaleController@getAllRetailerSales')->middleware('auth:api');
+        Route::get('/{sale_id}', 'RetailerSaleController@getSingleRetailerSale')->middleware('auth:api');
+        Route::post('/', 'RetailerSaleController@makeRetailerSale')->middleware('auth:api');
+
     });
 
     Route::group(['prefix' => 'offers'], function () {

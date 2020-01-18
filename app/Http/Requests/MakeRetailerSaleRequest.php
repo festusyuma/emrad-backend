@@ -26,11 +26,11 @@ class MakeRetailerSaleRequest extends FormRequest
     public function rules()
     {
         return [
-            'product_id' => 'required|numeric',
-            'company_id' => 'required|numeric',
-            'quantity' => 'required|numeric',
-            'unit_price' => 'required|numeric',
-            'created_by' => 'required'
+            // 'product_id' => 'required|numeric',
+            // 'company_id' => 'required|numeric',
+            // 'quantity' => 'required|numeric',
+            // 'unit_price' => 'required|numeric',
+            // 'created_by' => 'required'
         ];
     }
 

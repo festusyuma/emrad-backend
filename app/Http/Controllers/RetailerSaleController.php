@@ -10,22 +10,22 @@ use Emrad\Models\RetailerSale;
 use Emrad\Services\SaleServices;
 
 
-class RetailerSalesController extends Controller
+class RetailerSaleController extends Controller
 {
 
     /**
-     * @var SalesServices $saleServices
+     * @var SaleServices $saleServices
      */
-    public $salesServices;
+    public $saleServices;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(SalesServices $salesServices)
+    public function __construct(SaleServices $saleServices)
     {
-        $this->salesServices = $salesServices;
+        $this->saleServices = $saleServices;
     }
 
 
@@ -36,7 +36,7 @@ class RetailerSalesController extends Controller
      */
     public function getAllRetailerSales()
     {
-        $retailerSales = $this->salesServices->getAllRetailerSales();
+        $retailerSales = $this->saleServices->getAllRetailerSales();
 
         return response([
             'status' => 'success',
@@ -73,7 +73,7 @@ class RetailerSalesController extends Controller
     {
         $sales = $request->sales;
 
-        $result = $this->saleServices->makeRetailerSale($sales);
+        $result = $this->saleServices->makeRetailerSale($sales, auth()->id());
 
         return response([
             'status' => 'success',
