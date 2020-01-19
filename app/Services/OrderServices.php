@@ -29,7 +29,7 @@ class OrderServices
      * @return \Emrad\Models\RetailerOrder $order
      */
 
-    public function createRetailerOrder($order, $user_id) 
+    public function createRetailerOrder($order, $user_id)
     {
         $retailerOrder = new RetailerOrder;
         $retailerOrder->product_id = $order['product_id'];
@@ -42,19 +42,21 @@ class OrderServices
 
         return $retailerOrder;
     }
-    
+
 
 
     public function makeRetailerOrder($orders, $user_id)
     {
+        DB::beginTransaction();
         try {
             foreach ($orders as $order) {
                 $retailerOrder = $this->createRetailerOrder($order, $user_id);
             }
-
+            DB::commit();
             return "Order created successfully!";
 
         } catch (Exception $e) {
+            DB::rollback();
             return $e->getMessage();
         }
 
@@ -116,26 +118,26 @@ class OrderServices
 
             if($retailerOrder->is_confirmed)
                 throw new Exception("Order already confirmed");
-                
+
             $updateInventory = $this->updateInventory($retailerOrder);
-            
+
             if($updateInventory)
                 throw new Exception("Inventory not updated");
-            
+
             $retailerOrder->is_confirmed = true;
             $retailerOrder->save();
-            
+
             return "Order confirmed, inventory updated!";
-            
+
         } catch (Exception $e) {
             return $e->getMessage();
         }
     }
 
-    public function updateInventory($retailerOrder) 
+    public function updateInventory($retailerOrder)
     {
         try {
-            
+
             $retailerInventory = RetailerInventory::firstOrNew([
                 'product_id' => $retailerOrder->product_id
             ]);

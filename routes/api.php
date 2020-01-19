@@ -82,6 +82,10 @@ Route::group(['prefix' => 'v1'], function () {
         Route::put('/{offer}', 'OfferController@updateOffer');
     });
 
+    Route::group(['prefix' => 'dashboard'], function () {
+        Route::get('/', 'DashboardController@getDashboardStats')->middleware('auth:api');
+    });
+
 });
 
 
