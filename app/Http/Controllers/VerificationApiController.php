@@ -19,6 +19,11 @@ class VerificationApiController extends Controller
     public function verify(Request $request)
     {
         $user = \Emrad\User::findOrFail($request->token);
+        // if ($request->hasValidSignature()) {
+        //     return response()->json('yess');
+        // }else {
+        //     return response()->json('nooo');
+        // }
 
         if ($user->hasVerifiedEmail()) {
             return response()->json([

@@ -74,12 +74,12 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     Route::group(['prefix' => 'offers'], function () {
-        Route::get('/', 'OfferController@getOffers')->name("list-offers");
+        Route::get('/', 'OfferController@getOffers')->name("list-offers")->middleware("auth:api");
         Route::post('/apply', 'OfferController@applyForOffer')->middleware("auth:api");
         Route::get('/mine', 'OfferController@myOffers')->middleware("auth:api");
-        Route::get('/{offer}', 'OfferController@getSingleOffer');
-        Route::post('/', 'OfferController@createOffer');
-        Route::put('/{offer}', 'OfferController@updateOffer');
+        Route::get('/{offer}', 'OfferController@getSingleOffer')->middleware("auth:api");
+        Route::post('/', 'OfferController@createOffer')->middleware("auth:api");
+        Route::put('/{offer}', 'OfferController@updateOffer')->middleware("auth:api");
     });
 
     Route::group(['prefix' => 'dashboard'], function () {
@@ -97,5 +97,5 @@ Route::post('/resetpassword', 'AuthController@setPassword')->middleware('auth:ap
 Route::post('/forgetpassword', 'ForgotPasswordController@sendResetLinkEmail');
 Route::post('/password/reset', 'ResetPasswordController@reset');
 
-Route::post('email/verify', 'VerificationApiController@verify')->name('verificationapi.verify');
+Route::post('email/verify/', 'VerificationApiController@verify')->name('verificationapi.verify');
 Route::post('email/resend', 'VerificationApiController@resend')->middleware('auth:api')->name('verificationapi.resend');
