@@ -18,9 +18,7 @@ class InventoryFilters extends QueryFilter
     public function category($categorySlug)
     {
         $categoryId = Category::where('slug', $categorySlug)->first()->id;
-
         $productId = Product::where('category_id', $categoryId)->id;
-
         return $this->builder->where('product_id', $productId);
     }
 

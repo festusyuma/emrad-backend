@@ -67,6 +67,7 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     Route::group(['prefix' => 'retail-sales'], function () {
+        Route::get('/inventory-list', 'RetailerSaleController@getInventoryList')->middleware('auth:api');
         Route::get('/', 'RetailerSaleController@getAllRetailerSales')->middleware('auth:api');
         Route::get('/{sale_id}', 'RetailerSaleController@getSingleRetailerSale')->middleware('auth:api');
         Route::post('/', 'RetailerSaleController@makeRetailerSale')->middleware('auth:api');

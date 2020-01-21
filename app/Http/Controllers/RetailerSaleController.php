@@ -5,9 +5,12 @@ namespace Emrad\Http\Controllers;
 use Illuminate\Http\Request;
 use Emrad\Http\Requests\MakeRetailerSaleRequest;
 use Emrad\Http\Resources\RetailerSaleCollection;
+use Emrad\Http\Resources\RetailerInventoryCollection;
 use Emrad\Http\Resources\RetailerSaleResource;
 use Emrad\Models\RetailerSale;
+use Emrad\Models\RetailerInventory;
 use Emrad\Services\SaleServices;
+use Emrad\Filters\InventoryFilters;
 
 
 class RetailerSaleController extends Controller
@@ -37,12 +40,7 @@ class RetailerSaleController extends Controller
     public function getAllRetailerSales()
     {
         $retailerSales = $this->saleServices->getAllRetailerSales();
-
-        return response([
-            'status' => 'success',
-            'message' => 'Sales retrieved successfully',
-            'data' => new RetailerSaleCollection($retailerSales)
-        ], 200);
+        return new RetailerSaleCollection($retailerSales);
     }
 
 
@@ -90,4 +88,11 @@ class RetailerSaleController extends Controller
             'message' => $result
         ], 200);
     }
+
+    public function getInventoryList(InventoryFilters $filters)
+    {
+        $inventoryList = RetailerInventory::filter($filters)->orderBy('id', 'desc')->paginate(10);
+        return new RetailerInventoryCollection($inventoryList);
+    }
+
 }
