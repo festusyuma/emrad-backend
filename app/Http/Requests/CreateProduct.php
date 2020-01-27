@@ -30,6 +30,7 @@ class CreateProduct extends FormRequest
             'productName' => 'required|unique:products,name',
             'productPrice' => 'required',
             'productSize' => 'nullable',
+            'productSellingPrice' => 'required',
         ];
     }
 

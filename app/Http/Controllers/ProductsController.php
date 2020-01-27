@@ -90,6 +90,7 @@ class ProductsController extends Controller
                                                             $request->productName,
                                                             $request->productDescription,
                                                             $request->productPrice,
+                                                            $request->productSellingPrice,
                                                             $request->productSize,
                                                             $pathToFile,
                                                             $productSku
@@ -119,6 +120,7 @@ class ProductsController extends Controller
                                                             $request->productName,
                                                             $request->productDescription,
                                                             $request->productPrice,
+                                                            $request->productSellingPrice,
                                                             $request->productSize,
                                                             $request->productImage,
                                                             $request->productSku

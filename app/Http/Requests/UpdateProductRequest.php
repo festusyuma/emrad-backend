@@ -30,6 +30,7 @@ class UpdateProductRequest extends FormRequest
             'productName' => 'required|unique:products,name'.$this->product->name,
             'productSku' => 'required|unique:products,sku',
             'productPrice' => 'required',
+            'productSellingPrice' => 'required',
             'productSize' => 'nullable',
         ];
     }

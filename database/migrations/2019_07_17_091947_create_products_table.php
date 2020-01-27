@@ -21,7 +21,8 @@ class CreateProductsTable extends Migration
             $table->text('description')->nullable();
             $table->text('image')->nullable();
             $table->string('size')->nullable();
-            $table->string('price')->nullable();
+            $table->string('price');
+            $table->string('selling_price');
             $table->string('sku');
             $table->softDeletes();
             $table->timestamps();
