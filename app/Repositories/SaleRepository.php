@@ -27,17 +27,17 @@ class SaleRepository extends BaseRepository implements SaleRepositoryInterface {
      *
      * @return RetailerSale $retailSale
      */
-    public function findRetailerSaleById($sale_id, $relations = [])
-    {
-        return $this->model
-            ->where('id', $sale_id)
-            ->with($relations)
-            ->firstOrFail();
-    }
+    // public function findRetailerSaleById($sale_id, $relations = [])
+    // {
+    //     return $this->model
+    //         ->where('id', $sale_id)
+    //         ->with($relations)
+    //         ->firstOrFail();
+    // }
 
-    public function getAllRetailerSales()
-    {
-        return $this->model->all();
-    }
+    // public function getAllRetailerSales()
+    // {
+    //     return $this->model->all();
+    // }
 
 }

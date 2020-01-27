@@ -14,6 +14,6 @@ class RetailerSaleCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return RetailerInventoryResource::collection($this->collection);
+        return RetailerSaleResource::collection($this->collection);
     }
 }

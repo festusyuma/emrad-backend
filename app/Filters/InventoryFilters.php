@@ -19,9 +19,13 @@ class InventoryFilters extends QueryFilter
     {
         $categoryId = Category::where('slug', $categorySlug)->first()->id;
 
-        $productId = Product::where('category_id', $categoryId)->id;
+        $product = Product::where('category_id', $categoryId)->get();
 
-        return $this->builder->where('product_id', $productId);
+        $collection = collect($product);
+        $productId = $collection->pluck('id');
+
+
+        return $this->builder->whereIn('product_id', $productId);
     }
 
     /**
@@ -33,6 +37,12 @@ class InventoryFilters extends QueryFilter
      */
     public function productName($name = ' ')
     {
-        return $this->builder->Where('name','like', '%'. $name .'%');
+        $product = Product::Where('name','like', '%'. $name .'%')->get();
+
+        $collection = collect($product);
+        $productId = $collection->pluck('id');
+
+        return $this->builder->whereIn('product_id', $productId);
+        // return $this->builder->Where('name','like', '%'. $name .'%');
     }
 }

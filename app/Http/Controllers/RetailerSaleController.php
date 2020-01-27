@@ -5,27 +5,30 @@ namespace Emrad\Http\Controllers;
 use Illuminate\Http\Request;
 use Emrad\Http\Requests\MakeRetailerSaleRequest;
 use Emrad\Http\Resources\RetailerSaleCollection;
+use Emrad\Http\Resources\RetailerInventoryCollection;
 use Emrad\Http\Resources\RetailerSaleResource;
 use Emrad\Models\RetailerSale;
+use Emrad\Models\RetailerInventory;
 use Emrad\Services\SaleServices;
+use Emrad\Filters\InventoryFilters;
 
 
-class RetailerSalesController extends Controller
+class RetailerSaleController extends Controller
 {
 
     /**
-     * @var SalesServices $saleServices
+     * @var SaleServices $saleServices
      */
-    public $salesServices;
+    public $saleServices;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(SalesServices $salesServices)
+    public function __construct(SaleServices $saleServices)
     {
-        $this->salesServices = $salesServices;
+        $this->saleServices = $saleServices;
     }
 
 
@@ -36,13 +39,8 @@ class RetailerSalesController extends Controller
      */
     public function getAllRetailerSales()
     {
-        $retailerSales = $this->salesServices->getAllRetailerSales();
-
-        return response([
-            'status' => 'success',
-            'message' => 'Sales retrieved successfully',
-            'data' => new RetailerSaleCollection($retailerSales)
-        ], 200);
+        $retailerSales = $this->saleServices->getAllRetailerSales();
+        return new RetailerSaleCollection($retailerSales);
     }
 
 
@@ -73,7 +71,7 @@ class RetailerSalesController extends Controller
     {
         $sales = $request->sales;
 
-        $result = $this->saleServices->makeRetailerSale($sales);
+        $result = $this->saleServices->makeRetailerSale($sales, auth()->id());
 
         return response([
             'status' => 'success',
@@ -90,4 +88,11 @@ class RetailerSalesController extends Controller
             'message' => $result
         ], 200);
     }
+
+    public function getInventoryList(InventoryFilters $filters)
+    {
+        $inventoryList = RetailerInventory::filter($filters)->orderBy('id', 'desc')->paginate(10);
+        return new RetailerInventoryCollection($inventoryList);
+    }
+
 }

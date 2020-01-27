@@ -37,16 +37,7 @@ class RetailerOrderController extends Controller
     public function getAllRetailerOrders()
     {
         $retailerOrders = $this->orderServices->getAllRetailerOrders();
-        
         return new RetailerOrderCollection($retailerOrders);
-
-        // return response([
-        //     'status' => 'success',
-        //     'message' => 'Orders retrieved successfully',
-        //     'data' => new RetailerOrderCollection($retailerOrders)
-        // ], 200);
-
-
     }
 
 
@@ -77,7 +68,7 @@ class RetailerOrderController extends Controller
     {
         $orders = $request->orders;
 
-        $result = $this->orderServices->makeRetailerOrder($orders);
+        $result = $this->orderServices->makeRetailerOrder($orders, auth()->id());
 
         return response([
             'status' => 'success',

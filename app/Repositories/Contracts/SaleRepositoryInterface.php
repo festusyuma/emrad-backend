@@ -12,6 +12,6 @@ interface SaleRepositoryInterface extends BaseRepositoryInterface {
    *
    * @return RetailerSale $retailSale
    */
-  public function findRetailerSaleById($sale_id, $relations = []);
+  // public function findRetailerSaleById($sale_id, $relations = []);
   
 }
