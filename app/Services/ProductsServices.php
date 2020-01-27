@@ -24,6 +24,7 @@ class ProductsServices
      * @param String $userId
      * @param String $productDescription
      * @param String $productPrice
+     * @param String $productSellingPrice
      * @param String $productSize
      * @param String $productImage
      * @param String $productSku
@@ -37,6 +38,7 @@ class ProductsServices
         $productName,
         $productDescription,
         $productPrice,
+        $productSellingPrice,
         $productSize,
         $productImage,
         $productSku
@@ -49,6 +51,7 @@ class ProductsServices
             $product->category_id = $categoryId;
             $product->user_id = $userId;
             $product->name = $productName;
+            $product->selling_price = $productSellingPrice;
             $product->description = $productDescription;
             $product->price = $productPrice;
             $product->size = $productSize;
@@ -84,6 +87,7 @@ class ProductsServices
         $productName,
         $productDescription,
         $productPrice,
+        $productSellingPrice,
         $productSize,
         $productImage
     )
@@ -92,6 +96,7 @@ class ProductsServices
             $product->category_id = $categoryId;
             $product->user_id = $userId;
             $product->name = $productName;
+            $product->selling_price = $productSellingPrice;
             $product->description = $productDescription;
             $product->price = $productPrice;
             $product->size = $productSize;
@@ -123,41 +128,6 @@ class ProductsServices
     public function getSingleProduct($id)
     {
         return $this->productRepositoryInterface->find($id);
-    }
-
-    /**
-     * Toogle Product as liked or unlike
-     *
-     * @param Request $request
-     *
-     * @return Emrad\Models\Product $product
-     */
-    public function toogleLike($request)
-    {
-        // get the auth user
-        $authUser = auth()->user();
-
-        // find the product by id
-        $product = $this->productRepositoryInterface->find($request->productId);
-
-        // toggles the user like option
-        $authUser->toggleLike($product);
-
-        return $product;
-
-    }
-
-    /**
-     * Increment the view count colunm in the specified product colunm
-     * @param Product $product
-     *
-     */
-    public function incrementProductViewCount($product)
-    {
-        $productCount = $product->views_count;
-        $product->views_count = $productCount +1;
-        $product->save();
-        return;
     }
 
     /**

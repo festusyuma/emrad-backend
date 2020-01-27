@@ -14,6 +14,7 @@ $factory->define(Product::class, function (Faker $faker) {
         "description" => $faker->sentence(20),
         "image" => "https://dummyimage.com/100x100/fff/0000",
         "size" => $faker->numberBetween(3, 10),
-        "price" => $faker->numberBetween(1000, 3000)
+        "price" => $faker->numberBetween(1000, 3000),
+        "selling_price" => $faker->numberBetween(100, 1000)
     ];
 });
