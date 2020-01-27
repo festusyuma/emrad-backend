@@ -63,7 +63,6 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['prefix' => 'retail-inventories'], function () {
         Route::get('/', 'RetailerInventoryController@getAllRetailerInventories')->middleware('auth:api');
         Route::get('/{inventory_id}', 'RetailerInventoryController@getSingleRetailerInventory')->middleware('auth:api');
-        Route::patch('/update/{inventory_id}', 'RetailerInventoryController@updateRetailerInventory')->middleware('auth:api');
     });
 
     Route::group(['prefix' => 'retail-sales'], function () {

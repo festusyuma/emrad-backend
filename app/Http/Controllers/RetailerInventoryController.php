@@ -39,33 +39,7 @@ class RetailerInventoryController extends Controller
         $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
 
         return new RetailerInventoryCollection($retailerInventories);
-
-        // return response([
-        //     // 'status' => 'success',
-        //     // 'message' => 'Inventories retrieved succesfully',
-        //     // // 'data' => $retailerInventories
-        //     'data' => RetailerInventoryResource::collection($retailerInventories)
-        // ], 200);
     }
-
-    // public function getAllRetailerInventories(InventoryFilters $filters)
-    // {
-    //     // filters base on the resquest parameters
-    //     $products = Product::filter($filters)->get();
-    //     // ->orderBy('id', 'desc')->paginate(16)
-    //     // ->setPath(route('list-products', Input::except('page')));
-
-    //     // ->appends(Input::except('page'));
-    //     return new ProductCollection($products);
-
-    //     // $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
-
-    //     // return response([
-    //     //     'status' => 'success',
-    //     //     'message' => 'Inventories retrieved succesfully',
-    //     //     'data' => new RetailerInventoryCollection($retailerInventories)
-    //     // ], 200);
-    // }
 
 
     /**
@@ -87,20 +61,18 @@ class RetailerInventoryController extends Controller
     }
 
 
-    /**
-     * Create new multiple retailer-inventories in database.
-     *
-     * @param MakeRetailInventory $request
-     */
-    public function updateRetailerInventory(int $inventory_id, UpdateRetailerInventoryRequest $request)
-    {
-        $inventorySellingPrice = $request->selling_price;
+    // /**
+    //  * Create new multiple retailer-inventories in database.
+    //  */
+    // public function updateRetailerInventory(int $inventory_id, UpdateRetailerInventoryRequest $request)
+    // {
+    //     $inventorySellingPrice = $request->selling_price;
 
-        $result = $this->inventoryServices->updateRetailerInventory($inventory_id, $inventorySellingPrice);
+    //     $result = $this->inventoryServices->updateRetailerInventory($inventory_id, $inventorySellingPrice);
 
-        return response([
-            'status' => 'success',
-            'message' => $result
-        ], 200);
-    }
+    //     return response([
+    //         'status' => 'success',
+    //         'message' => $result
+    //     ], 200);
+    // }
 }

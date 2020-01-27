@@ -3,10 +3,12 @@
 namespace Emrad\Services;
 
 use Emrad\Services\InventoryServices;
+use Emrad\Models\Product;
 use Emrad\Models\RetailerOrder;
 use Emrad\Models\RetailerInventory;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 use Exception;
+use DB;
 
 class OrderServices
 {
@@ -31,10 +33,13 @@ class OrderServices
 
     public function createRetailerOrder($order, $user_id)
     {
+        $product = Product::find($order['product_id']);
+
         $retailerOrder = new RetailerOrder;
-        $retailerOrder->product_id = $order['product_id'];
+        $retailerOrder->product_id = $product->id;
         $retailerOrder->company_id = $order['company_id'];
-        $retailerOrder->unit_price = $order['unit_price'];
+        $retailerOrder->unit_price = $product->price;
+        $retailerOrder->selling_price = $product->selling_price;
         $retailerOrder->quantity = $order['quantity'];
         $retailerOrder->order_amount = $retailerOrder->unit_price * $retailerOrder->quantity;
         $retailerOrder->created_by = $user_id;
@@ -144,7 +149,7 @@ class OrderServices
 
             $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
             $retailerInventory->cost_price = $retailerOrder->unit_price;
-            $retailerInventory->selling_price = $retailerOrder->unit_price;
+            $retailerInventory->selling_price = $retailerOrder->selling_price;
             $retailerInventory->is_in_stock = $retailerOrder->quantity == 0 ? 0 : 1;
             $retailerInventory->save();
 

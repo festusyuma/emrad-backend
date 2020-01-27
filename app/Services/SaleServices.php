@@ -35,11 +35,8 @@ class SaleServices
         $retailerSale = new RetailerSale;
         $retailerSale->product_id = $sale['product_id'];
         $retailerSale->quantity = $sale['quantity'];
-        $retailerSale->unit_price = $sale['unit_price'];
-        $retailerSale->discount = $sale['discount'];
-        $totalAmount = $this->calculateTotalAmount($retailerSale->quantity, $retailerSale->unit_price);
-        $retailerSale->total_amount = $totalAmount;
-        $saleAmount = $this->calculateSaleAmount($retailerSale->quantity, $retailerSale->unit_price, $retailerSale->discount);
+        $retailerSale->amount_sold = $sale['amount_sold'];
+        $saleAmount = $this->calculateSaleAmount($retailerSale->quantity, $retailerSale->amount_sold);
         $retailerSale->sale_amount = $saleAmount;
         $retailerSale->created_by = $user_id;
         $retailerSale->save();
@@ -50,26 +47,14 @@ class SaleServices
     /**
      * Calculate sale amount
      *
-     * @param $quantity, $unit_price, $discount
+     * @param $quantity, $amount_sold
      */
-    public function calculateSaleAmount($quantity, $unit_price, $discount)
+    public function calculateSaleAmount($quantity, $amount_sold)
     {
-        $total = $quantity * $unit_price;
-        $discountAmount = $total * $discount / 100;
-        $saleAmount = $total - $discountAmount;
+        $saleAmount = $quantity * $amount_sold;
         return $saleAmount;
     }
 
-    /**
-     * Calculate total amount
-     *
-     * @param $quantity, $unit_price
-     */
-    public function calculateTotalAmount($quantity, $unit_price)
-    {
-        $totalAmount = $quantity * $unit_price;
-        return $totalAmount;
-    }
 
     /**
      * Create sale records and update inventory quantity

@@ -3,6 +3,7 @@
 namespace Emrad\Services;
 
 use Emrad\Models\RetailerInventory;
+use Emrad\Models\Product;
 use Emrad\Repositories\Contracts\InventoryRepositoryInterface;
 use Exception;
 
@@ -29,11 +30,15 @@ class InventoryServices
     {
         try {
             foreach ($inventories as $inventory) {
+
+                $product = Product::find($inventory['product_id']);
+
                 $retailerInventory = RetailerInventory::create([
-                    'product_id' => $inventory['product_id'],
+                    'product_id' => $product->id,
                     'company_id' => $inventory['company_id'],
                     'quantity' => $inventory['quantity'],
-                    'unit_price' => $inventory['unit_price'],
+                    'unit_price' => $product->price,
+                    'selling_price' => $product->selling_price,
                     'inventory_amount' => $inventory['quantity'] * $inventory['unit_price'],
                     'created_by' => $inventory['created_by']
                 ]);
