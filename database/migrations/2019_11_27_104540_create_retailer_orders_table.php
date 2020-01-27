@@ -16,12 +16,13 @@ class CreateRetailerOrdersTable extends Migration
         Schema::create('retailer_orders', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('product_id')->unsigned();
-            $table->integer('company_id')->unsigned(); 
+            $table->integer('company_id')->unsigned();
             $table->integer('quantity')->unsigned()->default(1);
             $table->string('unit_price');
+            $table->string('selling_price');
             $table->string('order_amount');
-            $table->integer('created_by');   
-            $table->boolean('is_confirmed')->default(false);   
+            $table->integer('created_by');
+            $table->boolean('is_confirmed')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });
