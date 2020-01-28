@@ -81,7 +81,8 @@ class RetailerOrderController extends Controller
         $stockBalance = $this->orderServices->getStockBalance($product_id);
         return response([
             'status' => 'success',
-            'stockBalance' => $stockBalance
+            'isInInventory' => $stockBalance[0],
+            'stockBalance' => $stockBalance[1]
         ], 200);
     }
 

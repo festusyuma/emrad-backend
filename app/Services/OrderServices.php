@@ -81,9 +81,18 @@ class OrderServices
 
     public function getStockBalance($product_id)
     {
-        $inventory = RetailerInventory::where('product_id', $product_id)->first();
-        $stockBalance = $inventory->quantity;
-        return $stockBalance;
+        $count = RetailerInventory::where('product_id', $product_id)->count();
+        if($count > 0) {
+            $isInInventory = true;
+            $inventory = RetailerInventory::where('product_id', $product_id)->first();
+            $stockBalance = $inventory->quantity;
+            return [$isInInventory, $stockBalance];
+        } else {
+            $isInInventory = false;
+            $stockBalance = "Product not in stock";
+            return [$isInInventory, $stockBalance];
+        }
+
     }
 
     /**
