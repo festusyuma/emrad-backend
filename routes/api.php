@@ -56,6 +56,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/', 'RetailerOrderController@getAllRetailerOrders')->middleware('auth:api');
         Route::get('/{order_id}', 'RetailerOrderController@getSingleRetailerOrder')->middleware('auth:api');
         Route::post('/', 'RetailerOrderController@makeRetailerOrder')->middleware('auth:api');
+        Route::get('/stock-balance/{product_id}', 'RetailerOrderController@getStockBalance')->middleware('auth:api');
         Route::patch('/confirm/{order_id}', 'RetailerOrderController@confirmRetailerOrder')->middleware('auth:api');
 
     });

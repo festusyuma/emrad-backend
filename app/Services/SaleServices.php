@@ -66,7 +66,7 @@ class SaleServices
         DB::beginTransaction();
         try {
             foreach ($sales as $sale) {
-
+                
                 $is_in_stock = $this->checkInventoryQuantity($sale);
 
                 if(!$is_in_stock)
@@ -152,3 +152,4 @@ class SaleServices
         return $inventory->is_in_stock;
     }
 }
+

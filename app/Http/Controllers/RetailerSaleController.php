@@ -71,6 +71,8 @@ class RetailerSaleController extends Controller
     {
         $sales = $request->sales;
 
+        
+
         $result = $this->saleServices->makeRetailerSale($sales, auth()->id());
 
         return response([

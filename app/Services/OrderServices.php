@@ -64,7 +64,15 @@ class OrderServices
             DB::rollback();
             return $e->getMessage();
         }
+    }
 
+
+
+    public function getStockBalance($product_id)
+    {
+        $inventory = RetailerInventory::where('product_id', $product_id)->first();
+        $stockBalance = $inventory->quantity;
+        return $stockBalance;
     }
 
     /**
