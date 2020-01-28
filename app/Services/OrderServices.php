@@ -7,6 +7,7 @@ use Emrad\Models\Product;
 use Emrad\Models\RetailerOrder;
 use Emrad\Models\RetailerInventory;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 use DB;
 
@@ -55,6 +56,16 @@ class OrderServices
         DB::beginTransaction();
         try {
             foreach ($orders as $order) {
+                $validator = Validator::make($order, [
+                    'product_id' => 'bail|required|numeric',
+                    'company_id' => 'nullable',
+                    'quantity' => 'required|numeric',
+                ]);
+
+                if ($validator->fails()) {
+                    throw new Exception("validation failed, please check request");
+                }
+
                 $retailerOrder = $this->createRetailerOrder($order, $user_id);
             }
             DB::commit();

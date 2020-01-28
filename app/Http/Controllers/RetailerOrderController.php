@@ -79,7 +79,10 @@ class RetailerOrderController extends Controller
     public function getStockBalance($product_id)
     {
         $stockBalance = $this->orderServices->getStockBalance($product_id);
-        return $stockBalance;
+        return response([
+            'status' => 'success',
+            'stockBalance' => $stockBalance
+        ], 200);
     }
 
     public function confirmRetailerOrder($order_id)

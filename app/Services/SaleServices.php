@@ -5,6 +5,7 @@ namespace Emrad\Services;
 use Emrad\Services\InventoryServices;
 use Emrad\Models\RetailerSale;
 use Emrad\Models\RetailerInventory;
+use Illuminate\Support\Facades\Validator;
 use Emrad\Repositories\Contracts\SaleRepositoryInterface;
 use Exception;
 use DB;
@@ -66,7 +67,17 @@ class SaleServices
         DB::beginTransaction();
         try {
             foreach ($sales as $sale) {
-                
+
+                $validator = Validator::make($sale, [
+                    'product_id' => 'bail|required|numeric',
+                    'quantity' => 'required|numeric',
+                    'amount_sold' => 'required|numeric',
+                ]);
+
+                if ($validator->fails()) {
+                    throw new Exception("validation failed for product: {$sale['product_id']}, transaction declined!");
+                }
+
                 $is_in_stock = $this->checkInventoryQuantity($sale);
 
                 if(!$is_in_stock)
@@ -77,7 +88,7 @@ class SaleServices
                 $updateInventory = $this->updateInventory($retailerSale);
 
                 if($updateInventory)
-                    throw new Exception("Please check stock quantity and retry, Inventory not updated");
+                    throw new Exception("Please check stock quantity and retry, transaction declined!");
             }
             DB::commit();
             return "Sale created successfully!";
@@ -138,7 +149,7 @@ class SaleServices
             $retailerInventory->save();
 
         } catch(Exception $e) {
-            return true;
+            return false;
         }
     }
 

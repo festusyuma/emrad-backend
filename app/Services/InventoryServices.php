@@ -5,6 +5,7 @@ namespace Emrad\Services;
 use Emrad\Models\RetailerInventory;
 use Emrad\Models\Product;
 use Emrad\Repositories\Contracts\InventoryRepositoryInterface;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 class InventoryServices
@@ -30,6 +31,15 @@ class InventoryServices
     {
         try {
             foreach ($inventories as $inventory) {
+                $validator = Validator::make($inventory, [
+                    'product_id' => 'bail|required|numeric',
+                    'company_id' => 'nullable',
+                    'quantity' => 'required|numeric',
+                ]);
+
+                if ($validator->fails()) {
+                    throw new Exception("validation failed, please check request");
+                }
 
                 $product = Product::find($inventory['product_id']);
 
@@ -47,8 +57,6 @@ class InventoryServices
         } catch (Exception $e) {
             return $e;
         }
-
-
     }
 
     /**
