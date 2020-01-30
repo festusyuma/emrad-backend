@@ -142,6 +142,7 @@ class OrderServices
      */
     public function confirmRetailerOrder($order_id, $user_id)
     {
+        DB::beginTransaction();
         try {
             $retailerOrder = RetailerOrder::find($order_id);
 
@@ -161,9 +162,11 @@ class OrderServices
             $retailerOrder->is_confirmed = true;
             $retailerOrder->save();
 
+            DB::commit();
             return "Order confirmed, inventory updated!";
 
         } catch (Exception $e) {
+            DB::rollback();
             return $e->getMessage();
         }
     }
@@ -175,18 +178,31 @@ class OrderServices
             $retailerInventory = RetailerInventory::firstOrNew([
                 'product_id' => $retailerOrder->product_id
             ]);
+
             $product_id = $retailerInventory->product_id;
+            if(is_null($retailerInventory->quantity)) {
+                $currentStockBalance = 0;
+            } else {
+                $currentStockBalance = $retailerInventory->quantity;
+            }
+
             $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
+            $newStockBalance = $retailerInventory->quantity;
+
+            $stockHistory = new StockHistory;
+            $stockHistory->product_id = $product_id;
+            $stockHistory->user_id = $user_id;
+            $stockHistory->stock_balance = $currentStockBalance;
+            $stockHistory->new_stock_balance = $newStockBalance;
 
             $retailerInventory->cost_price = $retailerOrder->unit_price;
             $retailerInventory->selling_price = $retailerOrder->selling_price;
             $retailerInventory->is_in_stock = $retailerOrder->quantity == 0 ? 0 : 1;
             $retailerInventory->save();
 
-            $updateStockHistory = $this->updateStockHistory($retailerInventory, $retailerOrder, $user_id);
-
-            if(!$updateStockHistory)
-                throw new Exception("Stock history not updated");
+            $inventory_id = $retailerInventory->id;
+            $stockHistory->inventory_id = $inventory_id;
+            $stockHistory->save();
 
             return true;
         } catch(Exception $e) {

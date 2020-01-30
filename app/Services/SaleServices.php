@@ -89,7 +89,7 @@ class SaleServices
 
                 $retailerSale = $this->createRetailerSale($sale, $user_id);
 
-                $updateInventory = $this->updateInventory($retailerSale);
+                $updateInventory = $this->updateInventory($retailerSale, $user_id);
 
                 if(!$updateInventory)
                     throw new Exception("Please check stock quantity and retry, transaction declined!");
@@ -143,7 +143,7 @@ class SaleServices
      *
      * @param $retailerSale
      */
-    public function updateInventory($retailerSale)
+    public function updateInventory($retailerSale, $user_id)
     {
         try {
             $retailerInventory = RetailerInventory::firstOrNew([
@@ -153,18 +153,25 @@ class SaleServices
             if($retailerInventory->quantity < $retailerSale->quantity)
                 throw new Exception("Insufficient stock for this sale");
 
+            $product_id = $retailerInventory->product_id;
+            $currentStockBalance = $retailerInventory->quantity;
+            $stockHistory = new StockHistory;
+
             $retailerInventory->quantity = $retailerInventory->quantity - $retailerSale->quantity;
-
             $retailerInventory->is_in_stock = $retailerSale->quantity == 0 ? 0 : 1;
-
             $retailerInventory->save();
 
-            // $updateStockHistory = $this->updateStockHistory($retailerInventory, $retailerSale, $user_id);
+            $newStockBalance = $retailerInventory->quantity;
 
-            // if(!$updateStockHistory)
-            //     throw new Exception("Stock history not updated");
+            $inventory_id = $retailerInventory->id;
+            $stockHistory->inventory_id = $inventory_id;
+            $stockHistory->product_id = $product_id;
+            $stockHistory->user_id = $user_id;
+            $stockHistory->stock_balance = $currentStockBalance;
+            $stockHistory->new_stock_balance = $newStockBalance;
+            $stockHistory->save();
+
             return true;
-
         } catch(Exception $e) {
             return false;
         }
