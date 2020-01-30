@@ -4,8 +4,10 @@ namespace Emrad\Services;
 
 use Emrad\Models\RetailerInventory;
 use Emrad\Models\Product;
+use Emrad\Models\StockHistory;
 use Emrad\Repositories\Contracts\InventoryRepositoryInterface;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Carbon;
 use Exception;
 
 class InventoryServices
@@ -19,6 +21,23 @@ class InventoryServices
     {
         $this->inventoryRepositoryInterface = $inventoryRepositoryInterface;
     }
+
+
+    /**
+     * Get inventory detail
+     *
+     * @param $inventory_id
+     * @return $oneMonthRecord
+     */
+    public function getStockHistory($inventory_id)
+    {
+        $oneMonthRecord = StockHistory::where('inventory_id', $inventory_id)
+            ->whereBetween('updated_at',[(new Carbon)->subDays(30),
+            (new Carbon)->now()] )->get();
+
+        return $oneMonthRecord;
+    }
+
 
     /**
      * Create a new inventory
@@ -103,4 +122,5 @@ class InventoryServices
         }
 
     }
+
 }

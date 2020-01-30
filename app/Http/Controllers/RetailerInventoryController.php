@@ -61,18 +61,17 @@ class RetailerInventoryController extends Controller
     }
 
 
-    // /**
-    //  * Create new multiple retailer-inventories in database.
-    //  */
-    // public function updateRetailerInventory(int $inventory_id, UpdateRetailerInventoryRequest $request)
-    // {
-    //     $inventorySellingPrice = $request->selling_price;
 
-    //     $result = $this->inventoryServices->updateRetailerInventory($inventory_id, $inventorySellingPrice);
+    public function fetchStockHistory($inventory_id)
+    {
+        // $stockHistory = $this->inventoryServices->stockHistoy($inventory_id);
+        $stockHistory = $this->inventoryServices->getStockHistory($inventory_id);
+        // dd("i goheret ");
+        return response([
+            'status' => 'success',
+            'message' => 'Stock history retrieved succesfully',
+            'stockHistory' => $stockHistory
+        ], 200);
+    }
 
-    //     return response([
-    //         'status' => 'success',
-    //         'message' => $result
-    //     ], 200);
-    // }
 }

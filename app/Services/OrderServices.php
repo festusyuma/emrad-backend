@@ -5,6 +5,7 @@ namespace Emrad\Services;
 use Emrad\Services\InventoryServices;
 use Emrad\Models\Product;
 use Emrad\Models\RetailerOrder;
+use Emrad\Models\StockHistory;
 use Emrad\Models\RetailerInventory;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 use Illuminate\Support\Facades\Validator;
@@ -139,7 +140,7 @@ class OrderServices
      *
      * @return \Spatie\Permission\Models\Order
      */
-    public function confirmRetailerOrder($order_id)
+    public function confirmRetailerOrder($order_id, $user_id)
     {
         try {
             $retailerOrder = RetailerOrder::find($order_id);
@@ -152,9 +153,9 @@ class OrderServices
             if($retailerOrder->is_confirmed)
                 throw new Exception("Order already confirmed");
 
-            $updateInventory = $this->updateInventory($retailerOrder);
+            $updateInventory = $this->updateInventory($retailerOrder, $user_id);
 
-            if($updateInventory)
+            if(!$updateInventory)
                 throw new Exception("Inventory not updated");
 
             $retailerOrder->is_confirmed = true;
@@ -167,22 +168,52 @@ class OrderServices
         }
     }
 
-    public function updateInventory($retailerOrder)
+    public function updateInventory($retailerOrder, $user_id)
     {
         try {
 
             $retailerInventory = RetailerInventory::firstOrNew([
                 'product_id' => $retailerOrder->product_id
             ]);
-
+            $product_id = $retailerInventory->product_id;
             $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
+
             $retailerInventory->cost_price = $retailerOrder->unit_price;
             $retailerInventory->selling_price = $retailerOrder->selling_price;
             $retailerInventory->is_in_stock = $retailerOrder->quantity == 0 ? 0 : 1;
             $retailerInventory->save();
 
-        } catch(Exception $e) {
+            $updateStockHistory = $this->updateStockHistory($retailerInventory, $retailerOrder, $user_id);
+
+            if(!$updateStockHistory)
+                throw new Exception("Stock history not updated");
+
             return true;
+        } catch(Exception $e) {
+            return false;
+        }
+    }
+
+    public function updateStockHistory($retailerInventory, $retailerOrder, $user_id)
+    {
+        try {
+            $product_id = $retailerInventory->product_id;
+            $inventory_id = $retailerInventory->id;
+            $currentStockBalance = $retailerInventory->quantity;
+
+            $newStockBalance = $retailerInventory->quantity + $retailerOrder->quantity;
+
+            $stockHistory = new StockHistory;
+            $stockHistory->product_id = $product_id;
+            $stockHistory->user_id = $user_id;
+            $stockHistory->stock_balance = $currentStockBalance;
+            $stockHistory->inventory_id = $inventory_id;
+            $stockHistory->new_stock_balance = $newStockBalance;
+            $stockHistory->save();
+            return true;
+
+        } catch(Exception $e) {
+            return false;
         }
     }
 }

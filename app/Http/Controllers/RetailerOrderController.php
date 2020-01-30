@@ -88,7 +88,7 @@ class RetailerOrderController extends Controller
 
     public function confirmRetailerOrder($order_id)
     {
-        $result = $this->orderServices->confirmRetailerOrder($order_id);
+        $result = $this->orderServices->confirmRetailerOrder($order_id, auth()->id());
 
         return response([
             'status' => 'success',

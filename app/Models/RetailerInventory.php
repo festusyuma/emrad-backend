@@ -24,6 +24,18 @@ class RetailerInventory extends Model
         return $this->belongsTo(\Emrad\Models\Product::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(\Emrad\Models\User::class);
+    }
+
+    public function stockHistory()
+    {
+        return $this->hasOne(\Emrad\Models\StockHistory::class, 'id', 'stock_history_id');
+    }
+
+
+
     /**
      * scope for quering product
      *

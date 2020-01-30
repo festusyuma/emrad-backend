@@ -4,6 +4,7 @@ namespace Emrad\Services;
 
 use Emrad\Services\InventoryServices;
 use Emrad\Models\RetailerSale;
+use Emrad\Models\StockHistory;
 use Emrad\Models\RetailerInventory;
 use Illuminate\Support\Facades\Validator;
 use Emrad\Repositories\Contracts\SaleRepositoryInterface;
@@ -13,6 +14,8 @@ use DB;
 
 class SaleServices
 {
+
+
     /**
      * @var $saleRepositoryInterface
      */
@@ -30,13 +33,14 @@ class SaleServices
      *
      * @return \Emrad\Models\RetailerSale $sale
      */
-
     public function createRetailerSale($sale, $user_id)
     {
         $retailerSale = new RetailerSale;
         $retailerSale->product_id = $sale['product_id'];
         $retailerSale->quantity = $sale['quantity'];
         $retailerSale->amount_sold = $sale['amount_sold'];
+        $fmcgSellingPrice = $this->getFmcgSellingPrice($retailerSale->product_id);
+        $retailerSale->fmcg_selling_price = $fmcgSellingPrice;
         $saleAmount = $this->calculateSaleAmount($retailerSale->quantity, $retailerSale->amount_sold);
         $retailerSale->sale_amount = $saleAmount;
         $retailerSale->created_by = $user_id;
@@ -87,7 +91,7 @@ class SaleServices
 
                 $updateInventory = $this->updateInventory($retailerSale);
 
-                if($updateInventory)
+                if(!$updateInventory)
                     throw new Exception("Please check stock quantity and retry, transaction declined!");
             }
             DB::commit();
@@ -134,6 +138,11 @@ class SaleServices
         $sale->delete();
     }
 
+    /**
+     * Update the user's inventory
+     *
+     * @param $retailerSale
+     */
     public function updateInventory($retailerSale)
     {
         try {
@@ -145,13 +154,22 @@ class SaleServices
                 throw new Exception("Insufficient stock for this sale");
 
             $retailerInventory->quantity = $retailerInventory->quantity - $retailerSale->quantity;
+
             $retailerInventory->is_in_stock = $retailerSale->quantity == 0 ? 0 : 1;
+
             $retailerInventory->save();
+
+            // $updateStockHistory = $this->updateStockHistory($retailerInventory, $retailerSale, $user_id);
+
+            // if(!$updateStockHistory)
+            //     throw new Exception("Stock history not updated");
+            return true;
 
         } catch(Exception $e) {
             return false;
         }
     }
+
 
     /**
      * Check inventory quantity
@@ -161,6 +179,44 @@ class SaleServices
     {
         $inventory = RetailerInventory::where('product_id', $sale['product_id'])->firstOrFail();
         return $inventory->is_in_stock;
+    }
+
+    /**
+     * Fetch fmcg selling price
+     *
+     * @param $product_id
+     * @return $selling_price
+     */
+    public function getFmcgSellingPrice($product_id)
+    {
+        $inventory = RetailerInventory::where('product_id', $product_id)->firstOrFail();
+        $sellingPrice = $inventory->selling_price;
+        return $sellingPrice;
+    }
+
+
+    public function updateStockHistory($retailerInventory, $retailerSale, $user_id)
+    {
+        try {
+            $product_id = $retailerInventory->product_id;
+            $inventory_id = $retailerInventory->id;
+            $currentStockBalance = $retailerInventory->quantity;
+
+            $newStockBalance = $retailerInventory->quantity - $retailerSale->quantity;
+
+            $stockHistory = new StockHistory;
+            $stockHistory->product_id = $product_id;
+            $stockHistory->user_id = $user_id;
+            $stockHistory->stock_balance = $currentStockBalance;
+            $stockHistory->inventory_id = $inventory_id;
+            $stockHistory->new_stock_balance = $newStockBalance;
+
+            $stockHistory->save();
+            return true;
+
+        } catch(Exception $e) {
+            return false;
+        }
     }
 }
 
