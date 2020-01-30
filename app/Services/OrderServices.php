@@ -39,7 +39,10 @@ class OrderServices
 
         $retailerOrder = new RetailerOrder;
         $retailerOrder->product_id = $product->id;
-        $retailerOrder->company_id = $order['company_id'];
+
+        if(array_key_exists('company_id', $order))
+            $retailerOrder->company_id = $order['company_id'];
+
         $retailerOrder->unit_price = $product->price;
         $retailerOrder->selling_price = $product->selling_price;
         $retailerOrder->quantity = $order['quantity'];
