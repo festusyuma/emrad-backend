@@ -55,6 +55,16 @@ class RolesServices
     }
 
     /**
+     * Get all roles
+     *
+     * @param \Collection $roleName
+     */
+    public function find($id)
+    {
+        return $this->roleRepositoryInterface->find($id);
+    }
+
+    /**
      * Delete the requested role
      *
      * @param Int|String $id

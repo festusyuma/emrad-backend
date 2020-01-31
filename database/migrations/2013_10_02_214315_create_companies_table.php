@@ -15,10 +15,13 @@ class CreateCompaniesTable extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('role_id')->index();
             $table->string('name')->index();
             $table->string('address')->nullable();
             $table->string('official_mail')->nullable();
             $table->string('cac')->nullable();
+
+            // $table->foreign('role_id')->references('id')->on('role')->onDelete('cascade');
             $table->timestamps();
         });
     }
