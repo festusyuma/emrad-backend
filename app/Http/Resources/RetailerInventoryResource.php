@@ -19,6 +19,7 @@ class RetailerInventoryResource extends JsonResource
             'inventoryProduct' => new ProductsResource($this->product),
             'costPrice' => $this->cost_price,
             'sellingPrice' => $this->selling_price,
+            'quantity' => $this->quantity,
             'isInStock' => $this->is_in_stock,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at
