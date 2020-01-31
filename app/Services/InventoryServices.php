@@ -8,6 +8,7 @@ use Emrad\Models\StockHistory;
 use Emrad\Repositories\Contracts\InventoryRepositoryInterface;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
+use Emrad\Http\Resources\ProductsResource;
 use Exception;
 
 class InventoryServices
@@ -38,7 +39,7 @@ class InventoryServices
         $inventory = RetailerInventory::find($inventory_id);
         $product_id = $inventory->product_id;
         $product = Product::find($product_id);
-        return ["product" => new ProductResource($product), "stockHistory" => $oneMonthRecord];
+        return ["product" => new ProductsResource($product), "stockHistory" => $oneMonthRecord];
     }
 
 
