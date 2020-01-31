@@ -2,8 +2,10 @@
 
 namespace Emrad\Filters;
 
+use Emrad\User;
+
+use Emrad\Models\Product;
 use Emrad\Filters\QueryFilter;
-use Emrad\Models\Offer;
 
 class OfferFilters extends QueryFilter
 {
@@ -31,5 +33,22 @@ class OfferFilters extends QueryFilter
     public function profitMargin($range = "")
     {
         return $this->builder->where("profit_margin", ">=" , (int)$range);
+    }
+
+    /**
+     * Get offers by companys
+     */
+    public function byCompany($companyId)
+    {
+        $users = User::where("company_id", $companyId)->get();
+        $collection = collect($users);
+        $usersId = $collection->pluck('id');
+
+        $products = Product::whereIn("user_id", $usersId)->get();
+        $collection = collect($products);
+        $productId = $collection->pluck('id');
+
+
+        return $this->builder->whereIn('product_id', $productId);
     }
 }

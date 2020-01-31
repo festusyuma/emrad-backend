@@ -14,6 +14,10 @@ class CompaniesCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'status' => 'success',
+            'message' => 'Companies listed successfully ',
+            'data' => CompanyResource::collection($this->collection),
+        ];
     }
 }

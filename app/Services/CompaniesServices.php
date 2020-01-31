@@ -1,6 +1,7 @@
 <?php
 namespace Emrad\Services;
 
+use Emrad\Models\Role;
 use Emrad\Models\Company;
 use Emrad\Repositories\Contracts\CompanyRepositoryInterface;
 
@@ -26,11 +27,14 @@ class CompaniesServices
      */
     public function createCompany($request)
     {
+        $roleId = Role::where('name', $request->userType)->first()->id;
+
         $company = new Company;
         $company->name = $request->companyName;
         $company->address = $request->companyAddress;
         $company->official_mail = $request->officialMail;
         $company->cac = $request->cac;
+        $company->role_id = $roleId;
         $company->save();
 
         return $company;
@@ -93,10 +97,13 @@ class CompaniesServices
      */
     public function updateCompany($request, $company)
     {
+        $roleId = Role::where('name', $request->userType)->first()->id;
+
         $company->name = $request->companyName;
         $company->address = $request->companyAddress;
         $company->official_mail = $request->officialMail;
         $company->cac = $request->cac;
+        $company->role_id = $roleId;
         $company->save();
 
         return $company;

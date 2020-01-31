@@ -4,8 +4,11 @@ namespace Emrad\Http\Controllers;
 
 use Emrad\Models\Company;
 use Illuminate\Http\Request;
+use Emrad\Filters\CompanyFilters;
 use Emrad\Services\CompaniesServices;
+use Emrad\Http\Requests\CreateCompany;
 use Emrad\Http\Resources\CompanyResource;
+use Emrad\Http\Resources\CompaniesCollection;
 
 class CompaniesController extends Controller
 {
@@ -26,14 +29,12 @@ class CompaniesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getCompanies()
+    public function getCompanies(CompanyFilters $filters)
     {
-        $companies = $this->companiesServices->getCompanies();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Companies listed successfully ',
-            'data' => CompanyResource::collection($companies),
-        ]);
+        // filters base on the resquest parameters
+        $companies = Company::filter($filters)->get();
+
+        return new CompaniesCollection($companies);
     }
 
     /**
@@ -42,7 +43,7 @@ class CompaniesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function createCompany(Request $request)
+    public function createCompany(CreateCompany $request)
     {
         $company = $this->companiesServices->createCompany($request);
         return response()->json([
@@ -60,7 +61,7 @@ class CompaniesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function updateCompany(Request $request, Company $company)
+    public function updateCompany(CreateCompany $request, Company $company)
     {
         $company = $this->companiesServices->updateCompany($request, $company);
         return response()->json([

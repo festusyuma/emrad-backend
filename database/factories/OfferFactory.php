@@ -13,5 +13,6 @@ $factory->define(Offer::class, function (Faker $faker) {
         "description" => $faker->sentence(30),
         "start_date" => $faker->date(),
         "end_date" => $faker->date(),
+        "profit_margin" => $faker->numberBetween(2,15)
     ];
 });
