@@ -27,11 +27,12 @@ class InventoryServices
      * Get inventory detail
      *
      * @param $inventory_id
-     * @return $oneMonthRecord
+     * @return StockHistory
      */
-    public function getStockHistory($inventory_id)
+    public function getStockHistory($inventory_id, $user_id)
     {
         $oneMonthRecord = StockHistory::where('inventory_id', $inventory_id)
+            ->where('user_id', $user_id)
             ->whereBetween('updated_at',[(new Carbon)->subDays(30),
             (new Carbon)->now()] )->get();
 

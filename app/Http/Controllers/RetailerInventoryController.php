@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Emrad\Http\Requests\UpdateRetailerInventoryRequest;
 use Emrad\Http\Resources\RetailerInventoryCollection;
 use Emrad\Http\Resources\RetailerInventoryResource;
+use Emrad\Http\Resources\StockHistoryResource;
 use Emrad\Models\RetailerInventory;
 use Emrad\Services\InventoryServices;
 
@@ -41,13 +42,6 @@ class RetailerInventoryController extends Controller
         return new RetailerInventoryCollection($retailerInventories);
     }
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \Emrad\Models\RetailerInventory  $product
-     * @return \Illuminate\Http\Response
-     */
     public function getSingleRetailerInventory($inventory_id)
     {
         $retailerInventory = $this->inventoryServices->getSingleRetailerInventory($inventory_id);
@@ -61,16 +55,16 @@ class RetailerInventoryController extends Controller
     }
 
 
-
-    public function fetchStockHistory($inventory_id)
+    public function getStockHistory()
     {
-        // $stockHistory = $this->inventoryServices->stockHistoy($inventory_id);
-        $stockHistory = $this->inventoryServices->getStockHistory($inventory_id);
-        // dd("i goheret ");
+        $inventory_id = request()->all()['inventory_id'];
+        $stockHistory = $this->inventoryServices->getStockHistory($inventory_id, auth()->id());
+
         return response([
             'status' => 'success',
             'message' => 'Stock history retrieved succesfully',
             'stockHistory' => $stockHistory
+            // 'data' => new StockHistoryResource($stockHistory)
         ], 200);
     }
 

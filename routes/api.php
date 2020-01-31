@@ -62,9 +62,9 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     Route::group(['prefix' => 'retail-inventories'], function () {
-        Route::get('/', 'RetailerInventoryController@getAllRetailerInventories')->middleware('auth:api');
-        Route::get('/{inventory_id}', 'RetailerInventoryController@getSingleRetailerInventory')->middleware('auth:api');
-        Route::get('/stock-history/{inventory_id}','RetailerInventoryController@fetchStockHistory')->middleware('auth:api');
+        Route::get('', 'RetailerInventoryController@getAllRetailerInventories')->middleware('auth:api');
+        Route::get('stock-history','RetailerInventoryController@getStockHistory')->middleware('auth:api');
+        Route::get('{inventory_id}', 'RetailerInventoryController@getSingleRetailerInventory')->middleware('auth:api');
     });
 
     Route::group(['prefix' => 'retail-sales'], function () {
