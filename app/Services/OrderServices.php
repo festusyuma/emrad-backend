@@ -72,6 +72,9 @@ class OrderServices
 
                 $retailerOrder = $this->createRetailerOrder($order, $user_id);
             }
+
+            dispatch(new SendMailToDistributorEmailJob($user_id));
+
             DB::commit();
             return "Order created successfully!";
 

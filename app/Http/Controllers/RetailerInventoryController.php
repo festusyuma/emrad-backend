@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Emrad\Http\Requests\UpdateRetailerInventoryRequest;
 use Emrad\Http\Resources\RetailerInventoryCollection;
 use Emrad\Http\Resources\RetailerInventoryResource;
+use Emrad\Http\Resources\RetailerProductResource;
 use Emrad\Http\Resources\StockHistoryResource;
 use Emrad\Models\RetailerInventory;
 use Emrad\Services\InventoryServices;
@@ -63,7 +64,8 @@ class RetailerInventoryController extends Controller
         return response([
             'status' => 'success',
             'message' => 'Stock history retrieved succesfully',
-            'stockHistory' => $stockHistory
+            'data' => $stockHistory
+            // 'stockHistory' => $stockHistory,
             // 'data' => new StockHistoryResource($stockHistory)
         ], 200);
     }

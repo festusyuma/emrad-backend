@@ -35,8 +35,10 @@ class InventoryServices
             ->where('user_id', $user_id)
             ->whereBetween('updated_at',[(new Carbon)->subDays(30),
             (new Carbon)->now()] )->get();
-
-        return $oneMonthRecord;
+        $inventory = RetailerInventory::find($inventory_id);
+        $product_id = $inventory->product_id;
+        $product = Product::find($product_id);
+        return ["product" => $product, "stockHistory" => $oneMonthRecord];
     }
 
 

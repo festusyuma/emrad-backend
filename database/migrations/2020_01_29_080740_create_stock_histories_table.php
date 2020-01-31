@@ -18,8 +18,8 @@ class CreateStockHistoriesTable extends Migration
             $table->integer('product_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->integer('inventory_id')->unsigned();
-            $table->string('stock_balance');
-            $table->string('new_stock_balance');
+            $table->integer('stock_balance');
+            $table->integer('new_stock_balance');
             $table->timestamps();
 
             $table->foreign('inventory_id')->references('id')->on('retailer_inventories')
