@@ -73,7 +73,7 @@ class OrderServices
                 $retailerOrder = $this->createRetailerOrder($order, $user_id);
             }
 
-            dispatch(new SendMailToDistributorEmailJob($user_id));
+            // dispatch(new SendMailToDistributorEmailJob($user_id));
 
             DB::commit();
             return "Order created successfully!";
@@ -200,6 +200,7 @@ class OrderServices
             $stockHistory->user_id = $user_id;
             $stockHistory->stock_balance = $currentStockBalance;
             $stockHistory->new_stock_balance = $newStockBalance;
+            $stockHistory->is_depleted = false;
 
             $retailerInventory->cost_price = $retailerOrder->unit_price;
             $retailerInventory->selling_price = $retailerOrder->selling_price;

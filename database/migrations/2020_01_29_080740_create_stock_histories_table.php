@@ -20,6 +20,7 @@ class CreateStockHistoriesTable extends Migration
             $table->integer('inventory_id')->unsigned();
             $table->integer('stock_balance');
             $table->integer('new_stock_balance');
+            $table->boolean('is_depleted');
             $table->timestamps();
 
             $table->foreign('inventory_id')->references('id')->on('retailer_inventories')

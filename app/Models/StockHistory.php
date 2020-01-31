@@ -10,7 +10,7 @@ class StockHistory extends Model
 {
 
     protected $fillable = [
-        'product_id', 'user_id', 'inventory_id', 'stock_balance', 'new_stock_balance'
+        'product_id', 'user_id', 'inventory_id', 'stock_balance', 'new_stock_balance', 'is_depleted'
     ];
 
 
@@ -39,4 +39,5 @@ class StockHistory extends Model
     {
         return $this->belongsTo(\Emrad\RetailerInventory::class, 'id', 'inventory_id');
     }
+
 }

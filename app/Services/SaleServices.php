@@ -169,6 +169,7 @@ class SaleServices
             $stockHistory->user_id = $user_id;
             $stockHistory->stock_balance = $currentStockBalance;
             $stockHistory->new_stock_balance = $newStockBalance;
+            $stockHistory->is_depleted = true;
             $stockHistory->save();
 
             return true;
