@@ -38,7 +38,7 @@ class InventoryServices
         $inventory = RetailerInventory::find($inventory_id);
         $product_id = $inventory->product_id;
         $product = Product::find($product_id);
-        return ["product" => $product, "stockHistory" => $oneMonthRecord];
+        return ["product" => new ProductResource($product), "stockHistory" => $oneMonthRecord];
     }
 
 
