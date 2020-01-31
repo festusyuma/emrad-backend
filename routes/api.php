@@ -56,6 +56,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/', 'RetailerOrderController@getAllRetailerOrders')->middleware('auth:api');
         Route::get('/{order_id}', 'RetailerOrderController@getSingleRetailerOrder')->middleware('auth:api');
         Route::post('/', 'RetailerOrderController@makeRetailerOrder')->middleware('auth:api');
+        Route::get('/stock-balance/{product_id}', 'RetailerOrderController@getStockBalance')->middleware('auth:api');
         Route::patch('/confirm/{order_id}', 'RetailerOrderController@confirmRetailerOrder')->middleware('auth:api');
 
     });
@@ -63,7 +64,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['prefix' => 'retail-inventories'], function () {
         Route::get('/', 'RetailerInventoryController@getAllRetailerInventories')->middleware('auth:api');
         Route::get('/{inventory_id}', 'RetailerInventoryController@getSingleRetailerInventory')->middleware('auth:api');
-        Route::patch('/update/{inventory_id}', 'RetailerInventoryController@updateRetailerInventory')->middleware('auth:api');
+        Route::get('/stock-history/{inventory_id}','RetailerInventoryController@fetchStockHistory')->middleware('auth:api');
     });
 
     Route::group(['prefix' => 'retail-sales'], function () {

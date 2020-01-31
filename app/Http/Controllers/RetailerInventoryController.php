@@ -39,33 +39,7 @@ class RetailerInventoryController extends Controller
         $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
 
         return new RetailerInventoryCollection($retailerInventories);
-
-        // return response([
-        //     // 'status' => 'success',
-        //     // 'message' => 'Inventories retrieved succesfully',
-        //     // // 'data' => $retailerInventories
-        //     'data' => RetailerInventoryResource::collection($retailerInventories)
-        // ], 200);
     }
-
-    // public function getAllRetailerInventories(InventoryFilters $filters)
-    // {
-    //     // filters base on the resquest parameters
-    //     $products = Product::filter($filters)->get();
-    //     // ->orderBy('id', 'desc')->paginate(16)
-    //     // ->setPath(route('list-products', Input::except('page')));
-
-    //     // ->appends(Input::except('page'));
-    //     return new ProductCollection($products);
-
-    //     // $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
-
-    //     // return response([
-    //     //     'status' => 'success',
-    //     //     'message' => 'Inventories retrieved succesfully',
-    //     //     'data' => new RetailerInventoryCollection($retailerInventories)
-    //     // ], 200);
-    // }
 
 
     /**
@@ -87,20 +61,17 @@ class RetailerInventoryController extends Controller
     }
 
 
-    /**
-     * Create new multiple retailer-inventories in database.
-     *
-     * @param MakeRetailInventory $request
-     */
-    public function updateRetailerInventory(int $inventory_id, UpdateRetailerInventoryRequest $request)
+
+    public function fetchStockHistory($inventory_id)
     {
-        $inventorySellingPrice = $request->selling_price;
-
-        $result = $this->inventoryServices->updateRetailerInventory($inventory_id, $inventorySellingPrice);
-
+        // $stockHistory = $this->inventoryServices->stockHistoy($inventory_id);
+        $stockHistory = $this->inventoryServices->getStockHistory($inventory_id);
+        // dd("i goheret ");
         return response([
             'status' => 'success',
-            'message' => $result
+            'message' => 'Stock history retrieved succesfully',
+            'stockHistory' => $stockHistory
         ], 200);
     }
+
 }

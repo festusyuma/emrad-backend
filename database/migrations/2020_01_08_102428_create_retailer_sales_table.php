@@ -17,9 +17,9 @@ class CreateRetailerSalesTable extends Migration
             $table->increments('id');
             $table->integer('product_id')->unsigned();
             $table->integer('quantity');
-            $table->string('unit_price');
-            $table->string('discount')->default(0);
-            $table->string('total_amount');
+            // $table->string('discount')->default(0);
+            $table->string('fmcg_selling_price');
+            $table->string('amount_sold');
             $table->string('sale_amount');
             $table->string('created_by');
             $table->softDeletes();

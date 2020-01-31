@@ -4,7 +4,9 @@ namespace Emrad\Services;
 
 use Emrad\Services\InventoryServices;
 use Emrad\Models\RetailerSale;
+use Emrad\Models\StockHistory;
 use Emrad\Models\RetailerInventory;
+use Illuminate\Support\Facades\Validator;
 use Emrad\Repositories\Contracts\SaleRepositoryInterface;
 use Exception;
 use DB;
@@ -12,6 +14,8 @@ use DB;
 
 class SaleServices
 {
+
+
     /**
      * @var $saleRepositoryInterface
      */
@@ -29,17 +33,15 @@ class SaleServices
      *
      * @return \Emrad\Models\RetailerSale $sale
      */
-
     public function createRetailerSale($sale, $user_id)
     {
         $retailerSale = new RetailerSale;
         $retailerSale->product_id = $sale['product_id'];
         $retailerSale->quantity = $sale['quantity'];
-        $retailerSale->unit_price = $sale['unit_price'];
-        $retailerSale->discount = $sale['discount'];
-        $totalAmount = $this->calculateTotalAmount($retailerSale->quantity, $retailerSale->unit_price);
-        $retailerSale->total_amount = $totalAmount;
-        $saleAmount = $this->calculateSaleAmount($retailerSale->quantity, $retailerSale->unit_price, $retailerSale->discount);
+        $retailerSale->amount_sold = $sale['amount_sold'];
+        $fmcgSellingPrice = $this->getFmcgSellingPrice($retailerSale->product_id);
+        $retailerSale->fmcg_selling_price = $fmcgSellingPrice;
+        $saleAmount = $this->calculateSaleAmount($retailerSale->quantity, $retailerSale->amount_sold);
         $retailerSale->sale_amount = $saleAmount;
         $retailerSale->created_by = $user_id;
         $retailerSale->save();
@@ -50,26 +52,14 @@ class SaleServices
     /**
      * Calculate sale amount
      *
-     * @param $quantity, $unit_price, $discount
+     * @param $quantity, $amount_sold
      */
-    public function calculateSaleAmount($quantity, $unit_price, $discount)
+    public function calculateSaleAmount($quantity, $amount_sold)
     {
-        $total = $quantity * $unit_price;
-        $discountAmount = $total * $discount / 100;
-        $saleAmount = $total - $discountAmount;
+        $saleAmount = $quantity * $amount_sold;
         return $saleAmount;
     }
 
-    /**
-     * Calculate total amount
-     *
-     * @param $quantity, $unit_price
-     */
-    public function calculateTotalAmount($quantity, $unit_price)
-    {
-        $totalAmount = $quantity * $unit_price;
-        return $totalAmount;
-    }
 
     /**
      * Create sale records and update inventory quantity
@@ -82,6 +72,16 @@ class SaleServices
         try {
             foreach ($sales as $sale) {
 
+                $validator = Validator::make($sale, [
+                    'product_id' => 'bail|required|numeric',
+                    'quantity' => 'required|numeric',
+                    'amount_sold' => 'required|numeric',
+                ]);
+
+                if ($validator->fails()) {
+                    throw new Exception("validation failed for product: {$sale['product_id']}, transaction declined!");
+                }
+
                 $is_in_stock = $this->checkInventoryQuantity($sale);
 
                 if(!$is_in_stock)
@@ -89,10 +89,10 @@ class SaleServices
 
                 $retailerSale = $this->createRetailerSale($sale, $user_id);
 
-                $updateInventory = $this->updateInventory($retailerSale);
+                $updateInventory = $this->updateInventory($retailerSale, $user_id);
 
-                if($updateInventory)
-                    throw new Exception("Please check stock quantity and retry, Inventory not updated");
+                if(!$updateInventory)
+                    throw new Exception("Please check stock quantity and retry, transaction declined!");
             }
             DB::commit();
             return "Sale created successfully!";
@@ -138,7 +138,12 @@ class SaleServices
         $sale->delete();
     }
 
-    public function updateInventory($retailerSale)
+    /**
+     * Update the user's inventory
+     *
+     * @param $retailerSale
+     */
+    public function updateInventory($retailerSale, $user_id)
     {
         try {
             $retailerInventory = RetailerInventory::firstOrNew([
@@ -148,14 +153,30 @@ class SaleServices
             if($retailerInventory->quantity < $retailerSale->quantity)
                 throw new Exception("Insufficient stock for this sale");
 
+            $product_id = $retailerInventory->product_id;
+            $currentStockBalance = $retailerInventory->quantity;
+            $stockHistory = new StockHistory;
+
             $retailerInventory->quantity = $retailerInventory->quantity - $retailerSale->quantity;
             $retailerInventory->is_in_stock = $retailerSale->quantity == 0 ? 0 : 1;
             $retailerInventory->save();
 
-        } catch(Exception $e) {
+            $newStockBalance = $retailerInventory->quantity;
+
+            $inventory_id = $retailerInventory->id;
+            $stockHistory->inventory_id = $inventory_id;
+            $stockHistory->product_id = $product_id;
+            $stockHistory->user_id = $user_id;
+            $stockHistory->stock_balance = $currentStockBalance;
+            $stockHistory->new_stock_balance = $newStockBalance;
+            $stockHistory->save();
+
             return true;
+        } catch(Exception $e) {
+            return false;
         }
     }
+
 
     /**
      * Check inventory quantity
@@ -166,4 +187,43 @@ class SaleServices
         $inventory = RetailerInventory::where('product_id', $sale['product_id'])->firstOrFail();
         return $inventory->is_in_stock;
     }
+
+    /**
+     * Fetch fmcg selling price
+     *
+     * @param $product_id
+     * @return $selling_price
+     */
+    public function getFmcgSellingPrice($product_id)
+    {
+        $inventory = RetailerInventory::where('product_id', $product_id)->firstOrFail();
+        $sellingPrice = $inventory->selling_price;
+        return $sellingPrice;
+    }
+
+
+    public function updateStockHistory($retailerInventory, $retailerSale, $user_id)
+    {
+        try {
+            $product_id = $retailerInventory->product_id;
+            $inventory_id = $retailerInventory->id;
+            $currentStockBalance = $retailerInventory->quantity;
+
+            $newStockBalance = $retailerInventory->quantity - $retailerSale->quantity;
+
+            $stockHistory = new StockHistory;
+            $stockHistory->product_id = $product_id;
+            $stockHistory->user_id = $user_id;
+            $stockHistory->stock_balance = $currentStockBalance;
+            $stockHistory->inventory_id = $inventory_id;
+            $stockHistory->new_stock_balance = $newStockBalance;
+
+            $stockHistory->save();
+            return true;
+
+        } catch(Exception $e) {
+            return false;
+        }
+    }
 }
+

@@ -3,7 +3,11 @@
 namespace Emrad\Services;
 
 use Emrad\Models\RetailerInventory;
+use Emrad\Models\Product;
+use Emrad\Models\StockHistory;
 use Emrad\Repositories\Contracts\InventoryRepositoryInterface;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Carbon;
 use Exception;
 
 class InventoryServices
@@ -18,6 +22,23 @@ class InventoryServices
         $this->inventoryRepositoryInterface = $inventoryRepositoryInterface;
     }
 
+
+    /**
+     * Get inventory detail
+     *
+     * @param $inventory_id
+     * @return $oneMonthRecord
+     */
+    public function getStockHistory($inventory_id)
+    {
+        $oneMonthRecord = StockHistory::where('inventory_id', $inventory_id)
+            ->whereBetween('updated_at',[(new Carbon)->subDays(30),
+            (new Carbon)->now()] )->get();
+
+        return $oneMonthRecord;
+    }
+
+
     /**
      * Create a new inventory
      *
@@ -29,11 +50,24 @@ class InventoryServices
     {
         try {
             foreach ($inventories as $inventory) {
+                $validator = Validator::make($inventory, [
+                    'product_id' => 'bail|required|numeric',
+                    'company_id' => 'nullable',
+                    'quantity' => 'required|numeric',
+                ]);
+
+                if ($validator->fails()) {
+                    throw new Exception("validation failed, please check request");
+                }
+
+                $product = Product::find($inventory['product_id']);
+
                 $retailerInventory = RetailerInventory::create([
-                    'product_id' => $inventory['product_id'],
+                    'product_id' => $product->id,
                     'company_id' => $inventory['company_id'],
                     'quantity' => $inventory['quantity'],
-                    'unit_price' => $inventory['unit_price'],
+                    'unit_price' => $product->price,
+                    'selling_price' => $product->selling_price,
                     'inventory_amount' => $inventory['quantity'] * $inventory['unit_price'],
                     'created_by' => $inventory['created_by']
                 ]);
@@ -42,8 +76,6 @@ class InventoryServices
         } catch (Exception $e) {
             return $e;
         }
-
-
     }
 
     /**
@@ -90,4 +122,5 @@ class InventoryServices
         }
 
     }
+
 }
