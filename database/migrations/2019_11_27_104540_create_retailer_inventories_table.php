@@ -16,6 +16,7 @@ class CreateRetailerInventoriesTable extends Migration
         Schema::create('retailer_inventories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('product_id')->unsigned();
+            $table->integer('user_id')->unsigned();
             $table->integer('quantity')->unsigned();
             $table->string('cost_price');
             $table->string('selling_price');

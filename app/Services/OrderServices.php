@@ -4,9 +4,11 @@ namespace Emrad\Services;
 
 use Emrad\Services\InventoryServices;
 use Emrad\Models\Product;
+use Emrad\User;
 use Emrad\Models\RetailerOrder;
 use Emrad\Models\StockHistory;
 use Emrad\Models\RetailerInventory;
+use Emrad\Events\NewRetailerOrderEvent;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 use Illuminate\Support\Facades\Validator;
 use Exception;
@@ -39,6 +41,7 @@ class OrderServices
 
         $retailerOrder = new RetailerOrder;
         $retailerOrder->product_id = $product->id;
+        $retailerOrder->user_id = $user_id;
 
         if(array_key_exists('company_id', $order))
             $retailerOrder->company_id = $order['company_id'];
@@ -52,8 +55,6 @@ class OrderServices
 
         return $retailerOrder;
     }
-
-
 
     public function makeRetailerOrder($orders, $user_id)
     {
@@ -71,6 +72,11 @@ class OrderServices
                 }
 
                 $retailerOrder = $this->createRetailerOrder($order, $user_id);
+
+                $user = User::find($user_id);
+
+                if($user)
+                    event(new NewRetailerOrderEvent($user, $retailerOrder));
             }
 
             DB::commit();
@@ -81,8 +87,6 @@ class OrderServices
             return $e->getMessage();
         }
     }
-
-
 
     public function getStockBalance($product_id)
     {
@@ -190,6 +194,7 @@ class OrderServices
                 $currentStockBalance = $retailerInventory->quantity;
             }
 
+            $retailerInventory->user_id = $user_id;
             $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
             $newStockBalance = $retailerInventory->quantity;
 

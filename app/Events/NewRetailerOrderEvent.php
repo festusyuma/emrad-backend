@@ -25,7 +25,7 @@ class NewRetailerOrderEvent
      */
     public function __construct(User $user, RetailerOrder $retailerOrder)
     {
-        // dd($user, $company);
+        // dd($user, $retailerOrder);
         $this->user = $user;
         $this->retailerOrder = $retailerOrder;
     }

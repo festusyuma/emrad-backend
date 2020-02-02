@@ -31,6 +31,6 @@ class NewRetailerOrderNotification
     public function handle(NewRetailerOrderEvent $event)
     {
         $when = now()->addSeconds(1);
-        Mail::to($event->user->email)->later($when, new NewRetailerOrderMail($event->user, $event->order));
+        Mail::to($event->user->email)->later($when, new NewRetailerOrderMail($event->user, $event->retailerOrder));
     }
 }

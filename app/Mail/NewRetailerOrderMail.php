@@ -20,7 +20,7 @@ class NewRetailerOrderMail extends Mailable
     protected $user;
 
     /**
-     * @var array $company
+     * @var RetailerOrder $order
      */
     public $order;
 
@@ -44,7 +44,8 @@ class NewRetailerOrderMail extends Mailable
     {
         return $this->view('emails.new_retailer_order')->with([
                                                         'user' => $this->user,
-                                                        'company' => $this->order,
-                                                    ])->subject("New Order");
+                                                        'order' => $this->order,
+                                                    ])->subject("New Order")
+                                                    ->to('kunle@intellchub.com');
     }
 }

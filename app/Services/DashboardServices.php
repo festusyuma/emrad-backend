@@ -10,12 +10,12 @@ use Exception;
 class DashboardServices
 {
 
-    public function getDashboardStats()
+    public function getDashboardStats($user_id)
     {
         return [
-            'monthly_sales' => $this->getMonthlySales(),
-            'num_products_sold' => $this->getNumOfProductsSold(),
-            'num_products_ordered' => $this->getNumOfProductsOrdered()
+            'monthly_sales' => $this->getMonthlySales($user_id),
+            'num_products_sold' => $this->getNumOfProductsSold($user_id),
+            'num_products_ordered' => $this->getNumOfProductsOrdered($user_id)
         ];
 
     }
@@ -25,9 +25,9 @@ class DashboardServices
      *
      * @return $monthly_sales
      */
-    public function getMonthlySales()
+    public function getMonthlySales($user_id)
     {
-        $sales = RetailerSale::all();
+        $sales = RetailerSale::where('user_id', $user_id)->get();
 
         $monthly_sales = [
             'Jan' => 0,
@@ -81,9 +81,9 @@ class DashboardServices
      *
      * @return $numOfProductsSold
      */
-    public function getNumOfProductsSold()
+    public function getNumOfProductsSold($user_id)
     {
-        $sales = RetailerSale::all();
+        $sales = RetailerSale::where('user_id', $user_id)->get();
 
         $numOfProductsSold = 0;
 
@@ -100,9 +100,9 @@ class DashboardServices
      *
      * @return $numOfProductsOrdered
      */
-    public function getNumOfProductsOrdered()
+    public function getNumOfProductsOrdered($user_id)
     {
-        $orders = RetailerOrder::all();
+        $orders = RetailerOrder::where('user_id', $user_id)->get();
 
         $numOfProductsOrdered = 0;
 

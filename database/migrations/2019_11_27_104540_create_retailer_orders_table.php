@@ -17,6 +17,7 @@ class CreateRetailerOrdersTable extends Migration
             $table->increments('id');
             $table->integer('product_id')->unsigned();
             $table->integer('company_id')->unsigned()->nullable();
+            $table->integer('user_id')->unsigned();
             $table->integer('quantity')->unsigned()->default(1);
             $table->string('unit_price');
             $table->string('selling_price');

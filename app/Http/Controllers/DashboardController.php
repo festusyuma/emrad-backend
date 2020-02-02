@@ -37,7 +37,7 @@ class DashboardController extends Controller
 
         try {
 
-            $data = $this->dashboardServices->getDashboardStats();
+            $data = $this->dashboardServices->getDashboardStats(auth()->id());
 
             return response([
             'status' => 'success',

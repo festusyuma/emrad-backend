@@ -37,6 +37,7 @@ class SaleServices
     {
         $retailerSale = new RetailerSale;
         $retailerSale->product_id = $sale['product_id'];
+        $retailerSale->user_id = $user_id;
         $retailerSale->quantity = $sale['quantity'];
         $retailerSale->amount_sold = $sale['amount_sold'];
         $fmcgSellingPrice = $this->getFmcgSellingPrice($retailerSale->product_id);

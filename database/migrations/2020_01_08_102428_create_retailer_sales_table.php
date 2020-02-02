@@ -16,6 +16,7 @@ class CreateRetailerSalesTable extends Migration
         Schema::create('retailer_sales', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('product_id')->unsigned();
+            $table->integer('user_id')->unsigned();
             $table->integer('quantity');
             // $table->string('discount')->default(0);
             $table->string('fmcg_selling_price');

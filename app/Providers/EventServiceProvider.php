@@ -3,9 +3,11 @@
 namespace Emrad\Providers;
 
 use Emrad\Events\NewCompanyCreated;
+use Emrad\Events\NewRetailerOrderEvent;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
 use Emrad\Listeners\NewCompanyCreatedNotification;
+use Emrad\Listeners\NewRetailerOrderNotification;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         NewCompanyCreated::class => [
             NewCompanyCreatedNotification::class
+        ],
+        NewRetailerOrderEvent::class => [
+            NewRetailerOrderNotification::class
         ]
     ];
 
