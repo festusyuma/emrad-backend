@@ -3,14 +3,14 @@
 namespace Emrad\Mail;
 
 use Emrad\User;
-use Emrad\Models\Company;
+use Emrad\Models\RetailerOrder;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\URL;
 
-class NewCompanyCreatedMail extends Mailable
+class NewRetailerOrderMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -22,17 +22,17 @@ class NewCompanyCreatedMail extends Mailable
     /**
      * @var array $company
      */
-    public $company;
+    public $order;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(User $user, Company $company)
+    public function __construct(User $user, RetailerOrder $order)
     {
         $this->user = $user;
-        $this->company = $company;
+        $this->order = $order;
     }
 
     /**
@@ -44,9 +44,7 @@ class NewCompanyCreatedMail extends Mailable
     {
         return $this->view('emails.new_retailer_order')->with([
                                                         'user' => $this->user,
-                                                        'company' => $this->company,
-                                                        // 'url' => URL::signedRoute('verificationapi.verify', ['user' => $this->user->id])
-                                                        'url' => "https://emrad.now.sh/verification?token=".$this->user->id
+                                                        'company' => $this->order,
                                                     ])->subject("New Order");
     }
 }
