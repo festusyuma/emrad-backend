@@ -60,6 +60,11 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    // 'to' => [
+    //     'address' => ['anselm2@intellchub.com', 'anselmleo2@gmail.com'],
+    //     'name' => 'Distributor'
+    // ],
+
     /*
     |--------------------------------------------------------------------------
     | E-Mail Encryption Protocol

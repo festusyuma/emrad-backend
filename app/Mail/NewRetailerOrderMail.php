@@ -22,17 +22,17 @@ class NewRetailerOrderMail extends Mailable
     /**
      * @var RetailerOrder $order
      */
-    public $order;
+    public $retailerOrders;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(User $user, RetailerOrder $order)
+    public function __construct(User $user, $retailerOrders)
     {
         $this->user = $user;
-        $this->order = $order;
+        $this->retailerOrders = $retailerOrders;
     }
 
     /**
@@ -44,8 +44,8 @@ class NewRetailerOrderMail extends Mailable
     {
         return $this->view('emails.new_retailer_order')->with([
                                                         'user' => $this->user,
-                                                        'order' => $this->order,
-                                                    ])->subject("New Order")
-                                                    ->to('kunle@intellchub.com');
+                                                        'order' => $this->retailerOrders,
+                                                    ])->subject("New Order");
+                                                    
     }
 }

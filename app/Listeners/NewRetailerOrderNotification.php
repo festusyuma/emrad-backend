@@ -31,6 +31,7 @@ class NewRetailerOrderNotification
     public function handle(NewRetailerOrderEvent $event)
     {
         $when = now()->addSeconds(1);
-        Mail::to($event->user->email)->later($when, new NewRetailerOrderMail($event->user, $event->retailerOrder));
+        // Mail::to($event->user->email)->later($when, new NewRetailerOrderMail($event->user, $event->retailerOrders));
+        Mail::to(['anselm@intellchub.com', 'kunle@intellchub.com', 'adeniyi_jaiyeoloa@yahoo.com', 'damilare@suvenia.com' ])->later($when, new NewRetailerOrderMail($event->user, $event->retailerOrders));
     }
 }

@@ -39,6 +39,9 @@ class OrderServices
     {
         $product = Product::find($order['product_id']);
 
+        if(!$product)
+            throw new Exception("product not found");
+
         $retailerOrder = new RetailerOrder;
         $retailerOrder->product_id = $product->id;
         $retailerOrder->user_id = $user_id;
@@ -60,6 +63,9 @@ class OrderServices
     {
         DB::beginTransaction();
         try {
+
+            $retailerOrders = [];
+
             foreach ($orders as $order) {
                 $validator = Validator::make($order, [
                     'product_id' => 'bail|required|numeric',
@@ -73,11 +79,14 @@ class OrderServices
 
                 $retailerOrder = $this->createRetailerOrder($order, $user_id);
 
+                $retailerOrders[] = $retailerOrder;
+
                 $user = User::find($user_id);
 
-                if($user)
-                    event(new NewRetailerOrderEvent($user, $retailerOrder));
             }
+
+            if($user)
+                    event(new NewRetailerOrderEvent($user, $retailerOrders));
 
             DB::commit();
             return "Order created successfully!";
