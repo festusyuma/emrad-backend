@@ -36,7 +36,7 @@ class RetailerOrderController extends Controller
      */
     public function getAllRetailerOrders()
     {
-        $retailerOrders = $this->orderServices->getAllRetailerOrders();
+        $retailerOrders = $this->orderServices->getAllRetailerOrders(auth()->id(), 10);
         return new RetailerOrderCollection($retailerOrders);
     }
 
@@ -49,7 +49,7 @@ class RetailerOrderController extends Controller
      */
     public function getSingleRetailerOrder($order_id)
     {
-        $retailerOrder = $this->orderServices->getSingleRetailerOrder($order_id);
+        $retailerOrder = $this->orderServices->getSingleRetailerOrder($order_id, auth()->id());
 
         return response([
             'status' => 'success',

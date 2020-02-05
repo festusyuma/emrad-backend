@@ -39,7 +39,7 @@ class RetailerSaleController extends Controller
      */
     public function getAllRetailerSales()
     {
-        $retailerSales = $this->saleServices->getAllRetailerSales();
+        $retailerSales = $this->saleServices->getAllRetailerSales(auth()->id(), 10);
         return new RetailerSaleCollection($retailerSales);
     }
 
@@ -52,7 +52,7 @@ class RetailerSaleController extends Controller
      */
     public function getSingleRetailerSale($sale_id)
     {
-        $retailerSale = $this->saleServices->getSingleRetailerSale($sale_id);
+        $retailerSale = $this->saleServices->getSingleRetailerSale($sale_id, auth()->id());
 
         return response([
             'status' => 'success',
@@ -93,5 +93,4 @@ class RetailerSaleController extends Controller
         $inventoryList = RetailerInventory::filter($filters)->orderBy('id', 'desc')->paginate(10);
         return new RetailerInventoryCollection($inventoryList);
     }
-
 }

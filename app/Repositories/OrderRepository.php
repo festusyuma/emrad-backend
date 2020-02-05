@@ -21,23 +21,45 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     }
 
     /**
-     * Find retailer-order by id
-     *
-     * @param string $order_id
-     *
-     * @return RetailerOrder $retailOrder
-     */
-    // public function findRetailerOrderById($order_id, $relations = [])
-    // {
-    //     return $this->model
-    //         ->where('id', $order_id)
-    //         ->with($relations)
-    //         ->firstOrFail();
-    // }
+   * Get all result from the model
+   *
+   * @return void
+   */
+    public function allByUser(){
+        return $this->model
+                    ->select()
+                    ->orderBy('id', 'DESC')
+                    ->get();
+    }
 
-    // public function getAllRetailerOrders()
-    // {
-    //     return $this->model->all();
-    // }
+    /**
+   * Get paginated result from the model
+   *
+   * @param int $limit
+   * @param array $relations
+   *
+   * @return void
+   */
+    public function paginateAllByUser($user_id, $limit, $relations = []){
+        return $this->model::with($relations)->where('user_id', $user_id)->orderBy('id', 'DESC')->paginate($limit);
+    }
+
+    /**
+   * Get single result from the model
+   *
+   * @param int $id
+   * @param array $relations
+   *
+   * @return Model
+   */
+    public function findByUser($order_id, $user_id, $relations = []){
+
+        return $this->model
+                ->where('id', $order_id)
+                ->where('user_id', $user_id)
+                ->with($relations)
+                ->firstOrFail();
+
+    }
 
 }

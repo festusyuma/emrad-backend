@@ -118,9 +118,9 @@ class OrderServices
      *
      * @param $order_id
      */
-    public function getSingleRetailerOrder($order_id)
+    public function getSingleRetailerOrder($order_id, $user_id)
     {
-        return $this->orderRepositoryInterface->find($order_id);
+        return $this->orderRepositoryInterface->findByUser($order_id, $user_id);
     }
 
     /**
@@ -128,9 +128,9 @@ class OrderServices
      *
      * @param \Collection $order
      */
-    public function getAllRetailerOrders()
+    public function getAllRetailerOrders($user_id, $limit)
     {
-        return $this->orderRepositoryInterface->paginate(10);
+        return $this->orderRepositoryInterface->paginateAllByUser($user_id, $limit);
     }
 
 

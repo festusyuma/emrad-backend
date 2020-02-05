@@ -109,9 +109,9 @@ class SaleServices
      *
      * @param Int|String $sale_id
      */
-    public function getSingleRetailerSale($sale_id)
+    public function getSingleRetailerSale(int $sale_id, $user_id)
     {
-        return $this->saleRepositoryInterface->find($sale_id);
+        return $this->saleRepositoryInterface->findByUser($sale_id, $user_id);
     }
 
     /**
@@ -119,9 +119,9 @@ class SaleServices
      *
      * @return \Collection $sales
      */
-    public function getAllRetailerSales()
+    public function getAllRetailerSales($user_id, $limit)
     {
-        return $this->saleRepositoryInterface->paginate(10);
+        return $this->saleRepositoryInterface->paginateAllByUser($user_id, $limit);
     }
 
 
