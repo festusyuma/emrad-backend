@@ -87,9 +87,9 @@ class InventoryServices
      *
      * @param int $inventory_id
      */
-    public function getSingleRetailerInventory(int $inventory_id)
+    public function getSingleRetailerInventory(int $inventory_id, $user_id)
     {
-        return $this->inventoryRepositoryInterface->find($inventory_id);
+        return $this->inventoryRepositoryInterface->findByUser($inventory_id, $user_id);
     }
 
     /**
@@ -97,9 +97,9 @@ class InventoryServices
      *
      * @param \Collection $inventory
      */
-    public function getAllRetailerInventories()
+    public function getAllRetailerInventories($user_id, $limit)
     {
-        return $this->inventoryRepositoryInterface->paginate(10);
+        return $this->inventoryRepositoryInterface->paginateAllByUser($user_id, $limit);
     }
 
     /**

@@ -38,21 +38,20 @@ class RetailerInventoryController extends Controller
      */
     public function getAllRetailerInventories()
     {
-        $retailerInventories = $this->inventoryServices->getAllRetailerInventories();
+        $retailerInventories = $this->inventoryServices->getAllRetailerInventories(auth()->id(), 10);
 
         return new RetailerInventoryCollection($retailerInventories);
     }
 
     public function getSingleRetailerInventory($inventory_id)
     {
-        $retailerInventory = $this->inventoryServices->getSingleRetailerInventory($inventory_id);
 
-        return response([
-            'status' => 'success',
-            'message' => 'Inventory retrieved succesfully',
-            'data' => new RetailerInventoryResource($retailerInventory)
+            $retailerInventory = $this->inventoryServices->getSingleRetailerInventory($inventory_id, auth()->id());
+            return response([
+                'status' => 'success',
+                'message' => 'Inventory retrieved succesfully',
+                'data' => new RetailerInventoryResource($retailerInventory)
         ], 200);
-
     }
 
 
