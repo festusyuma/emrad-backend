@@ -8,7 +8,7 @@ use Faker\Generator as Faker;
 $factory->define(RetailerOrder::class, function (Faker $faker) {
     return [
         "product_id" => $faker->numberBetween(1,50),
-        "user_id" => $faker->numberBetween(1,50),
+        "user_id" => $faker->numberBetween(1,20),
         "company_id" => $faker->numberBetween(1,15),
         "quantity" => $faker->numberBetween(1, 10),
         "unit_price" => $faker->numberBetween(1000, 3000),
