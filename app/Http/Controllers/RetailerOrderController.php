@@ -2,6 +2,7 @@
 
 namespace Emrad\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Emrad\Http\Requests\MakeRetailerOrderRequest;
 use Emrad\Http\Resources\RetailerOrderCollection;
@@ -58,22 +59,19 @@ class RetailerOrderController extends Controller
         ], 200);
     }
 
-
     /**
-     * Create new multiple retailer-orders in database.
-     *
-     * @param MakeRetailOrder $request
+     * @throws Exception
      */
     public function makeRetailerOrder(MakeRetailerOrderRequest $request)
     {
         $orders = $request->orders;
-
         $result = $this->orderServices->makeRetailerOrder($orders, auth()->id());
 
         return response([
-            'status' => 'success',
-            'message' => $result
-        ], 200);
+            'status' => $result->success ? 'success' : 'failed',
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
     }
 
     public function getStockBalance($product_id)

@@ -21,14 +21,10 @@ class AuthController extends Controller
 
     public $successStatus = 200;
 
-    /**
-     * login api
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function login(Request $request){
+    public function login(Request $request): \Illuminate\Http\JsonResponse
+    {
         if(Auth::attempt(['email' => request('email'), 'password' => request('password')])
-        || Auth::attempt(['email' => request('email'), 'password' => request('password')])){
+            || Auth::attempt(['email' => request('email'), 'password' => request('password')])){
             $user = Auth::user();
             $success['token'] =  $user->createToken('Emrad')->accessToken;
             $success['details'] =  new UsersResource($user);
@@ -41,66 +37,49 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * Registration api
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function register(CreateUser $request)
+
+    public function register(CreateUser $request): \Illuminate\Http\JsonResponse
     {
         $pathToFile = config('app.url')."/default-user-icon.jpg";
         $company = CompaniesServicesFacade::createCompany($request);
         $user = UsersServicesFacade::createUser(
-                                            $company->id,
-                                            $request->firstName,
-                                            $request->lastName,
-                                            $request->gender,
-                                            $pathToFile,
-                                            $request->phoneNumber,
-                                            $request->email,
-                                            $request->password,
-                                            $request->address,
-                                            $request->rememberToken
-                                        );
+            $company->id,
+            $request->firstName,
+            $request->lastName,
+            $request->gender,
+            $pathToFile,
+            $request->phoneNumber,
+            $request->email,
+            $request->password,
+            $request->address,
+            $request->rememberToken
+        );
 
 
         event(new NewCompanyCreated($user, $company));
-                            // dd('test');
         $user->assignRole($request->userType);
 
         $message = 'Please confirm yourself by clicking on verify user button sent to your email';
 
         return response()->json([
-                                    'status' => 'success',
-                                    'message'=>$message,
-                                    'data' => []
-                                    ], 201);
+            'status' => 'success',
+            'message'=>$message,
+            'data' => []
+        ], 201);
     }
 
-    /**
-     * Delete all users token
-     * and log user out
-     */
-    public function logout()
-    {
+    public function logout(): \Illuminate\Http\JsonResponse {
         auth()->user()->tokens->each(function ($token, $key) {
             $token->delete();
         });
         return response()->json([
-                                    'status' => 'success',
-                                    'message'=>"User logged out successfully",
-                                    'data' => []
-                                ], 200);
+            'status' => 'success',
+            'message'=>"User logged out successfully",
+            'data' => []
+        ], 200);
     }
 
-    /**
-     * Resets users password
-     *
-     * @param $request
-     *
-     * @return void
-     */
-    public function setPassword(ResetPassword $request)
+    public function setPassword(ResetPassword $request): \Illuminate\Http\JsonResponse
     {
         $user = auth()->user();
         $oldPassword = $request->oldPassword;
@@ -109,39 +88,29 @@ class AuthController extends Controller
         if (Hash::check($oldPassword, $user->password)) {
 
             $user->password = Hash::make($newPassword);
-
             $user->setRememberToken(Str::random(60));
-
             $user->save();
-
             event(new PasswordReset($user));
 
             // $this->guard()->login($user);
 
             return response()->json([
-                                    'status' => 'success',
-                                    'message' => 'password reset successfully'
-                                    ]);
+                'status' => 'success',
+                'message' => 'password reset successfully'
+            ]);
         }
         return response()->json([
-                                'status' => 'fail',
-                                'message' => 'password does not match'
-                                ],422);
+            'status' => 'fail',
+            'message' => 'password does not match'
+        ],422);
     }
 
-    /**
-     * forgot password function sends a passpord reset link
-     *
-     * @param string $email
-     *
-     * @return response
-     */
     public function forgotPassword(Request $request)
     {
         UsersServicesFacade::forgotPassword($request);
         return response([
-                            'status' => "success",
-                            'message' => "If you account exist we will send you a mail",
-                        ],200);
+            'status' => "success",
+            'message' => "If you account exist we will send you a mail",
+        ],200);
     }
 }

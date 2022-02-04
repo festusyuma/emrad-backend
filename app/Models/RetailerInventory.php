@@ -2,10 +2,16 @@
 
 namespace Emrad\Models;
 
+use Eloquent;
 use Emrad\Filters\QueryFilter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Post
+ *
+ * @mixin Eloquent
+ */
 class RetailerInventory extends Model
 {
     use SoftDeletes;

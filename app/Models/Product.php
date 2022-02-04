@@ -2,10 +2,16 @@
 
 namespace Emrad\Models;
 
+use Eloquent;
 use Emrad\Filters\QueryFilter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Post
+ *
+ * @mixin Eloquent
+ */
 class Product extends Model
 {
 

@@ -18,12 +18,8 @@ class RolesController extends Controller
         $this->rolesServices = $rolesServices;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function getRoles()
+
+    public function getRoles(): \Illuminate\Http\JsonResponse
     {
         $roles = $this->rolesServices->getRoles();
         return response()->json([
@@ -33,13 +29,8 @@ class RolesController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  Emrad\Http\Requests\RoleRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function createRole(RoleRequest $request)
+
+    public function createRole(RoleRequest $request): \Illuminate\Http\JsonResponse
     {
         $role = $this->rolesServices->createRole($request);
         return response()->json([
@@ -49,14 +40,7 @@ class RolesController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $role
-     * @return \Illuminate\Http\Response
-     */
-    public function updateRole(Request $request,Role $role)
+    public function updateRole(Request $request,Role $role): \Illuminate\Http\JsonResponse
     {
         $updatedRole = $this->rolesServices->updateRole($request, $role);
         return response()->json([
@@ -66,12 +50,6 @@ class RolesController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  Spatie\Permission\Models\Role $role
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Role $role)
     {
         $status = $role->delete();
@@ -81,13 +59,7 @@ class RolesController extends Controller
         ]);
     }
 
-    /**
-     * Sync Role and the request permisions
-     *
-     * @param  int  Spatie\Permission\Models\Role $role
-     * @return \Illuminate\Http\Response
-     */
-    public function attachPermissions(Role $role, Request $request)
+    public function attachPermissions(Role $role, Request $request): \Illuminate\Http\JsonResponse
     {
         $permissions = $request->activePermissions;
         $this->rolesServices->attachPermissions($role, $permissions);
@@ -97,14 +69,7 @@ class RolesController extends Controller
         ]);
     }
 
-    /**
-     * get array of the specified role permissions
-     *
-     * @param \Spatie\Permission\Models\Role $role
-     *
-     * @param Array $permissionsId
-     */
-    public function getActivePermissions(Role $role)
+    public function getActivePermissions(Role $role): \Illuminate\Http\JsonResponse
     {
         $rolePermissions = $this->rolesServices->getActivePermissions($role);
         return response()->json([

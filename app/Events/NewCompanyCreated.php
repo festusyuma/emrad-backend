@@ -19,24 +19,14 @@ class NewCompanyCreated
     public $user;
     public $company;
 
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
     public function __construct(User $user, Company $company)
     {
-        // dd($user, $company);
         $this->user = $user;
         $this->company = $company;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
-    public function broadcastOn()
+
+    public function broadcastOn(): PrivateChannel
     {
         return new PrivateChannel('channel-name');
     }

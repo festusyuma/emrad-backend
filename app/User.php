@@ -2,12 +2,18 @@
 
 namespace Emrad;
 
+use Eloquent;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * Post
+ *
+ * @mixin Eloquent
+ */
 class User extends Authenticatable
 {
     use Notifiable, HasApiTokens, HasRoles;
@@ -41,32 +47,22 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function company()
+    public function company(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(\Emrad\Models\Company::class);
     }
 
-    public function order()
+    public function order(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(\Emrad\User::class);
     }
 
-    /**
-     * user belongs to offer
-     *
-     * @return \Emrad\Models\Offer
-     */
-    public function offers()
+    public function offers(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(\Emrad\Models\Offer::class);
     }
 
-    /**
-     * users products
-     *
-     * @return \Emrad\Models\Product
-     */
-    public function products()
+    public function products(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(\Emrad\Models\Product::class);
     }

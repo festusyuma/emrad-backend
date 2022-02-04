@@ -1,6 +1,7 @@
 <?php
 namespace Emrad\Services;
 
+use Emrad\Http\Requests\RoleRequest;
 use Emrad\Models\Role;
 use Emrad\Repositories\Contracts\RoleRepositoryInterface;
 
@@ -17,14 +18,8 @@ class RolesServices
         $this->roleRepositoryInterface = $roleRepositoryInterface;
     }
 
-    /**
-     * Create a new role
-     *
-     * @param Request $request
-     *
-     * @return \Spatie\Permission\Models\Role $role
-     */
-    public function createRole($request)
+
+    public function createRole(RoleRequest $request): Role
     {
         $role = new Role;
         $role->name = $request->name;

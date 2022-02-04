@@ -18,7 +18,7 @@ class RoleTableSeeder extends Seeder
         ]);
 
         DB::table('roles')->insert([
-            'name' => 'Wholesaler',
+            'name' => 'Distributor',
             'guard_name' => 'api',
         ]);
 

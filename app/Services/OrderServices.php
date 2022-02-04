@@ -10,6 +10,7 @@ use Emrad\Models\StockHistory;
 use Emrad\Models\RetailerInventory;
 use Emrad\Events\NewRetailerOrderEvent;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
+use Emrad\Util\CustomResponse;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use DB;
@@ -19,6 +20,7 @@ class OrderServices
     /**
      * @var $orderRepositoryInterface
      */
+
     public $orderRepositoryInterface;
 
     public function __construct(OrderRepositoryInterface $orderRepositoryInterface)
@@ -27,20 +29,12 @@ class OrderServices
     }
 
     /**
-     * Create a new order
-     *
-     * @param Request $request
-     * @param user_id
-     *
-     * @return \Emrad\Models\RetailerOrder $order
+     * @throws Exception
      */
-
-    public function createRetailerOrder($order, $user_id)
+    public function createRetailerOrder($order, $user_id): RetailerOrder
     {
         $product = Product::find($order['product_id']);
-
-        if(!$product)
-            throw new Exception("product not found");
+        if(!$product) throw new Exception("product not found");
 
         $retailerOrder = new RetailerOrder;
         $retailerOrder->product_id = $product->id;
@@ -59,34 +53,58 @@ class OrderServices
         return $retailerOrder;
     }
 
+    /**
+     * @throws Exception
+     */
     public function makeRetailerOrder($orders, $user_id)
     {
-        DB::beginTransaction();
-        try {
+        if (count($orders) < 1) return CustomResponse::badRequest("order cannot be empty order");
+        usort($orders, function ($a, $b) { return $a['product_id'] > $b['product_id']; });
 
+        $validator = Validator::make($orders, [
+            '*.product_id' => 'bail|required|integer',
+            '*.company_id' => 'nullable',
+            '*.quantity' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return CustomResponse::badRequest("validation failed, plaese check request");
+        }
+
+        $productIds = array_column($orders, 'product_id');
+        $products = Product::whereIn('id', $productIds)->orderBy('id', 'ASC')->get();
+        if (count($products) < count($productIds)) return CustomResponse::badRequest("invalid product id");
+
+        DB::beginTransaction();
+
+        $orderItems = array();
+        for ($i = 0; $i < count($orders); $i++) {
+            $orderItem = [
+                'product_id' => $products[$i]->id,
+                'quantity' => $orders[$i]['quantity'],
+                'price_per_unit' => floatval($products[$i]->price),
+                'amount' => $products[$i]->price * $orders[$i]['quantity']
+            ];
+
+            if ($products[$i]->size < $orderItem['quantity']) {
+                return CustomResponse::failed($products[$i]->name.' does not have enough stock');
+            }
+
+            $orderItems[] = $orderItem;
+        }
+
+        dd($orderItems);
+        try {
+            error_log(count($orders));
             $retailerOrders = [];
 
             foreach ($orders as $order) {
-                $validator = Validator::make($order, [
-                    'product_id' => 'bail|required|numeric',
-                    'company_id' => 'nullable',
-                    'quantity' => 'required|numeric',
-                ]);
-
-                if ($validator->fails()) {
-                    throw new Exception("validation failed, please check request");
-                }
-
                 $retailerOrder = $this->createRetailerOrder($order, $user_id);
-
                 $retailerOrders[] = $retailerOrder;
-
-                $user = User::find($user_id);
-
             }
 
-            if($user)
-                    event(new NewRetailerOrderEvent($user, $retailerOrders));
+            $user = User::find($user_id);
+            if($user) event(new NewRetailerOrderEvent($user, $retailerOrders));
 
             DB::commit();
             return "Order created successfully!";
@@ -97,50 +115,31 @@ class OrderServices
         }
     }
 
-    public function getStockBalance($product_id)
+    public function getStockBalance($product_id): array
     {
         $count = RetailerInventory::where('product_id', $product_id)->count();
+        $isInInventory = $count > 0;
+
         if($count > 0) {
-            $isInInventory = true;
             $inventory = RetailerInventory::where('product_id', $product_id)->first();
             $stockBalance = $inventory->quantity;
-            return [$isInInventory, $stockBalance];
         } else {
-            $isInInventory = false;
             $stockBalance = "Product not in stock";
-            return [$isInInventory, $stockBalance];
         }
 
+        return [$isInInventory, $stockBalance];
     }
 
-    /**
-     * Get single retailer-order
-     *
-     * @param $order_id
-     */
-    public function getSingleRetailerOrder($order_id, $user_id)
+    public function getSingleRetailerOrder($order_id, $user_id): \Emrad\Repositories\Model
     {
         return $this->orderRepositoryInterface->findByUser($order_id, $user_id);
     }
 
-    /**
-     * Get all retailer orders
-     *
-     * @param \Collection $order
-     */
     public function getAllRetailerOrders($user_id, $limit)
     {
         return $this->orderRepositoryInterface->paginateAllByUser($user_id, $limit);
     }
 
-
-    /**
-     * Delete the requested order
-     *
-     * @param Int|String $id
-     *
-     * @return void
-     */
     public function delete($order_id)
     {
         $order = $this->orderRepositoryInterface->find($order_id);
@@ -148,16 +147,7 @@ class OrderServices
         $order->delete();
     }
 
-    /**
-     * Fine the requested order by Id
-     * Then Update the order with the $request
-     *
-     * @param Object $request
-     * @param Int|String $id
-     *
-     * @return \Spatie\Permission\Models\Order
-     */
-    public function confirmRetailerOrder($order_id, $user_id)
+    public function confirmRetailerOrder($order_id, $user_id): string
     {
         DB::beginTransaction();
         try {
@@ -188,7 +178,7 @@ class OrderServices
         }
     }
 
-    public function updateInventory($retailerOrder, $user_id)
+    public function updateInventory($retailerOrder, $user_id): bool
     {
         try {
 
