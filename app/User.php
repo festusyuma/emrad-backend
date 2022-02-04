@@ -3,6 +3,7 @@
 namespace Emrad;
 
 use Eloquent;
+use Emrad\Models\Wallet;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -65,5 +66,10 @@ class User extends Authenticatable
     public function products(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(\Emrad\Models\Product::class);
+    }
+
+    public function wallet(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Wallet::class);
     }
 }

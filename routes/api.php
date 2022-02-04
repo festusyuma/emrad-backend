@@ -88,6 +88,13 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/', 'DashboardController@getDashboardStats')->middleware('auth:api');
     });
 
+    Route::group(['prefix' => 'wallet', 'middleware' => 'auth:api'], function () {
+        Route::get('/', 'WalletController@getBalance');
+        Route::post('/', 'WalletController@addCard');
+        Route::post('/credit', 'WalletController@creditCard');
+        Route::get('/history', 'WalletController@creditCard');
+    });
+
 });
 
 
@@ -101,3 +108,7 @@ Route::post('/password/reset', 'ResetPasswordController@reset');
 
 Route::post('email/verify/', 'VerificationApiController@verify')->name('verificationapi.verify');
 Route::post('email/resend', 'VerificationApiController@resend')->middleware('auth:api')->name('verificationapi.resend');
+
+Route::group(['prefix' => 'webhook'], function () {
+
+});
