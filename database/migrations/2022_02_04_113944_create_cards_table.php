@@ -18,6 +18,7 @@ class CreateCardsTable extends Migration
             $table->string('last_4');
             $table->string('expiration_date');
             $table->string('full_name');
+            $table->unsignedBigInteger('wallet_id');
             $table->foreign('wallet_id')->references('id')->on('wallets');
             $table->timestamps();
         });

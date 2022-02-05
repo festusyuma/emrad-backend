@@ -17,10 +17,10 @@ class WalletController extends Controller
 
     public function getBalance() {
         $user = auth()->user();
-        $response = $this->walletService->fetchBalance();
+        $response = $this->walletService->fetchBalance($user);
 
         return response([
-            'status' => 'success',
+            'status' => $response->success,
             'message' => $response->message,
             'data' => $response->data
         ], 200);

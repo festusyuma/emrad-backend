@@ -17,7 +17,7 @@ class CustomResponse
         $this->success = $success;
     }
 
-    static function success($data): CustomResponse
+    static function success($data = null): CustomResponse
     {
         return new CustomResponse('successful', $data, 200, true);
     }
