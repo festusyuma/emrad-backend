@@ -32,7 +32,7 @@ class CustomResponse
         return new CustomResponse($message, $data, 400);
     }
 
-    static function serverError($message = 'an unknown server error occurred'): CustomResponse
+    static function serverError(\Exception $e = null, $message = 'an unknown server error occurred'): CustomResponse
     {
         return new CustomResponse($message, null, 500);
     }
