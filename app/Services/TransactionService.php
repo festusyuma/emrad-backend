@@ -7,8 +7,8 @@ use GuzzleHttp\Client;
 
 class TransactionService
 {
-    private $payStackUrl = 'https://api.paystack.co';
-    private $client;
+    private string $payStackUrl = 'https://api.paystack.co';
+    private Client $client;
 
     public function __construct()
     {
@@ -41,7 +41,10 @@ class TransactionService
             $stream = $request->getBody();
             $body = json_decode($stream->getContents());
 
-            return CustomResponse::success($body);
+            if (!$body->status) return CustomResponse::failed($body->message);
+            else $paystackData = $body->data;
+
+            return CustomResponse::success($paystackData);
         } catch (\Exception $e) {
             return CustomResponse::serverError();
         }
