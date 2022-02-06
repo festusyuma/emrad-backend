@@ -2,6 +2,7 @@
 
 namespace Emrad\Services;
 
+use Emrad\Models\Transaction;
 use Emrad\Util\CustomResponse;
 use GuzzleHttp\Client;
 
@@ -22,11 +23,20 @@ class TransactionService
         ]);
     }
 
+    public function getReference(): string {
+        while (true) {
+            $reference = generateReference();
+            $transaction = Transaction::where('reference', $reference);
+            if (!$transaction) return $reference;
+        }
+    }
+
     public function initTransaction($data): CustomResponse
     {
         try {
-            $reference = generateReference();
+            $reference = $this->getReference();
             $url = $this->payStackUrl.'/transaction/initialize';
+
             $body = [
                 'email' => $data['email'],
                 'channels' => $data['channels'],
