@@ -2,7 +2,6 @@
 
 namespace Emrad\Services;
 
-use Cassandra\Custom;
 use Emrad\Models\Transaction;
 use Emrad\Util\CustomResponse;
 use GuzzleHttp\Client;
@@ -11,9 +10,11 @@ class TransactionService
 {
     private string $payStackUrl = 'https://api.paystack.co';
     private Client $client;
+    private WalletService $walletService;
 
-    public function __construct()
+    public function __construct(WalletService $walletService)
     {
+        $this->walletService = $walletService;
         $key = "Bearer ".env('PAYSTACK_SECRET', '');
         $this->client = new Client([
             'headers' => [
@@ -36,7 +37,7 @@ class TransactionService
         }
     }
 
-    public function initTransaction($data): CustomResponse
+    public function initTransaction($type, $data): CustomResponse
     {
         try {
             $reference = $this->getReference();
@@ -60,7 +61,17 @@ class TransactionService
             if (!$body->status) return CustomResponse::failed($body->message);
             else $paystackData = $body->data;
 
-            return CustomResponse::success($paystackData);
+            $transaction = new Transaction([
+                'type' => $type,
+                'amount' => $data['amount'],
+                'reference' => $body['reference'],
+                'user_id' => $data['user_id']
+            ]);
+
+            return CustomResponse::success([
+                'transaction' => $transaction,
+                'paystack_data' => $paystackData
+            ]);
         } catch (\Exception $e) {
             return CustomResponse::serverError();
         }
@@ -78,8 +89,6 @@ class TransactionService
             if (!$body->status) return CustomResponse::failed($body->message);
             else $paystackData = $body->data;
 
-
-
             return CustomResponse::success();
         } catch (\Exception $e) {
             return CustomResponse::serverError($e);
@@ -95,9 +104,39 @@ class TransactionService
         }
     }
 
-    public function verifyTransaction($data): CustomResponse
+    public function verifyTransaction($paystack_data): CustomResponse
     {
         try {
+            $event = $paystack_data->event;
+            $transaction = Transaction::where('reference')->first();
+            if (!$transaction) return CustomResponse::badRequest('invalid request');
+
+            if ($event != 'charge.success') {
+                $transaction->status = 'failed';
+                $transaction->verified = true;
+                $transaction->save();
+
+                return CustomResponse::success('transaction failed');
+            }
+
+            $transaction->status = 'success';
+            $transaction->verified = true;
+
+            switch ($event) {
+                case config('transactiontype.credit_wallet'):
+                    $res = $this->walletService->confirmCreditWallet($transaction->user_id, $transaction->amount);
+                    break;
+                case config('transactiontype.retail_order'):
+                    break;
+                case config('transactiontype.new_card'):
+                    $res = $this->walletService->confirmAddCard($transaction->user_id, $paystack_data->data);
+                    break;
+                default:
+                    return CustomResponse::badRequest('invalid transaction');
+            }
+
+            $transaction->save();
+
             return CustomResponse::success();
         } catch (\Exception $e) {
             return CustomResponse::serverError();

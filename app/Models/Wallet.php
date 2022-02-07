@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  * Post
  *
  * @mixin Eloquent
+ * @property int|mixed $balance
+ * @property mixed $id
  */
 class Wallet extends Model
 {
