@@ -2,6 +2,7 @@
 
 namespace Emrad\Services;
 
+use Cassandra\Custom;
 use Emrad\Models\Transaction;
 use Emrad\Util\CustomResponse;
 use GuzzleHttp\Client;
@@ -55,6 +56,35 @@ class TransactionService
             else $paystackData = $body->data;
 
             return CustomResponse::success($paystackData);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError();
+        }
+    }
+
+    public function confirmTransactionManual($reference): CustomResponse
+    {
+        try {
+            $url = $this->payStackUrl.'/transaction/verify/'.$reference;
+            $request = $this->client->get($url);
+
+            $stream = $request->getBody();
+            $body = json_decode($stream->getContents());
+
+            if (!$body->status) return CustomResponse::failed($body->message);
+            else $paystackData = $body->data;
+
+            
+
+            return CustomResponse::success();
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
+    }
+
+    public function chargeCard(): CustomResponse
+    {
+        try {
+            return CustomResponse::success();
         } catch (\Exception $e) {
             return CustomResponse::serverError();
         }

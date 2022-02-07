@@ -110,5 +110,5 @@ Route::post('email/verify/', 'VerificationApiController@verify')->name('verifica
 Route::post('email/resend', 'VerificationApiController@resend')->middleware('auth:api')->name('verificationapi.resend');
 
 Route::group(['prefix' => 'webhook'], function () {
-
+    Route::post('/transaction', 'Webhook@transaction');
 });

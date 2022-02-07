@@ -13,6 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     protected $fillable = [
-        'type', 'amount', 'status', 'verified', 'reference', 'source'
+        'type', 'amount', 'reference', 'card_id'
     ];
 }
