@@ -24,7 +24,6 @@ class WebhookController extends Controller
         $reqHash = $request->header('x-paystack-signature', '');
         $encodedBody = json_encode($request->json()->all());
         $hash = hash_hmac('sha512', $encodedBody, $key);
-        info($hash, $reqHash);
 
         if ($reqHash !== $hash) {
             return response([
@@ -33,8 +32,6 @@ class WebhookController extends Controller
                 'data' => null
             ], 400);
         }
-
-        error_log('webhook_successful');
 
         $response = $this->transactionService->verifyTransaction($request->json()->all());
 
