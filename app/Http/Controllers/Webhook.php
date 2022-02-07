@@ -4,6 +4,7 @@ namespace Emrad\Http\Controllers;
 
 use Emrad\Services\TransactionService;
 use Emrad\Util\CustomResponse;
+use Illuminate\Http\Request;
 
 class Webhook extends Controller
 {
@@ -16,20 +17,29 @@ class Webhook extends Controller
         $this->transactionService = $transactionService;
     }
 
-    public function transaction($request): CustomResponse
+    public function transaction(Request $request)
     {
-        // only a post with paystack signature header gets our attention
-
         $key = env('PAYSTACK_SECRET','SECRET_KEY');
-        $reqHash = $request->header('x-paystack-signature');
-        $hash = hash_hmac('sha512', $request->getAll, $key);
+        $reqHash = $request->header('x-paystack-signature', '');
+        $encodedBody = json_encode($request->json()->all());
+        $hash = hash_hmac('sha512', $encodedBody, $key);
 
-        error_log($key);
-        error_log($reqHash);
-        error_log($hash);
-        error_log($reqHash);
-        error_log(json_encode($request));
+        if ($reqHash !== $hash) {
+            return response([
+                'status' => false,
+                'message' => 'invalid hash',
+                'data' => null
+            ], 400);
+        }
 
-        return CustomResponse::success();
+        error_log('webhook_successful');
+
+        $response = $this->transactionService->verifyTransaction($request->json()->all());
+
+        return response([
+            'status' => $response->success,
+            'message' => $response->message,
+            'data' => $response->data
+        ], 200);
     }
 }
