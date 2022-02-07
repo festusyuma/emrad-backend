@@ -24,11 +24,15 @@ class TransactionService
         ]);
     }
 
-    public function getReference(): string {
-        while (true) {
-            $reference = generateReference();
-            $transaction = Transaction::where('reference', $reference);
-            if (!$transaction) return $reference;
+    public function getReference(): ?string {
+        try {
+            while (true) {
+                $reference = generateReference();
+                $transaction = Transaction::where('reference', $reference)->first();
+                if (!$transaction) return $reference;
+            }
+        } catch (\Exception $e) {
+            return null;
         }
     }
 
@@ -36,6 +40,7 @@ class TransactionService
     {
         try {
             $reference = $this->getReference();
+            if (!$reference) return CustomResponse::failed('error generating reference');
             $url = $this->payStackUrl.'/transaction/initialize';
 
             $body = [
@@ -73,7 +78,7 @@ class TransactionService
             if (!$body->status) return CustomResponse::failed($body->message);
             else $paystackData = $body->data;
 
-            
+
 
             return CustomResponse::success();
         } catch (\Exception $e) {

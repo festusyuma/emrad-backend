@@ -19,10 +19,12 @@ class Webhook extends Controller
 
     public function transaction(Request $request)
     {
+        info('webhook called');
         $key = env('PAYSTACK_SECRET','SECRET_KEY');
         $reqHash = $request->header('x-paystack-signature', '');
         $encodedBody = json_encode($request->json()->all());
         $hash = hash_hmac('sha512', $encodedBody, $key);
+        info($hash, $reqHash);
 
         if ($reqHash !== $hash) {
             return response([
