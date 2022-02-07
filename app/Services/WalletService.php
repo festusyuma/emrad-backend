@@ -117,7 +117,7 @@ class WalletService
             $wallet = $this->getUserWallet($user);
             if (!$wallet) return CustomResponse::failed('error fetching wallet');
 
-            $wallet->balance += $amount;
+            $wallet->balance += (float) $amount;
             $wallet->save();
 
             return CustomResponse::success($wallet);
