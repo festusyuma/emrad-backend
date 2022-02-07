@@ -20,7 +20,7 @@ class CreateTransactionsTable extends Migration
             $table->enum('status', ['pending', 'success', 'failed'])->default('pending');
             $table->boolean('verified')->default(false);
             $table->string('reference')->unique();
-            $table->string('card_id')->nullable()->default(null);
+            $table->unsignedBigInteger('card_id')->nullable()->default(null);
             $table->foreign('card_id')->references('id')->on('cards');
             $table->timestamps();
         });
