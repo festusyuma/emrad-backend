@@ -6,7 +6,7 @@ use Emrad\Services\TransactionService;
 use Emrad\Util\CustomResponse;
 use Illuminate\Http\Request;
 
-class Webhook extends Controller
+class WebhookController extends Controller
 {
     public TransactionService $transactionService;
 

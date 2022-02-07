@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class WalletController extends Controller
 {
-    public $walletService;
+    public WalletService $walletService;
 
     public function __construct(
         WalletService $walletService
