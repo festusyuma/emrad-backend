@@ -25,6 +25,10 @@ class WebhookController extends Controller
         $encodedBody = json_encode($request->json()->all());
         $hash = hash_hmac('sha512', $encodedBody, $key);
 
+        info($reqHash);
+        info($encodedBody);
+        info($hash);
+
         if ($reqHash !== $hash) {
             return response([
                 'status' => false,

@@ -146,7 +146,7 @@ class TransactionService
 
             return CustomResponse::success();
         } catch (\Exception $e) {
-            return CustomResponse::serverError();
+            return CustomResponse::serverError($e);
         }
     }
 

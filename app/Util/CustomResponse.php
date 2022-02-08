@@ -34,6 +34,7 @@ class CustomResponse
 
     static function serverError(\Exception $e = null, $message = 'an unknown server error occurred'): CustomResponse
     {
+        if ($e) error_log($e);
         return new CustomResponse($message, null, 500);
     }
 }
