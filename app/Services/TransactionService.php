@@ -140,6 +140,7 @@ class TransactionService
                     return CustomResponse::badRequest('invalid transaction');
             }
 
+            info(json_encode($res));
             if (!$res->success) return $res;
             else $transaction->save();
 
@@ -165,7 +166,9 @@ class TransactionService
                 'authorization_code' => $authorization->authorization_code,
                 'wallet_id' => $wallet->id
             ];
+
             $card = new Card($card_data);
+            $card->save();
 
             return CustomResponse::success($card);
         } catch (\Exception $e) {
