@@ -2,6 +2,8 @@
 
 namespace Emrad\Providers;
 
+use Emrad\Repositories\Contracts\WalletRepositoryInterface;
+use Emrad\Repositories\WalletRepository;
 use Emrad\Services\RolesServices;
 use Emrad\Services\UsersServices;
 use Emrad\Services\CompaniesServices;
@@ -49,6 +51,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(InventoryRepositoryInterface::class, InventoryRepository::class);
         $this->app->bind(SaleRepositoryInterface::class, SaleRepository::class);
+        $this->app->bind(WalletRepositoryInterface::class, WalletRepository::class);
         $this->app->bind('fc-users-repo-interface', function ($app){ return $app->make(UserRepositoryInterface::class); });
         $this->app->bind('fc-users-services', function ($app){ return $app->make(UsersServices::class); });
         $this->app->bind('fc-company-repo-interface', function ($app){ return $app->make(CompanyRepositoryInterface::class); });

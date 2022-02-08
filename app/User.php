@@ -14,6 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * Post
  *
  * @mixin Eloquent
+ * @property mixed $id
  */
 class User extends Authenticatable
 {

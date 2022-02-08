@@ -4,40 +4,29 @@ namespace Emrad\Services;
 
 use Emrad\Models\Card;
 use Emrad\Models\Wallet;
+use Emrad\Repositories\Contracts\WalletRepositoryInterface;
 use Emrad\User;
 use Emrad\Util\CustomResponse;
 
 class WalletService
 {
-    private TransactionService $transactionService;
+    public TransactionService $transactionService;
+    public WalletRepositoryInterface $walletRepo;
 
     public function __construct(
-        TransactionService $transactionService
+        TransactionService $transactionService,
+        WalletRepositoryInterface $walletRepo
     )
     {
         $this->transactionService = $transactionService;
-    }
-
-    private function getUserWallet($user): ?Wallet {
-        try {
-            $wallet = Wallet::where('user_id', $user->id)->first();
-            if (!$wallet) $wallet = new Wallet([
-                'balance' => 0,
-                'user_id' => $user->id
-            ]);
-
-            $wallet->save();
-            return $wallet;
-        } catch (\Exception $e) {
-            return null;
-        }
+        $this->walletRepo = $walletRepo;
     }
 
     public function fetchBalance($user): CustomResponse
     {
         try {
-            $wallet = $this->getUserWallet($user);
-            if (!$wallet) return CustomResponse::failed('error generating wallet');
+            $wallet = $this->walletRepo->getUserWallet($user->id);
+            if (!$wallet) return CustomResponse::failed('error fetching wallet');
 
             return CustomResponse::success($wallet);
         } catch (\Exception $e) {
@@ -47,8 +36,8 @@ class WalletService
 
     public function fetchHistory($user): CustomResponse {
         try {
-            $wallet = $this->getUserWallet($user);
-            if (!$wallet) return CustomResponse::failed('error generating wallet');
+            $wallet = $this->walletRepo->getUserWallet($user->id);
+            if (!$wallet) return CustomResponse::failed('error fetching history');
 
             return CustomResponse::success($wallet);
         } catch (\Exception $e) {
@@ -58,13 +47,14 @@ class WalletService
 
     public function addCard($user): CustomResponse {
         try {
-            $wallet = $this->getUserWallet($user);
-            if (!$wallet) return CustomResponse::failed('error generating wallet');
+            $wallet = $this->walletRepo->getUserWallet($user->id);
+            if (!$wallet) return CustomResponse::failed('error fetching wallet');
 
             $transactionRes = $this->transactionService->initTransaction(config('transactiontype.new_card'), [
                 'amount' => 50,
                 'email' => $user->email,
-                'channels' => ['card']
+                'channels' => ['card'],
+                'user_id' => $user->id
             ]);
 
             if (!$transactionRes->success) return $transactionRes;
@@ -79,48 +69,6 @@ class WalletService
     public function creditWallet(): CustomResponse {
         try {
             return CustomResponse::success();
-        } catch (\Exception $e) {
-            return CustomResponse::serverError();
-        }
-    }
-
-    public function confirmAddCard($user_id, $data): CustomResponse {
-        try {
-            $user = User::find($user_id);
-
-            $wallet = $this->getUserWallet($user);
-            if (!$wallet) return CustomResponse::failed('error fetching wallet');
-
-            $wallet->balance += 50;
-            $wallet->save();
-
-            $authorization = $data->authorization;
-            $card_data = [
-                'last_4' => $authorization->last4,
-                'expiration_date' => $authorization->exp_month.'/'.$authorization->exp_year,
-                'full_name' => $authorization->account_name,
-                'authorization_code' => $authorization->authorization_code,
-                'wallet_id' => $wallet->id
-            ];
-            $card = new Card($card_data);
-
-            return CustomResponse::success($card);
-        } catch (\Exception $e) {
-            return CustomResponse::serverError();
-        }
-    }
-
-    public function confirmCreditWallet($user_id, $amount): CustomResponse {
-        try {
-            $user = User::find($user_id);
-
-            $wallet = $this->getUserWallet($user);
-            if (!$wallet) return CustomResponse::failed('error fetching wallet');
-
-            $wallet->balance += (float) $amount;
-            $wallet->save();
-
-            return CustomResponse::success($wallet);
         } catch (\Exception $e) {
             return CustomResponse::serverError();
         }
