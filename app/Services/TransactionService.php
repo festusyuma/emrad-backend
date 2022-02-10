@@ -111,7 +111,7 @@ class TransactionService
     public function verifyTransaction($paystack_data): CustomResponse
     {
         try {
-            $event = $paystack_data->event;
+            $event = $paystack_data['event'];
             $transaction = Transaction::where('reference')->first();
             if (!$transaction) return CustomResponse::badRequest('invalid request');
 
@@ -134,7 +134,7 @@ class TransactionService
                     $res = CustomResponse::success();
                     break;
                 case config('transactiontype.new_card'):
-                    $res = $this->confirmAddCard($transaction->user_id, $paystack_data->data);
+                    $res = $this->confirmAddCard($transaction->user_id, $paystack_data['data']);
                     break;
                 default:
                     return CustomResponse::badRequest('invalid transaction');
@@ -158,12 +158,12 @@ class TransactionService
             $wallet = $this->walletRepo->creditWallet($wallet, 50);
             if (!$wallet) return CustomResponse::failed('error crediting wallet');
 
-            $authorization = $data->authorization;
+            $authorization = $data['authorization'];
             $card_data = [
-                'last_4' => $authorization->last4,
-                'expiration_date' => $authorization->exp_month.'/'.$authorization->exp_year,
-                'full_name' => $authorization->account_name,
-                'authorization_code' => $authorization->authorization_code,
+                'last_4' => $authorization['last4'],
+                'expiration_date' => $authorization['exp_month'].'/'.$authorization['exp_year'],
+                'full_name' => $authorization['account_name'],
+                'authorization_code' => $authorization['authorization_code'],
                 'wallet_id' => $wallet->id
             ];
 
