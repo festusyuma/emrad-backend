@@ -34,6 +34,7 @@ class WebhookController extends Controller
 
         info($reqHash);
         info($hash);
+        info($encodedBody);
 
         if ($reqHash !== $hash) {
             return response([
