@@ -3,6 +3,7 @@
 namespace Emrad\Services;
 
 use Emrad\Models\Card;
+use Emrad\Models\Transaction;
 use Emrad\Models\Wallet;
 use Emrad\Repositories\Contracts\WalletRepositoryInterface;
 use Emrad\User;
@@ -48,12 +49,16 @@ class WalletService
         }
     }
 
-    public function fetchHistory($user): CustomResponse {
+    public function fetchHistory($user, $page): CustomResponse {
         try {
-            $wallet = $this->walletRepo->getUserWallet($user->id);
-            if (!$wallet) return CustomResponse::failed('error fetching history');
+            $transactions = Transaction::where('user_id', $user->id)->paginate(
+                $page[1],
+                ['*'],
+                'page',
+                $page[0]
+            );
 
-            return CustomResponse::success($wallet);
+            return CustomResponse::success($transactions);
         } catch (\Exception $e) {
             return CustomResponse::serverError();
         }

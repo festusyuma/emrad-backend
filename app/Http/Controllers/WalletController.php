@@ -66,7 +66,17 @@ class WalletController extends Controller
         ], 200);
     }
 
-    public function getHistory($user_id) {
+    public function getHistory(Request $request) {
+        $user = auth()->user();
+        $page = $request->get('page', 1);
+        $size = $request->get('size', 5);
 
+        $response = $this->walletService->fetchHistory($user, [$page, $size]);
+
+        return response([
+            'status' => $response->success,
+            'message' => $response->message,
+            'data' => $response->data
+        ], 200);
     }
 }
