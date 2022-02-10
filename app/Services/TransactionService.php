@@ -128,7 +128,7 @@ class TransactionService
             $transaction->status = 'success';
             $transaction->verified = true;
 
-            switch ($event) {
+            switch ($transaction->type) {
                 case config('transactiontype.credit_wallet'):
                     $res = $this->confirmCreditWallet($transaction->user_id, $transaction->amount);
                     break;
