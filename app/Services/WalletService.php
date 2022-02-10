@@ -34,6 +34,20 @@ class WalletService
         }
     }
 
+    public function fetchCards($user): CustomResponse
+    {
+        try {
+            $wallet = $this->walletRepo->getUserWallet($user->id);
+            if (!$wallet) return CustomResponse::failed('error fetching wallet');
+
+            $cards = $wallet->cards()->get();
+
+            return CustomResponse::success($cards);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError();
+        }
+    }
+
     public function fetchHistory($user): CustomResponse {
         try {
             $wallet = $this->walletRepo->getUserWallet($user->id);

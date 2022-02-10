@@ -93,6 +93,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::put('/', 'WalletController@addCard');
         Route::post('/credit', 'WalletController@creditCard');
         Route::get('/history', 'WalletController@creditCard');
+        Route::get('/card', 'WalletController@getCards');
     });
 
 });

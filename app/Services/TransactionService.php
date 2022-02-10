@@ -115,7 +115,8 @@ class TransactionService
             $data = $paystack_data['data'];
 
             $transaction = Transaction::where('reference', $data['reference'])->first();
-            if (!$transaction) return CustomResponse::badRequest('invalid request');
+            if (!$transaction) return CustomResponse::badRequest('invalid transaction');
+            if ($transaction->verified) return CustomResponse::failed('invalid transaction');
 
             if ($event != 'charge.success') {
                 $transaction->status = 'failed';
@@ -161,20 +162,29 @@ class TransactionService
             if (!$wallet) return CustomResponse::failed('error crediting wallet');
 
             $authorization = $data['authorization'];
+            if (!$authorization['authorization_code'] || $authorization['authorization_code'] == '') return $authorization['error saving card'];
+
             $card_data = [
                 'last_4' => $authorization['last4'],
                 'expiration_date' => $authorization['exp_month'].'/'.$authorization['exp_year'],
-                'full_name' => $authorization['account_name'],
+                'full_name' => $authorization['account_name'] ?? '',
                 'authorization_code' => $authorization['authorization_code'],
                 'wallet_id' => $wallet->id
             ];
 
-            $card = new Card($card_data);
+            $card = Card::where([
+                ['last_4', $authorization['last4']],
+                ['expiration_date', $authorization['exp_month'].'/'.$authorization['exp_year']],
+                ['wallet_id', $wallet->id]
+            ])->first();
+            if (!$card) $card = new Card($card_data);
+            else $card->authorization_code = $authorization['authorization_code'];
+
             $card->save();
 
             return CustomResponse::success($card);
         } catch (\Exception $e) {
-            return CustomResponse::serverError();
+            return CustomResponse::serverError($e);
         }
     }
 

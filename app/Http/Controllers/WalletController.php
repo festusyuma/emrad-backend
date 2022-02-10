@@ -27,6 +27,18 @@ class WalletController extends Controller
         ], 200);
     }
 
+    public function getCards() {
+        $user = auth()->user();
+        $response = $this->walletService->fetchCards($user);
+
+        return response([
+            'status' => $response->success,
+            'message' => $response->message,
+            'data' => $response->data
+        ], 200);
+    }
+
+
     public function addCard() {
         $user = auth()->user();
         $response = $this->walletService->addCard($user);
@@ -36,10 +48,6 @@ class WalletController extends Controller
             'message' => $response->message,
             'data' => $response->data
         ], 200);
-    }
-
-    public function confirmAddCard($user_id) {
-
     }
 
     public function creditCard(Request $request) {
@@ -56,10 +64,6 @@ class WalletController extends Controller
             'message' => $response->message,
             'data' => $response->data
         ], 200);
-    }
-
-    public function confirmCreditCard($user_id) {
-
     }
 
     public function getHistory($user_id) {

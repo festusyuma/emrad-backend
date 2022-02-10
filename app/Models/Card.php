@@ -12,6 +12,10 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Card extends Model
 {
+    protected $hidden = [
+        'authorization_code'
+    ];
+
     protected $fillable = [
         'last_4', 'expiration_date', 'full_name', 'authorization_code', 'wallet_id'
     ];
