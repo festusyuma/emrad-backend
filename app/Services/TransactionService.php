@@ -112,7 +112,9 @@ class TransactionService
     {
         try {
             $event = $paystack_data['event'];
-            $transaction = Transaction::where('reference')->first();
+            $data = $paystack_data['data'];
+
+            $transaction = Transaction::where('reference', $data['reference'])->first();
             if (!$transaction) return CustomResponse::badRequest('invalid request');
 
             if ($event != 'charge.success') {
@@ -134,7 +136,7 @@ class TransactionService
                     $res = CustomResponse::success();
                     break;
                 case config('transactiontype.new_card'):
-                    $res = $this->confirmAddCard($transaction->user_id, $paystack_data['data']);
+                    $res = $this->confirmAddCard($transaction->user_id, $data);
                     break;
                 default:
                     return CustomResponse::badRequest('invalid transaction');
