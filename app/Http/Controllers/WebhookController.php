@@ -22,7 +22,7 @@ class WebhookController extends Controller
         info('webhook called');
         $key = env('PAYSTACK_SECRET','SECRET_KEY');
         $reqHash = $request->header('x-paystack-signature', '');
-        $encodedBody = json_encode($request->json()->all());
+        $encodedBody = json_encode($request->getContent());
         $hash = hash_hmac('sha512', $encodedBody, $key);
 
         info($reqHash);
