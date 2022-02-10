@@ -27,7 +27,7 @@ class WebhookController extends Controller
         $reqHash = $request->header('x-paystack-signature', '');
         info($reqHash);
 
-        $encodedBody = json_encode($request->getContent());
+        $encodedBody = $request->getContent();
         info($encodedBody);
 
         $hash = hash_hmac('sha512', $encodedBody, $key);
