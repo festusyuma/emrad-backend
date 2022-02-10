@@ -64,6 +64,20 @@ class WalletService
         }
     }
 
+    public function fetchTransaction($user, $id): CustomResponse {
+        try {
+            $transactions = Transaction::where([
+                ['id', $id],
+                ['user_id', $user->id]
+            ])->get();
+
+            if (!$transactions) return CustomResponse::badRequest('invalid transaction id');
+            return CustomResponse::success($transactions);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError();
+        }
+    }
+
     public function addCard($user): CustomResponse {
         try {
             $wallet = $this->walletRepo->getUserWallet($user->id);

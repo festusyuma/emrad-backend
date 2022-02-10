@@ -29,7 +29,7 @@ class WalletController extends Controller
 
     public function getCards() {
         $user = auth()->user();
-        $response = $this->walletService->fetchCards($user);
+        $response = $this->walletService->fetchaCards($user);
 
         return response([
             'status' => $response->success,
@@ -72,6 +72,17 @@ class WalletController extends Controller
         $size = $request->get('size', 5);
 
         $response = $this->walletService->fetchHistory($user, [$page, $size]);
+
+        return response([
+            'status' => $response->success,
+            'message' => $response->message,
+            'data' => $response->data
+        ], 200);
+    }
+
+    public function getTransactionStatus($id) {
+        $user = auth()->user();
+        $response = $this->walletService->fetchTransaction($user, $id);
 
         return response([
             'status' => $response->success,

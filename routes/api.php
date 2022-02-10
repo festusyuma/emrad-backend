@@ -95,6 +95,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/history', 'WalletController@creditCard');
         Route::get('/card', 'WalletController@getCards');
         Route::get('/transaction', 'WalletController@getHistory');
+        Route::get('/transaction/{id}', 'WalletController@getTransaction');
     });
 
 });
