@@ -29,7 +29,7 @@ class WalletController extends Controller
 
     public function getCards() {
         $user = auth()->user();
-        $response = $this->walletService->fetchaCards($user);
+        $response = $this->walletService->fetchCards($user);
 
         return response([
             'status' => $response->success,

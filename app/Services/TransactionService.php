@@ -8,6 +8,7 @@ use Emrad\Repositories\Contracts\WalletRepositoryInterface;
 use Emrad\User;
 use Emrad\Util\CustomResponse;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 class TransactionService
 {
@@ -25,6 +26,7 @@ class TransactionService
                 'Content-Type' => 'application/json',
                 'Cache-Control' => 'no-cache',
             ],
+            'http_errors' => false
         ]);
     }
 
@@ -49,7 +51,7 @@ class TransactionService
 
             $body = [
                 'email' => $data['email'],
-                'channels' => $data['channels'],
+                'channels' => $data['channels'] || [],
                 'amount' => $data['amount'] * 100,
                 'reference' => $reference,
             ];
@@ -81,6 +83,62 @@ class TransactionService
         }
     }
 
+    public function chargeCard($data): CustomResponse
+    {
+        try {
+            $reference = $this->getReference();
+            if (!$reference) return CustomResponse::failed('error generating reference');
+            $url = $this->payStackUrl.'/transaction/charge_authorization';
+
+            $body = [
+                'email' => $data['email'],
+                'channels' => $data['channels'] || [],
+                'amount' => $data['amount'] * 100,
+                'reference' => $reference,
+            ];
+
+            $paystackData = $this->fetchPaystackData($this->payStackUrl, 'POST', $body);
+
+            $transaction = new Transaction([
+                'type' => $type,
+                'amount' => $data['amount'],
+                'reference' => $paystackData->reference,
+                'user_id' => $data['user_id']
+            ]);
+            $transaction->save();
+
+            return CustomResponse::success();
+        } catch (\Exception $e) {
+            return CustomResponse::serverError();
+        }
+    }
+
+    private function fetchPaystackData($url, $method = 'GET', $body = null): ?CustomResponse
+    {
+        try {
+            switch ($method) {
+                case 'POST':
+                    $request = $this->client->post($url, ['json' => $body]);
+                    break;
+                case 'GET':
+                    $request = $this->client->get($url);
+                    break;
+                default:
+                    return null;
+            }
+
+            $stream = $request->getBody();
+            $body = json_decode($stream->getContents());
+
+            if (!$body->status) return null;
+            else $paystackData = $body->data;
+
+            return $paystackData;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
     public function confirmTransactionManual($reference): CustomResponse
     {
         try {
@@ -96,15 +154,6 @@ class TransactionService
             return CustomResponse::success();
         } catch (\Exception $e) {
             return CustomResponse::serverError($e);
-        }
-    }
-
-    public function chargeCard(): CustomResponse
-    {
-        try {
-            return CustomResponse::success();
-        } catch (\Exception $e) {
-            return CustomResponse::serverError();
         }
     }
 

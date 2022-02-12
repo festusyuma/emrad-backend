@@ -2,6 +2,7 @@
 
 namespace Emrad\Services;
 
+use Emrad\Models\Order;
 use Emrad\Services\InventoryServices;
 use Emrad\Models\Product;
 use Emrad\User;
@@ -17,20 +18,19 @@ use DB;
 
 class OrderServices
 {
-    /**
-     * @var $orderRepositoryInterface
-     */
+    public OrderRepositoryInterface $orderRepositoryInterface;
+    public TransactionService $transactionService;
 
-    public $orderRepositoryInterface;
-
-    public function __construct(OrderRepositoryInterface $orderRepositoryInterface)
+    public function __construct(
+        OrderRepositoryInterface $orderRepositoryInterface,
+        TransactionService $transactionService
+    )
     {
+
         $this->orderRepositoryInterface = $orderRepositoryInterface;
+        $this->transactionService = $transactionService;
     }
 
-    /**
-     * @throws Exception
-     */
     public function createRetailerOrder($order, $user_id): RetailerOrder
     {
         $product = Product::find($order['product_id']);
@@ -53,11 +53,17 @@ class OrderServices
         return $retailerOrder;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function makeRetailerOrder($orders, $user_id)
+    public function makeRetailerOrder($order, $user_id): CustomResponse
     {
+        $orders = $order['items'];
+        $payment_method = $order['payment_method'];
+
+        if (!in_array($payment_method, ['wallet', 'card', 'paystack'])) {
+            return CustomResponse::badRequest('invalid payment type');
+        } else if ($payment_method == 'card' && !isset($payment_method)) {
+            return CustomResponse::badRequest('please select a card');
+        }
+
         if (count($orders) < 1) return CustomResponse::badRequest("order cannot be empty order");
         usort($orders, function ($a, $b) { return $a['product_id'] > $b['product_id']; });
 
@@ -71,31 +77,29 @@ class OrderServices
             return CustomResponse::badRequest("validation failed, plaese check request");
         }
 
-        $productIds = array_column($orders, 'product_id');
-        $products = Product::whereIn('id', $productIds)->orderBy('id', 'ASC')->get();
-        if (count($products) < count($productIds)) return CustomResponse::badRequest("invalid product id");
-
         DB::beginTransaction();
 
-        $orderItems = array();
-        for ($i = 0; $i < count($orders); $i++) {
-            $orderItem = [
-                'product_id' => $products[$i]->id,
-                'quantity' => $orders[$i]['quantity'],
-                'price_per_unit' => floatval($products[$i]->price),
-                'amount' => $products[$i]->price * $orders[$i]['quantity']
-            ];
+        $generateItemsRes = $this->getOrderItems($orders);
+        if (!$generateItemsRes->success) return $generateItemsRes;
+        $generateItems = $generateItemsRes->data;
 
-            if ($products[$i]->size < $orderItem['quantity']) {
-                return CustomResponse::failed($products[$i]->name.' does not have enough stock');
-            }
+        $orderItems = $generateItems['items'];
+        $totalAmount = $generateItems['totalAmount'];
 
-            $orderItems[] = $orderItem;
-        }
+        $order = new Order([
+            'amount' => $totalAmount,
+            'payment_method' => $order['payment_method'],
+            'user_id' => $user_id,
+        ]);
 
-        dd($orderItems);
-        try {
-            error_log(count($orders));
+        $order->save();
+
+        dump($orderItems);
+        dd($totalAmount);
+
+        return CustomResponse::success();
+
+        /*try {
             $retailerOrders = [];
 
             foreach ($orders as $order) {
@@ -112,6 +116,74 @@ class OrderServices
         } catch (Exception $e) {
             DB::rollback();
             return $e->getMessage();
+        }*/
+    }
+
+    private function getOrderItems($orders): CustomResponse
+    {
+        try {
+            $orderItems = array();
+            $totalAmount = 0;
+
+            $productIds = array_column($orders, 'product_id');
+            $products = Product::whereIn('id', $productIds)->orderBy('id', 'ASC')->get();
+            if (count($products) < count($productIds)) return CustomResponse::badRequest("invalid product id");
+
+            for ($i = 0; $i < count($orders); $i++) {
+                $orderItem = [
+                    'product_id' => $products[$i]->id,
+                    'quantity' => $orders[$i]['quantity'],
+                    'unit_price' => floatval($products[$i]->price),
+                    'amount' => $products[$i]->price * $orders[$i]['quantity']
+                ];
+
+                if ($products[$i]->size < $orderItem['quantity']) {
+                    return CustomResponse::failed($products[$i]->name.' does not have enough stock');
+                }
+
+                $orderItems[] = $orderItem;
+                $totalAmount += $orderItem['amount'];
+            }
+
+            return CustomResponse::success([ 'items' => $orderItems, 'totalAmount' => $totalAmount ]);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
+    }
+
+    private function chargeCustomer($user, $order, $card_id = null) {
+        try {
+            $paymentData = [
+                'amount' => $order['amount'],
+                'email' => $user->email,
+                'channels' => ['card'],
+                'user_id' => $user->id
+            ];
+
+            switch ($order['payment_method']) {
+                case 'wallet':
+                    return $this->transactionService->chargeCard(
+                        config('transactiontype.retail_order'),
+                        $paymentData,
+                    );
+                    break;
+                case 'card':
+                    return $this->transactionService->chargeCard(
+                        config('transactiontype.retail_order'),
+                        $paymentData,
+                    );
+                    break;
+                case 'paystack':
+                    return $this->transactionService->initTransaction(
+                        config('transactiontype.retail_order'),
+                        $paymentData,
+                    );
+                    break;
+                default:
+                    return CustomResponse::badRequest('invalid payment method');
+            }
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
         }
     }
 

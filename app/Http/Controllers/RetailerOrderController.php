@@ -64,8 +64,13 @@ class RetailerOrderController extends Controller
      */
     public function makeRetailerOrder(MakeRetailerOrderRequest $request)
     {
-        $orders = $request->orders;
-        $result = $this->orderServices->makeRetailerOrder($orders, auth()->id());
+        $order = [
+            'items' => $request->get('orders'),
+            'payment_method' => $request->get('payment_order'),
+            'card_id' => $request->get('card_id')
+        ];
+
+        $result = $this->orderServices->makeRetailerOrder($order, auth()->id());
 
         return response([
             'status' => $result->success ? 'success' : 'failed',
