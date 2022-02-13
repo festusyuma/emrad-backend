@@ -45,33 +45,24 @@ class TransactionService
     public function initTransaction($type, $data): CustomResponse
     {
         try {
-            $reference = $this->getReference();
-            if (!$reference) return CustomResponse::failed('error generating reference');
+            $transaction = $this->createTransaction($data['user_id'], $type, $data['amount']);
+            if (!$transaction) return CustomResponse::failed('error generating transaction');
             $url = $this->payStackUrl.'/transaction/initialize';
 
             $body = [
                 'email' => $data['email'],
                 'channels' => $data['channels'] || [],
                 'amount' => $data['amount'] * 100,
-                'reference' => $reference,
+                'reference' => $transaction->reference,
             ];
 
             $request = $this->client->post($url, [
                 'json' => $body,
             ]);
 
-            $stream = $request->getBody();
-            $body = json_decode($stream->getContents());
+            $paystackData = $this->fetchPaystackData($url, 'POST', $body);
+            dd($paystackData);
 
-            if (!$body->status) return CustomResponse::failed($body->message);
-            else $paystackData = $body->data;
-
-            $transaction = new Transaction([
-                'type' => $type,
-                'amount' => $data['amount'],
-                'reference' => $paystackData->reference,
-                'user_id' => $data['user_id']
-            ]);
             $transaction->save();
 
             return CustomResponse::success([
@@ -83,28 +74,72 @@ class TransactionService
         }
     }
 
-    public function chargeCard($data): CustomResponse
+    public function chargeCard($id, $type, $data): CustomResponse
     {
         try {
-            $reference = $this->getReference();
-            if (!$reference) return CustomResponse::failed('error generating reference');
+            $wallet = $this->walletRepo->getUserWallet($data['user_id']);
+            if (!$wallet) return CustomResponse::failed('error fetching wallet');
+
+            $card = Card::where([
+                ['id', $id],
+                ['wallet_id', $wallet->id]
+            ])->first();
+            if (!$card) return CustomResponse::badRequest('invalid card id');
+
+            $transaction = $this->createTransaction($data['user_id'], $type, $data['amount']);
+            if (!$transaction) return CustomResponse::failed('error generating transaction');
             $url = $this->payStackUrl.'/transaction/charge_authorization';
 
             $body = [
                 'email' => $data['email'],
                 'channels' => $data['channels'] || [],
                 'amount' => $data['amount'] * 100,
-                'reference' => $reference,
+                'reference' => $transaction->reference,
+                'authorization_code' => $card->authorization_code
             ];
 
-            $paystackData = $this->fetchPaystackData($this->payStackUrl, 'POST', $body);
+            $transaction->card_id = $id;
+            $paystackData = $this->fetchPaystackData($url, 'POST', $body);
 
-            $transaction = new Transaction([
-                'type' => $type,
-                'amount' => $data['amount'],
-                'reference' => $paystackData->reference,
-                'user_id' => $data['user_id']
-            ]);
+            if ($paystackData->status !== 'success') {
+                $transaction->status = 'failed';
+            } else {
+                $transaction->status = 'success';
+            }
+
+            $transaction->verified = true;
+            $transaction->save();
+
+            return CustomResponse::success();
+        } catch (\Exception $e) {
+            dd($e);
+            return CustomResponse::serverError();
+        }
+    }
+
+    public function chargeWallet($type, $data): CustomResponse
+    {
+        try {
+            $transaction = $this->createTransaction($data['user_id'], $type, $data['amount']);
+            if (!$transaction) return CustomResponse::failed('error generating transaction');
+
+            $wallet = $this->walletRepo->getUserWallet($data['user_id']);
+            if (!$wallet) return CustomResponse::failed('error fetching wallet');
+
+            $amount = (double) $data['amount'];
+            if ($amount > $wallet->balance) {
+                $transaction->status = 'failed';
+                $transaction->verified = true;
+                $transaction->save();
+                return CustomResponse::failed('insufficient funds');
+            }
+
+            $wallet->balance -= $amount;
+            $wallet->save();
+
+            $transaction->status = 'success';
+            $transaction->verified = true;
+
             $transaction->save();
 
             return CustomResponse::success();
@@ -113,7 +148,24 @@ class TransactionService
         }
     }
 
-    private function fetchPaystackData($url, $method = 'GET', $body = null): ?CustomResponse
+    private function createTransaction($user_id, $type, $amount): ?Transaction
+    {
+        try {
+            $reference = $this->getReference();
+            if (!$reference) return null;
+
+            return new Transaction([
+                'type' => $type,
+                'amount' => $amount,
+                'reference' => $reference,
+                'user_id' => $user_id
+            ]);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    private function fetchPaystackData($url, $method = 'GET', $body = null)
     {
         try {
             switch ($method) {

@@ -53,51 +53,63 @@ class OrderServices
         return $retailerOrder;
     }
 
-    public function makeRetailerOrder($order, $user_id): CustomResponse
+    public function makeRetailerOrder($order, $user): CustomResponse
     {
-        $orders = $order['items'];
-        $payment_method = $order['payment_method'];
+        try {
+            $orders = $order['items'];
+            $payment_method = $order['payment_method'];
+            $card_id = $order['card_id'];
 
-        if (!in_array($payment_method, ['wallet', 'card', 'paystack'])) {
-            return CustomResponse::badRequest('invalid payment type');
-        } else if ($payment_method == 'card' && !isset($payment_method)) {
-            return CustomResponse::badRequest('please select a card');
+            if (!in_array($payment_method, ['wallet', 'card', 'paystack'])) {
+                return CustomResponse::badRequest('invalid payment type');
+            } else if ($payment_method == 'card' && !$card_id) {
+                return CustomResponse::badRequest('please select a card');
+            }
+
+            if (count($orders) < 1) return CustomResponse::badRequest("order cannot be empty order");
+            usort($orders, function ($a, $b) { return $a['product_id'] > $b['product_id']; });
+
+            $validator = Validator::make($orders, [
+                '*.product_id' => 'bail|required|integer',
+                '*.company_id' => 'nullable',
+                '*.quantity' => 'required|integer|min:1',
+            ]);
+
+            if ($validator->fails()) {
+                return CustomResponse::badRequest("validation failed, plaese check request");
+            }
+
+            DB::beginTransaction();
+
+            $generateItemsRes = $this->getOrderItems($orders);
+            if (!$generateItemsRes->success) return $generateItemsRes;
+            $generateItems = $generateItemsRes->data;
+
+            $orderItems = $generateItems['items'];
+            $totalAmount = $generateItems['totalAmount'];
+
+            $order = new Order([
+                'amount' => $totalAmount,
+                'payment_method' => $order['payment_method'],
+                'user_id' => $user->id,
+                'card_id' => $card_id,
+            ]);
+            $order->save();
+
+            $chargeRes = $this->chargeCustomer($user, $order);
+            if (!$chargeRes->success) return $chargeRes;
+            $charge = $chargeRes->data;
+
+            dump($order);
+            dump($orderItems);
+            dump($charge);
+            dd($totalAmount);
+
+            return CustomResponse::success();
+        } catch (\Exception $e) {
+            dd($e);
+            return CustomResponse::serverError($e);
         }
-
-        if (count($orders) < 1) return CustomResponse::badRequest("order cannot be empty order");
-        usort($orders, function ($a, $b) { return $a['product_id'] > $b['product_id']; });
-
-        $validator = Validator::make($orders, [
-            '*.product_id' => 'bail|required|integer',
-            '*.company_id' => 'nullable',
-            '*.quantity' => 'required|integer|min:1',
-        ]);
-
-        if ($validator->fails()) {
-            return CustomResponse::badRequest("validation failed, plaese check request");
-        }
-
-        DB::beginTransaction();
-
-        $generateItemsRes = $this->getOrderItems($orders);
-        if (!$generateItemsRes->success) return $generateItemsRes;
-        $generateItems = $generateItemsRes->data;
-
-        $orderItems = $generateItems['items'];
-        $totalAmount = $generateItems['totalAmount'];
-
-        $order = new Order([
-            'amount' => $totalAmount,
-            'payment_method' => $order['payment_method'],
-            'user_id' => $user_id,
-        ]);
-
-        $order->save();
-
-        dump($orderItems);
-        dd($totalAmount);
-
-        return CustomResponse::success();
 
         /*try {
             $retailerOrders = [];
@@ -151,7 +163,8 @@ class OrderServices
         }
     }
 
-    private function chargeCustomer($user, $order, $card_id = null) {
+    private function chargeCustomer($user, $order): CustomResponse
+    {
         try {
             $paymentData = [
                 'amount' => $order['amount'],
@@ -162,27 +175,26 @@ class OrderServices
 
             switch ($order['payment_method']) {
                 case 'wallet':
-                    return $this->transactionService->chargeCard(
+                    return $this->transactionService->chargeWallet(
                         config('transactiontype.retail_order'),
                         $paymentData,
                     );
-                    break;
                 case 'card':
                     return $this->transactionService->chargeCard(
+                        $order['card_id'],
                         config('transactiontype.retail_order'),
                         $paymentData,
                     );
-                    break;
                 case 'paystack':
                     return $this->transactionService->initTransaction(
                         config('transactiontype.retail_order'),
                         $paymentData,
                     );
-                    break;
                 default:
                     return CustomResponse::badRequest('invalid payment method');
             }
         } catch (\Exception $e) {
+            dd($e);
             return CustomResponse::serverError($e);
         }
     }

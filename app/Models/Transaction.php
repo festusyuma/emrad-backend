@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Model;
  * Post
  *
  * @mixin Eloquent
+ * @property mixed $reference
+ * @property mixed|string $status
+ * @property integer $card_id
+ * @property bool $verified
  */
 class Transaction extends Model
 {
