@@ -51,18 +51,12 @@ class TransactionService
 
             $body = [
                 'email' => $data['email'],
-                'channels' => $data['channels'] || [],
+                'channels' => $data['channels'] ?: [],
                 'amount' => $data['amount'] * 100,
                 'reference' => $transaction->reference,
             ];
 
-            $request = $this->client->post($url, [
-                'json' => $body,
-            ]);
-
             $paystackData = $this->fetchPaystackData($url, 'POST', $body);
-            dd($paystackData);
-
             $transaction->save();
 
             return CustomResponse::success([
@@ -103,16 +97,16 @@ class TransactionService
 
             if ($paystackData->status !== 'success') {
                 $transaction->status = 'failed';
-            } else {
-                $transaction->status = 'success';
+                $transaction->verified = true;
+                $transaction->save();
+                return CustomResponse::failed($paystackData->message);
             }
 
-            $transaction->verified = true;
+            $transaction->status = 'success';
             $transaction->save();
 
-            return CustomResponse::success();
+            return CustomResponse::success($transaction);
         } catch (\Exception $e) {
-            dd($e);
             return CustomResponse::serverError();
         }
     }
@@ -142,7 +136,7 @@ class TransactionService
 
             $transaction->save();
 
-            return CustomResponse::success();
+            return CustomResponse::success($transaction);
         } catch (\Exception $e) {
             return CustomResponse::serverError();
         }

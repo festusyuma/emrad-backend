@@ -100,14 +100,11 @@ class OrderServices
             if (!$chargeRes->success) return $chargeRes;
             $charge = $chargeRes->data;
 
-            dump($order);
-            dump($orderItems);
-            dump($charge);
-            dd($totalAmount);
+            DB::commit();
 
+            return CustomResponse::success($charge);
             return CustomResponse::success();
         } catch (\Exception $e) {
-            dd($e);
             return CustomResponse::serverError($e);
         }
 
