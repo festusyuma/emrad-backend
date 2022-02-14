@@ -45,7 +45,7 @@ class TransactionService
     public function initTransaction($type, $data): CustomResponse
     {
         try {
-            $transaction = $this->createTransaction($data['user_id'], $type, $data['amount']);
+            $transaction = $this->createTransaction($data['user_id'], $type, $data['amount'], 'paystack');
             if (!$transaction) return CustomResponse::failed('error generating transaction');
             $url = $this->payStackUrl.'/transaction/initialize';
 
@@ -80,7 +80,7 @@ class TransactionService
             ])->first();
             if (!$card) return CustomResponse::badRequest('invalid card id');
 
-            $transaction = $this->createTransaction($data['user_id'], $type, $data['amount']);
+            $transaction = $this->createTransaction($data['user_id'], $type, $data['amount'], 'card', $id);
             if (!$transaction) return CustomResponse::failed('error generating transaction');
             $url = $this->payStackUrl.'/transaction/charge_authorization';
 
@@ -114,7 +114,7 @@ class TransactionService
     public function chargeWallet($type, $data): CustomResponse
     {
         try {
-            $transaction = $this->createTransaction($data['user_id'], $type, $data['amount']);
+            $transaction = $this->createTransaction($data['user_id'], $type, $data['amount'], 'wallet');
             if (!$transaction) return CustomResponse::failed('error generating transaction');
 
             $wallet = $this->walletRepo->getUserWallet($data['user_id']);
@@ -132,8 +132,6 @@ class TransactionService
             $wallet->save();
 
             $transaction->status = 'success';
-            $transaction->verified = true;
-
             $transaction->save();
 
             return CustomResponse::success($transaction);
@@ -142,7 +140,13 @@ class TransactionService
         }
     }
 
-    private function createTransaction($user_id, $type, $amount): ?Transaction
+    private function createTransaction(
+        $user_id,
+        $type,
+        $amount,
+        $method,
+        $card_id = null
+    ): ?Transaction
     {
         try {
             $reference = $this->getReference();
@@ -152,7 +156,9 @@ class TransactionService
                 'type' => $type,
                 'amount' => $amount,
                 'reference' => $reference,
-                'user_id' => $user_id
+                'user_id' => $user_id,
+                'payment_method' => $method,
+                'card_id' => $card_id
             ]);
         } catch (\Exception $e) {
             return null;

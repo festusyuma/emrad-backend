@@ -17,6 +17,6 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     protected $fillable = [
-        'type', 'amount', 'reference', 'card_id', 'user_id', 'verified', 'status'
+        'type', 'amount', 'reference', 'card_id', 'user_id', 'verified', 'status', 'payment_method'
     ];
 }

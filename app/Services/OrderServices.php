@@ -3,6 +3,7 @@
 namespace Emrad\Services;
 
 use Emrad\Models\Order;
+use Emrad\Models\OrderItems;
 use Emrad\Services\InventoryServices;
 use Emrad\Models\Product;
 use Emrad\User;
@@ -53,12 +54,12 @@ class OrderServices
         return $retailerOrder;
     }
 
-    public function makeRetailerOrder($order, $user): CustomResponse
+    public function makeRetailerOrder($orderReq, $user): CustomResponse
     {
         try {
-            $orders = $order['items'];
-            $payment_method = $order['payment_method'];
-            $card_id = $order['card_id'];
+            $orders = $orderReq['items'];
+            $payment_method = strtolower($orderReq['payment_method']);
+            $card_id = $orderReq['card_id'];
 
             if (!in_array($payment_method, ['wallet', 'card', 'paystack'])) {
                 return CustomResponse::badRequest('invalid payment type');
@@ -81,29 +82,51 @@ class OrderServices
 
             DB::beginTransaction();
 
-            $generateItemsRes = $this->getOrderItems($orders);
+            $order = new Order([
+                'amount' => 0,
+                'user_id' => $user->id,
+            ]);
+            $order->save();
+
+            $generateItemsRes = $this->getOrderItems($orders, $order->id);
             if (!$generateItemsRes->success) return $generateItemsRes;
             $generateItems = $generateItemsRes->data;
 
             $orderItems = $generateItems['items'];
             $totalAmount = $generateItems['totalAmount'];
-
-            $order = new Order([
-                'amount' => $totalAmount,
-                'payment_method' => $order['payment_method'],
-                'user_id' => $user->id,
-                'card_id' => $card_id,
-            ]);
+            $order->amount = $totalAmount;
             $order->save();
 
-            $chargeRes = $this->chargeCustomer($user, $order);
-            if (!$chargeRes->success) return $chargeRes;
+            $chargeRes = $this->chargeCustomer($user, $order, $payment_method, $card_id);
+            if (!$chargeRes->success) {
+                DB::rollBack();
+                return $chargeRes;
+            }
+
             $charge = $chargeRes->data;
+            $order->transaction_id = $payment_method === 'paystack' ? $charge['transaction']->id : $charge->id;
+            $order->save();
 
             DB::commit();
+            DB::beginTransaction();
 
+            if ($payment_method === 'paystack') {
+                return CustomResponse::success($charge);
+            }
+
+
+            if ($charge->status == 'success') {
+                $order->payment_confirmed = true;
+                $charge->verified = true;
+                $charge->save();
+                $order->save();
+            } else {
+                $this->revertStock($orderItems);
+                return CustomResponse::failed('error placing order');
+            }
+
+            DB::commit();
             return CustomResponse::success($charge);
-            return CustomResponse::success();
         } catch (\Exception $e) {
             return CustomResponse::serverError($e);
         }
@@ -128,7 +151,7 @@ class OrderServices
         }*/
     }
 
-    private function getOrderItems($orders): CustomResponse
+    private function getOrderItems($orders, $order_id): CustomResponse
     {
         try {
             $orderItems = array();
@@ -139,19 +162,24 @@ class OrderServices
             if (count($products) < count($productIds)) return CustomResponse::badRequest("invalid product id");
 
             for ($i = 0; $i < count($orders); $i++) {
-                $orderItem = [
+                $orderItem = new OrderItems([
                     'product_id' => $products[$i]->id,
                     'quantity' => $orders[$i]['quantity'],
                     'unit_price' => floatval($products[$i]->price),
-                    'amount' => $products[$i]->price * $orders[$i]['quantity']
-                ];
+                    'amount' => $products[$i]->price * $orders[$i]['quantity'],
+                    'order_id' => $order_id
+                ]);
 
-                if ($products[$i]->size < $orderItem['quantity']) {
+                if ($products[$i]->size < $orderItem->quantity) {
                     return CustomResponse::failed($products[$i]->name.' does not have enough stock');
+                } else {
+                    $products[$i]->size -= $orderItem->quantity;
+                    $products[$i]->save();
+                    $orderItem->save();
                 }
 
                 $orderItems[] = $orderItem;
-                $totalAmount += $orderItem['amount'];
+                $totalAmount += $orderItem->amount;
             }
 
             return CustomResponse::success([ 'items' => $orderItems, 'totalAmount' => $totalAmount ]);
@@ -160,7 +188,7 @@ class OrderServices
         }
     }
 
-    private function chargeCustomer($user, $order): CustomResponse
+    private function chargeCustomer($user, $order, $payment_method, $card_id = null): CustomResponse
     {
         try {
             $paymentData = [
@@ -170,7 +198,7 @@ class OrderServices
                 'user_id' => $user->id
             ];
 
-            switch ($order['payment_method']) {
+            switch ($payment_method) {
                 case 'wallet':
                     return $this->transactionService->chargeWallet(
                         config('transactiontype.retail_order'),
@@ -178,7 +206,7 @@ class OrderServices
                     );
                 case 'card':
                     return $this->transactionService->chargeCard(
-                        $order['card_id'],
+                        $card_id,
                         config('transactiontype.retail_order'),
                         $paymentData,
                     );
@@ -191,8 +219,21 @@ class OrderServices
                     return CustomResponse::badRequest('invalid payment method');
             }
         } catch (\Exception $e) {
-            dd($e);
             return CustomResponse::serverError($e);
+        }
+    }
+
+    private function revertStock($items) {
+        try {
+            foreach ($items as $item) {
+                $product = Product::find($item->product_id)->get();
+                if (!$product) return;
+
+                $product->size += $item->quantity;
+                $product->save();
+            }
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
         }
     }
 

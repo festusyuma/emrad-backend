@@ -64,13 +64,13 @@ class RetailerOrderController extends Controller
      */
     public function makeRetailerOrder(MakeRetailerOrderRequest $request)
     {
-        $order = [
+        $orderReq = [
             'items' => $request->get('orders'),
             'payment_method' => $request->get('payment_method'),
             'card_id' => $request->get('card_id')
         ];
 
-        $result = $this->orderServices->makeRetailerOrder($order, auth()->user());
+        $result = $this->orderServices->makeRetailerOrder($orderReq, auth()->user());
 
         return response([
             'status' => $result->success ? 'success' : 'failed',
