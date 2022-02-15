@@ -69,7 +69,7 @@ class WalletService
             $transactions = Transaction::where([
                 ['id', $id],
                 ['user_id', $user->id]
-            ])->get();
+            ])->first();
 
             if (!$transactions) return CustomResponse::badRequest('invalid transaction id');
             return CustomResponse::success($transactions);
