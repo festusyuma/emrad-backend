@@ -114,7 +114,6 @@ class OrderServices
                 return CustomResponse::success($charge);
             }
 
-
             if ($charge->status == 'success') {
                 $order->payment_confirmed = true;
                 $charge->verified = true;
@@ -130,25 +129,6 @@ class OrderServices
         } catch (\Exception $e) {
             return CustomResponse::serverError($e);
         }
-
-        /*try {
-            $retailerOrders = [];
-
-            foreach ($orders as $order) {
-                $retailerOrder = $this->createRetailerOrder($order, $user_id);
-                $retailerOrders[] = $retailerOrder;
-            }
-
-            $user = User::find($user_id);
-            if($user) event(new NewRetailerOrderEvent($user, $retailerOrders));
-
-            DB::commit();
-            return "Order created successfully!";
-
-        } catch (Exception $e) {
-            DB::rollback();
-            return $e->getMessage();
-        }*/
     }
 
     private function getOrderItems($orders, $order_id): CustomResponse

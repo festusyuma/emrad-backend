@@ -73,7 +73,7 @@ class RetailerOrderController extends Controller
         $result = $this->orderServices->makeRetailerOrder($orderReq, auth()->user());
 
         return response([
-            'status' => $result->success ? 'success' : 'failed',
+            'status' => $result->success,
             'message' => $result->message,
             'data' => $result->data
         ], $result->status);

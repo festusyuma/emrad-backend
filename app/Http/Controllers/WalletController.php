@@ -80,7 +80,7 @@ class WalletController extends Controller
         ], 200);
     }
 
-    public function getTransactionStatus($id) {
+    public function getTransaction($id) {
         $user = auth()->user();
         $response = $this->walletService->fetchTransaction($user, $id);
 
