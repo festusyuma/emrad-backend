@@ -91,8 +91,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['prefix' => 'wallet', 'middleware' => 'auth:api'], function () {
         Route::get('/', 'WalletController@getBalance');
         Route::put('/', 'WalletController@addCard');
-        Route::post('/credit', 'WalletController@creditCard');
-        Route::get('/history', 'WalletController@creditCard');
+        Route::post('/credit', 'WalletController@creditWallet');
         Route::get('/card', 'WalletController@getCards');
         Route::get('/transaction', 'WalletController@getHistory');
         Route::get('/transaction/{id}', 'WalletController@getTransaction');

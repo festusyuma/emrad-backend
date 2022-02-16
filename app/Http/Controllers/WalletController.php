@@ -50,7 +50,7 @@ class WalletController extends Controller
         ], 200);
     }
 
-    public function creditCard(Request $request) {
+    public function creditWallet(Request $request) {
         $request->validate([
             'amount' => 'required',
             'source' => 'required'
