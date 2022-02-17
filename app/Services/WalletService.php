@@ -106,7 +106,7 @@ class WalletService
             $validator = Validator::make($data, [
                 'amount' => 'required|numeric|min:100',
                 'payment_method' => 'required|in:paystack,card',
-                'card_id' => 'integer'
+                'card_id' => 'integer|nullable'
             ]);
 
             if ($validator->fails()) {
