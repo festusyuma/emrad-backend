@@ -52,7 +52,7 @@ class TransactionService
 
             $body = [
                 'email' => $data['email'],
-                'channels' => $data['channels'] ?: [],
+                'channels' => $data['channels'] ?? ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
                 'amount' => $data['amount'] * 100,
                 'reference' => $transaction->reference,
             ];
