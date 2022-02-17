@@ -157,7 +157,7 @@ class WalletService
                 return CustomResponse::failed('Error initiating transaction');
             }
 
-            if ($payment_method !== 'paystack') return CustomResponse::success($charge);
+            if ($payment_method === 'paystack') return CustomResponse::success($charge);
             if ($charge->status === 'success') {
                 $charge->verified = true;
                 $this->walletRepo->creditWallet($wallet, $amount);
