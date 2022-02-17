@@ -119,13 +119,14 @@ class OrderServices
                 $charge->verified = true;
                 $charge->save();
                 $order->save();
+
+                DB::commit();
+                return CustomResponse::success($charge);
             } else {
                 $this->revertStock($orderItems);
+                DB::commit();
                 return CustomResponse::failed('error placing order');
             }
-
-            DB::commit();
-            return CustomResponse::success($charge);
         } catch (\Exception $e) {
             return CustomResponse::serverError($e);
         }

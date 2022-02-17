@@ -53,12 +53,14 @@ class WalletService
 
     public function fetchHistory($user, $page): CustomResponse {
         try {
-            $transactions = Transaction::where('user_id', $user->id)->paginate(
-                $page[1],
-                ['*'],
-                'page',
-                $page[0]
-            );
+            $transactions = Transaction::where('user_id', $user->id)
+                ->orderBy('created_at', 'DESC')
+                ->paginate(
+                    $page[1],
+                    ['*'],
+                    'page',
+                    $page[0]
+                );
 
             return CustomResponse::success($transactions);
         } catch (\Exception $e) {
@@ -148,19 +150,22 @@ class WalletService
             }
 
             $charge = $chargeRes->data;
-
-            if ($data['payment_method'] === 'paystack') {
-                return CustomResponse::success($charge);
-            }
-
-            if ($charge->status !== 'success') {
-                return CustomResponse::success($charge);
-            }
-
-            $this->walletRepo->creditWallet($wallet, $amount);
             DB::commit();
+            DB::beginTransaction();
 
-            return CustomResponse::success();
+            if ($charge->status === 'failed') {
+                return CustomResponse::failed('Error initiating transaction');
+            }
+
+            if ($payment_method !== 'paystack') return CustomResponse::success();
+            if ($charge->status === 'success') {
+                $charge->verified = true;
+                $this->walletRepo->creditWallet($wallet, $amount);
+                $charge->save();
+            }
+
+            DB::commit();
+            return CustomResponse::success($charge);
         } catch (\Exception $e) {
             return CustomResponse::serverError();
         }
