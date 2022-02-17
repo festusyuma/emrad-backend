@@ -3,6 +3,7 @@
 namespace Emrad\Services;
 
 use Emrad\Models\Card;
+use Emrad\Models\Order;
 use Emrad\Models\Transaction;
 use Emrad\Repositories\Contracts\WalletRepositoryInterface;
 use Emrad\User;
@@ -86,7 +87,7 @@ class TransactionService
 
             $body = [
                 'email' => $data['email'],
-                'channels' => $data['channels'] || [],
+                'channels' => $data['channels'] ?? ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
                 'amount' => $data['amount'] * 100,
                 'reference' => $transaction->reference,
                 'authorization_code' => $card->authorization_code
@@ -235,7 +236,7 @@ class TransactionService
                     $res = $this->confirmCreditWallet($transaction->user_id, $transaction->amount);
                     break;
                 case config('transactiontype.retail_order'):
-                    $res = CustomResponse::success();
+                    $res = $this->confirmOrder($transaction->id);
                     break;
                 case config('transactiontype.new_card'):
                     $res = $this->confirmAddCard($transaction->user_id, $data);
@@ -300,6 +301,21 @@ class TransactionService
             return CustomResponse::success($wallet);
         } catch (\Exception $e) {
             return CustomResponse::serverError();
+        }
+    }
+
+    private function confirmOrder($transaction_id): CustomResponse
+    {
+        try {
+            $order = Order::where('transaction_id', $transaction_id)->first();
+            if (!$order) return CustomResponse::failed('error fetching order');
+
+            $order->payment_confirmed = true;
+            $order->save();
+
+            return CustomResponse::success($order);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
         }
     }
 }

@@ -2,12 +2,14 @@
 
 namespace Emrad\Services;
 
+use DB;
 use Emrad\Models\Card;
 use Emrad\Models\Transaction;
 use Emrad\Models\Wallet;
 use Emrad\Repositories\Contracts\WalletRepositoryInterface;
 use Emrad\User;
 use Emrad\Util\CustomResponse;
+use Illuminate\Support\Facades\Validator;
 
 class WalletService
 {
@@ -99,8 +101,65 @@ class WalletService
         }
     }
 
-    public function creditWallet(): CustomResponse {
+    public function creditWallet($user, $data): CustomResponse {
         try {
+            $validator = Validator::make($data, [
+                'amount' => 'required|numeric|min:100',
+                'payment_method' => 'required|in:paystack,card',
+                'card_id' => 'integer'
+            ]);
+
+            if ($validator->fails()) {
+                return CustomResponse::badRequest("validation failed, plaese check request");
+            }
+
+            $data['user_id'] = $user->id;
+            $data['email'] = $user->email;
+            $amount = $data['amount'];
+            $payment_method = $data['payment_method'];
+            $card_id = $data['card_id'];
+
+            $wallet = $this->walletRepo->getUserWallet($user->id);
+            if (!$wallet) return CustomResponse::failed('error fetching wallet');
+
+            DB::beginTransaction();
+
+            switch ($payment_method) {
+                case 'card':
+                    $chargeRes = $this->transactionService->chargeCard(
+                        $card_id,
+                        config('transactiontype.credit_wallet'),
+                        $data
+                    );
+                    break;
+                case 'paystack':
+                    $chargeRes = $this->transactionService->initTransaction(
+                        config('transactiontype.credit_wallet'),
+                        $data
+                    );
+                    break;
+                default:
+                    return CustomResponse::badRequest('invalid payment method');
+            }
+
+            if (!$chargeRes->success) {
+                DB::rollBack();
+                return $chargeRes;
+            }
+
+            $charge = $chargeRes->data;
+
+            if ($data['payment_method'] === 'paystack') {
+                return CustomResponse::success($charge);
+            }
+
+            if ($charge->status !== 'success') {
+                return CustomResponse::success($charge);
+            }
+
+            $this->walletRepo->creditWallet($wallet, $amount);
+            DB::commit();
+
             return CustomResponse::success();
         } catch (\Exception $e) {
             return CustomResponse::serverError();

@@ -4,6 +4,7 @@ namespace Emrad\Http\Controllers;
 
 use Emrad\Services\WalletService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class WalletController extends Controller
 {
@@ -51,13 +52,9 @@ class WalletController extends Controller
     }
 
     public function creditWallet(Request $request) {
-        $request->validate([
-            'amount' => 'required',
-            'source' => 'required'
-        ]);
-
+        $data = $request->all();
         $user = auth()->user();
-        $response = $this->walletService->creditWallet($user);
+        $response = $this->walletService->creditWallet($user, $data);
 
         return response([
             'status' => $response->success,
