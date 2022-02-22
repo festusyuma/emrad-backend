@@ -238,9 +238,24 @@ class OrderServices
         return $this->orderRepositoryInterface->findByUser($order_id, $user_id);
     }
 
-    public function getAllRetailerOrders($user_id, $limit)
+    public function getAllRetailerOrders($user_id, $limit): CustomResponse
     {
-        return $this->orderRepositoryInterface->paginateAllByUser($user_id, $limit);
+        try {
+            $orders = $this->orderRepositoryInterface->paginateAllByUser($user_id, $limit, ['transaction', 'items']);
+            return CustomResponse::success($orders);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
+    }
+
+    public function totalOrderPayment($user_id): CustomResponse
+    {
+        try {
+            $total = $this->orderRepositoryInterface->totalOrderPayment($user_id);
+            return CustomResponse::success($total);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
     }
 
     public function delete($order_id)

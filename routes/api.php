@@ -54,6 +54,7 @@ Route::group(['prefix' => 'v1'], function () {
 
     Route::group(['prefix' => 'retail-orders'], function () {
         Route::get('/', 'RetailerOrderController@getAllRetailerOrders')->middleware('auth:api');
+        Route::get('/total', 'RetailerOrderController@totalOrderPayment')->middleware('auth:api');
         Route::get('/{order_id}', 'RetailerOrderController@getSingleRetailerOrder')->middleware('auth:api');
         Route::post('/', 'RetailerOrderController@makeRetailerOrder')->middleware('auth:api');
         Route::get('/stock-balance/{product_id}', 'RetailerOrderController@getStockBalance')->middleware('auth:api');

@@ -25,8 +25,8 @@ class Order extends Model
         return $this->hasMany(OrderItems::class);
     }
 
-    public function transaction(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function transaction(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->hasOne(Transaction::class);
+        return $this->belongsTo(Transaction::class);
     }
 }

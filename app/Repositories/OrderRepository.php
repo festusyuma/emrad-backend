@@ -2,58 +2,49 @@
 
 namespace Emrad\Repositories;
 
+use Emrad\Models\Order;
 use Emrad\Models\RetailerOrder;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface {
 
-    public $retailerOrder;
+    private Order $model;
 
-    /**
-     * OrderRepository Constructor
-     *
-     * @param Emrad\Models\RetailerOrder $retailerOrder
-      */
-    public function __construct(RetailerOrder $retailerOrder)
+    public function __construct(Order $retailerOrder)
     {
         $this->model = $retailerOrder;
     }
 
-    /**
-   * Get all result from the model
-   *
-   * @return void
-   */
-    public function allByUser(){
+
+
+    public function allByUser(): \Illuminate\Support\Collection
+    {
         return $this->model
                     ->select()
                     ->orderBy('id', 'DESC')
                     ->get();
     }
 
-    /**
-   * Get paginated result from the model
-   *
-   * @param int $limit
-   * @param array $relations
-   *
-   * @return void
-   */
-    public function paginateAllByUser($user_id, $limit, $relations = []){
-        return $this->model::with($relations)->where('user_id', $user_id)->orderBy('id', 'DESC')->paginate($limit);
+
+    public function paginateAllByUser($user_id, $limit, $relations = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return $this->model::with($relations)
+            ->where('user_id', $user_id)
+            ->orderBy('created_at', 'DESC')->paginate($limit);
     }
 
-    /**
-   * Get single result from the model
-   *
-   * @param int $id
-   * @param array $relations
-   *
-   * @return Model
-   */
-    public function findByUser($order_id, $user_id, $relations = []){
+    public function totalOrderPayment($user_id)
+    {
+        return $this->model::where([
+            ['user_id', $user_id],
+            ['payment_confirmed', true]
+        ])->sum('amount');
+    }
 
+
+    public function findByUser($order_id, $user_id, $relations = [])
+    {
         return $this->model
                 ->where('id', $order_id)
                 ->where('user_id', $user_id)

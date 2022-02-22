@@ -30,15 +30,26 @@ class RetailerOrderController extends Controller
     }
 
 
-    /**
-     * Display a listing of the retailer-order resource collection.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function getAllRetailerOrders()
     {
-        $retailerOrders = $this->orderServices->getAllRetailerOrders(auth()->id(), 10);
-        return new RetailerOrderCollection($retailerOrders);
+        $result = $this->orderServices->getAllRetailerOrders(auth()->id(), 10);
+
+        return response([
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
+    }
+
+    public function totalOrderPayment()
+    {
+        $result = $this->orderServices->totalOrderPayment(auth()->id());
+
+        return response([
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
     }
 
 
