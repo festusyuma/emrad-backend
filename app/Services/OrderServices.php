@@ -233,9 +233,14 @@ class OrderServices
         return [$isInInventory, $stockBalance];
     }
 
-    public function getSingleRetailerOrder($order_id, $user_id): \Emrad\Repositories\Model
+    public function getSingleRetailerOrder($order_id, $user_id): CustomResponse
     {
-        return $this->orderRepositoryInterface->findByUser($order_id, $user_id);
+        try {
+            $order = $this->orderRepositoryInterface->findByUser($order_id, $user_id, ['transaction', 'items', 'items.product']);
+            return CustomResponse::success($order);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
     }
 
     public function getAllRetailerOrders($user_id, $limit): CustomResponse
@@ -265,75 +270,42 @@ class OrderServices
         $order->delete();
     }
 
-    public function confirmRetailerOrder($order_id, $user_id): string
+    public function confirmRetailerOrder($item_id, $user_id): CustomResponse
     {
-        DB::beginTransaction();
         try {
-            $retailerOrder = RetailerOrder::find($order_id);
+            $item = OrderItems::find($item_id);
+            if (!$item) return CustomResponse::badRequest('invalid item id');
+            if ($item->confirmed) return CustomResponse::failed('order has already been confirmed');
 
-            $isNull = is_null($retailerOrder);
+            $order = $this->orderRepositoryInterface->findByUser($item->order_id, $user_id);
+            if (!$order) return CustomResponse::badRequest('invalid order item');
+            if (!$order->payment_confirmed) return CustomResponse::failed('your payment has not been confirmed');
 
-            if($isNull)
-                throw new Exception("Order not found!");
+            $item->confirmed = true;
+            $updateInventoryRes = $this->updateInventory($item, $user_id);
+            if (!$updateInventoryRes->success) return $updateInventoryRes;
 
-            if($retailerOrder->is_confirmed)
-                throw new Exception("Order already confirmed");
-
-            $updateInventory = $this->updateInventory($retailerOrder, $user_id);
-
-            if(!$updateInventory)
-                throw new Exception("Inventory not updated");
-
-            $retailerOrder->is_confirmed = true;
-            $retailerOrder->save();
-
-            DB::commit();
-            return "Order confirmed, inventory updated!";
-
+            $item->save();
+            return CustomResponse::success();
         } catch (Exception $e) {
-            DB::rollback();
-            return $e->getMessage();
+            return CustomResponse::serverError($e);
         }
     }
 
-    public function updateInventory($retailerOrder, $user_id): bool
+    public function updateInventory($item, $user_id): CustomResponse
     {
         try {
-
             $retailerInventory = RetailerInventory::firstOrNew([
-                'product_id' => $retailerOrder->product_id
+                'product_id' => $item->product_id
             ]);
 
-            $product_id = $retailerInventory->product_id;
-            if(is_null($retailerInventory->quantity)) {
-                $currentStockBalance = 0;
-            } else {
-                $currentStockBalance = $retailerInventory->quantity;
-            }
-
-            $retailerInventory->user_id = $user_id;
-            $retailerInventory->quantity = $retailerInventory->quantity + $retailerOrder->quantity;
-            $newStockBalance = $retailerInventory->quantity;
-
-            $stockHistory = new StockHistory;
-            $stockHistory->product_id = $product_id;
-            $stockHistory->user_id = $user_id;
-            $stockHistory->stock_balance = $currentStockBalance;
-            $stockHistory->new_stock_balance = $newStockBalance;
-            $stockHistory->is_depleted = false;
-
-            $retailerInventory->cost_price = $retailerOrder->unit_price;
-            $retailerInventory->selling_price = $retailerOrder->selling_price;
-            $retailerInventory->is_in_stock = $retailerOrder->quantity == 0 ? 0 : 1;
+            if ($retailerInventory->quantity) $retailerInventory->quantity += $item->quantity;
+            else $retailerInventory = $item->quantity;
             $retailerInventory->save();
 
-            $inventory_id = $retailerInventory->id;
-            $stockHistory->inventory_id = $inventory_id;
-            $stockHistory->save();
-
-            return true;
-        } catch(Exception $e) {
-            return false;
+            return CustomResponse::success();
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
         }
     }
 

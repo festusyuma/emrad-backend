@@ -53,21 +53,16 @@ class RetailerOrderController extends Controller
     }
 
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \Emrad\Models\RetailerOrder  $product
-     * @return \Illuminate\Http\Response
-     */
+
     public function getSingleRetailerOrder($order_id)
     {
-        $retailerOrder = $this->orderServices->getSingleRetailerOrder($order_id, auth()->id());
+        $result = $this->orderServices->getSingleRetailerOrder($order_id, auth()->id());
 
         return response([
-            'status' => 'success',
-            'message' => 'Order retrieved succesfully',
-            'data' => new RetailerOrderResource($retailerOrder)
-        ], 200);
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
     }
 
     /**
@@ -100,13 +95,14 @@ class RetailerOrderController extends Controller
         ], 200);
     }
 
-    public function confirmRetailerOrder($order_id)
+    public function confirmRetailerOrder($item_id)
     {
-        $result = $this->orderServices->confirmRetailerOrder($order_id, auth()->id());
+        $result = $this->orderServices->confirmRetailerOrder($item_id, auth()->id());
 
         return response([
-            'status' => 'success',
-            'message' => $result
-        ], 200);
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
     }
 }
