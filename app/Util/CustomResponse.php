@@ -27,6 +27,11 @@ class CustomResponse
         return new CustomResponse($message, $data, 200, false);
     }
 
+    static function unAuthorized($message, $data = null): CustomResponse
+    {
+        return new CustomResponse($message, $data, 401);
+    }
+
     static function badRequest($message, $data = null): CustomResponse
     {
         return new CustomResponse($message, $data, 400);

@@ -6,13 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class UsersResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
             'userId' => $this->id,
@@ -26,6 +20,8 @@ class UsersResource extends JsonResource
             'userPermissions' => $this->permissions,
             'createdAt' => $this->created_at,
             'userCompany' => new CompanyResource($this->company),
+            'roles' => RolesResource::collection($this->roles),
+            'permissions' => PermissionsResource::collection($this->permissions)
         ];
     }
 }

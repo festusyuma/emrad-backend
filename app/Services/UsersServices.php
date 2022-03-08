@@ -6,6 +6,7 @@ use Emrad\User;
 use Emrad\Models\SocialProfile;
 use Emrad\Services\SubsServices;
 use Emrad\Repositories\Contracts\UserRepositoryInterface;
+use Emrad\Util\CustomResponse;
 
 class UsersServices
 {
@@ -138,14 +139,14 @@ class UsersServices
         return auth()->user()->socialProfile()->first();
     }
 
-    /**
-     * Get users profile
-     *
-     * @return void
-     */
-    public function getUser()
+    public function getUser(): CustomResponse
     {
-        return $this->userRepositoryInterface->find( auth()->user()->id, []);
+        try {
+            $user = auth()->user();
+            return CustomResponse::success($user);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
     }
 
     /**

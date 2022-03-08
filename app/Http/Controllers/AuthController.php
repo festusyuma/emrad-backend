@@ -2,6 +2,7 @@
 
 namespace Emrad\Http\Controllers;
 
+use Emrad\Services\AuthService;
 use Illuminate\Support\Str;
 use Emrad\Events\NewCompanyCreated;
 use Emrad\Http\Requests\CreateUser;
@@ -9,32 +10,30 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Emrad\Facade\UsersServicesFacade;
 use Emrad\Http\Requests\ResetPassword;
-use Emrad\Http\Resources\RolesResource;
-use Emrad\Http\Resources\UsersResource;
 use Emrad\Facade\CompaniesServicesFacade;
 use Illuminate\Auth\Events\PasswordReset;
-use Emrad\Http\Resources\PermissionsResource;
 use Symfony\Component\HttpFoundation\Request;
 
 class AuthController extends Controller
 {
 
-    public $successStatus = 200;
+    public int $successStatus = 200;
+    private AuthService $authService;
 
-    public function login(Request $request): \Illuminate\Http\JsonResponse
+    public function __construct(AuthService $authService)
     {
-        if(Auth::attempt(['email' => request('email'), 'password' => request('password')])
-            || Auth::attempt(['email' => request('email'), 'password' => request('password')])){
-            $user = Auth::user();
-            $success['token'] =  $user->createToken('Emrad')->accessToken;
-            $success['details'] =  new UsersResource($user);
-            $success['roles'] =  RolesResource::collection($user->roles);
-            $success['permissions'] = PermissionsResource::collection($user->permissions);
-            return response()->json(['status' => 'success', 'data' => $success], 200);
-        }
-        else{
-            return response()->json(['status' => 'fail', 'error'=>'password and email mismatch'], 401);
-        }
+        $this->authService = $authService;
+    }
+
+    public function login(Request $request)
+    {
+        $result = $this->authService->login($request);
+
+        return response([
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
     }
 
 

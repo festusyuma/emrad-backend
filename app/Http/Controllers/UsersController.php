@@ -12,10 +12,7 @@ use Emrad\Services\PermissionsServices;
 
 class UsersController extends Controller
 {
-    /**
-     * @var UsersServices $usersServices
-     */
-    public $usersServices;
+    public UsersServices $usersServices;
 
     /**
      * @var RolesServices $rolesServices
@@ -71,18 +68,14 @@ class UsersController extends Controller
         ], 200);
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
      public function getUser()
      {
-        $user = $this->usersServices->getUser();
-        return response([
-                            'status' => 'success',
-                            'message' => 'user retrieved successfully',
-                            'data' => new UsersResource($user)
-                        ], 200);
+         $result = $this->usersServices->getUser();
+
+         return response([
+             'status' => $result->success,
+             'message' => $result->message,
+             'data' => new UsersResource($result->data)
+         ], $result->status);
      }
 }
