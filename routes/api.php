@@ -52,6 +52,11 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/{product}', 'ProductsController@getSingleProduct')->name('product-details');
             Route::put('/{product}', 'ProductsController@updateProduct');
         });
+
+        Route::group(['prefix' => 'orders'], function () {
+            Route::get('/', 'Distributor\OrdersController@getOrders')->name('list-orders');
+            Route::put('/{product}', 'Distributor\OrdersController@fulfillOrder')->name('fulfill-order');
+        });
     });
 
     Route::group(['prefix' => 'products'], function () {

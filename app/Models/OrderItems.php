@@ -22,4 +22,9 @@ class OrderItems extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function order(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
 }

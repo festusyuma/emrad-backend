@@ -3,6 +3,7 @@
 namespace Emrad\Repositories;
 
 use Emrad\Models\Order;
+use Emrad\Models\OrderItems;
 use Emrad\Models\RetailerOrder;
 use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 
@@ -10,10 +11,12 @@ use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface {
 
     private Order $model;
+    private OrderItems $itemsModel;
 
-    public function __construct(Order $retailerOrder)
+    public function __construct(Order $retailerOrder, OrderItems $itemsModel)
     {
         $this->model = $retailerOrder;
+        $this->itemsModel = $itemsModel;
     }
 
 
@@ -53,4 +56,15 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     }
 
+    public function fetchByProductOwner($user_id, $limit): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return $this->itemsModel
+            ->with(['product', 'order'])
+            ->whereHas('product', function ($query) use ($user_id) {
+                $query->where('user_id', $user_id);
+            })
+            ->whereHas('order', function ($query) {
+                $query->where('payment_confirmed', true);
+            })->paginate($limit);
+    }
 }
