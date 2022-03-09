@@ -45,10 +45,19 @@ Route::group(['prefix' => 'v1'], function () {
         Route::delete('/{userId}', 'UsersController@deleteUser')->middleware(['auth:api', 'verified','permission:delete-user']);
     });
 
+    Route::group(['prefix' => 'distributor', 'middleware' => ['auth:api', 'role:Distributor']], function () {
+        Route::group(['prefix' => 'products'], function () {
+            Route::post('/', 'Distributor\ProductsController@createProduct')->name('create-product');
+            Route::get('/', 'ProductsController@getProducts')->name('list-products');
+            Route::get('/{product}', 'ProductsController@getSingleProduct')->name('product-details');
+            Route::put('/{product}', 'ProductsController@updateProduct');
+        });
+    });
+
     Route::group(['prefix' => 'products'], function () {
         Route::get('/', 'ProductsController@getProducts')->name('list-products');
-        Route::get('/{product}', 'ProductsController@getSingleProduct')->name('product-detials');
-        Route::post('/', 'ProductsController@createProduct')->middleware('auth:api');
+        Route::get('/{product}', 'ProductsController@getSingleProduct')->name('product-details');
+        Route::post('/', 'ProductsController@createProduct')->middleware(['auth:api', 'role:Distributor']);
         Route::put('/{product}', 'ProductsController@updateProduct')->middleware('auth:api');
     });
 

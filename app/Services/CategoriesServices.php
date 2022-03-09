@@ -4,6 +4,7 @@ namespace Emrad\Services;
 
 use Emrad\Models\Category;
 use Emrad\Repositories\Contracts\CategoryRepositoryInterface;
+use Emrad\Util\CustomResponse;
 
 class CategoriesServices
 {
@@ -82,14 +83,14 @@ class CategoriesServices
 
     }
 
-    /**
-     * return all categories
-     *
-     * @return \Collection $categories
-     */
-    public function getCategories()
+    public function getCategories(): CustomResponse
     {
-        return $this->categoryRepositoryInterface->paginate(20);
+        try {
+            $categories = $this->categoryRepositoryInterface->all();
+            return CustomResponse::success($categories);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
     }
 
     /**

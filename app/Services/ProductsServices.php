@@ -7,10 +7,7 @@ use Emrad\Repositories\Contracts\ProductRepositoryInterface;
 
 class ProductsServices
 {
-    /**
-     * @var $productRepositoryInterface
-     */
-    public $productRepositoryInterface;
+    public ProductRepositoryInterface $productRepositoryInterface;
 
     public function __construct(ProductRepositoryInterface $productRepositoryInterface)
     {

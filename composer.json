@@ -9,6 +9,8 @@
     "license": "MIT",
     "require": {
         "php": "^7.4",
+        "ext-json": "*",
+        "cloudinary-labs/cloudinary-laravel": "^1.0",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "^6.3.0",
         "laravel/framework": "^6.0",
@@ -17,8 +19,7 @@
         "laravel/tinker": "^1.0",
         "lcobucci/jwt": "3.3.3",
         "spatie/laravel-cors": "^1.6",
-        "spatie/laravel-permission": "^3.0",
-        "ext-json": "*"
+        "spatie/laravel-permission": "^3.0"
     },
     "require-dev": {
         "andrey-helldar/laravel-app": "^1.0",

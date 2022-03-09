@@ -7,13 +7,13 @@ use Emrad\Repositories\Contracts\ProductRepositoryInterface;
 
 class ProductRepository extends BaseRepository implements ProductRepositoryInterface {
 
-    public $model;
+    public Product $model;
 
     /**
      * ProductRepository Constructor
      *
-     * @param Emrad\Models\Product $product
-      */
+     * @param Product $product
+     */
     public function __construct(Product $product)
     {
         $this->model = $product;

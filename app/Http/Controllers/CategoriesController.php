@@ -24,19 +24,16 @@ class CategoriesController extends Controller
         $this->categoriesServices = $categoriesServices;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function getCategories()
     {
-        $categories = $this->categoriesServices->getCategories();
+        $result = $this->categoriesServices->getCategories();
+
         return response([
-                            'status' => 'success',
-                            'message' => 'list of categories',
-                            'data' => CategoryResource::collection($categories)
-                        ], 200);
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
     }
 
     /**
