@@ -3,16 +3,16 @@
 namespace Emrad\Services\Distributor;
 
 use Emrad\Models\Product;
-use Emrad\Repositories\ProductRepository;
+use Emrad\Repositories\Contracts\ProductRepositoryInterface;
 use Emrad\Util\CustomResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ProductsServices
 {
-    private ProductRepository $productRepository;
+    private ProductRepositoryInterface $productRepository;
 
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(ProductRepositoryInterface $productRepository)
     {
         $this->productRepository = $productRepository;
     }
@@ -59,6 +59,21 @@ class ProductsServices
             }
 
             return CustomResponse::success($product, $message);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
+    }
+
+    public function fetchProducts($limit=10): CustomResponse
+    {
+        try {
+
+            $products = $this->productRepository->paginateAllByUser(
+                auth()->id(),
+                $limit,
+                ['category']
+            );
+            return CustomResponse::success($products);
         } catch (\Exception $e) {
             return CustomResponse::serverError($e);
         }

@@ -31,8 +31,15 @@ class ProductsController extends Controller
 
     }
 
-    public function getProducts()
+    public function getProducts(Request $request)
     {
+        $limit = $request->get('size', 10);
+        $result = $this->productsServices->fetchProducts($limit);
 
+        return response([
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
     }
 }
