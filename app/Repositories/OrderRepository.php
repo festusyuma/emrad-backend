@@ -59,7 +59,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function fetchByProductOwner($user_id, $limit, $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        return $this->buildOwnerQuery($user_id, $filters)->paginate($limit);
+        return $this->buildOwnerQuery($user_id, $filters)->with(['product', 'order'])->paginate($limit);
     }
 
     public function countByProductOwner($user_id, $filters = []): int
