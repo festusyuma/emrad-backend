@@ -24,4 +24,14 @@ class IndexController  extends Controller
             'data' => $result->data
         ], $result->status);
     }
+
+    public function getHistory(Request $request) {
+        $result = $this->indexService->fetchHistory();
+
+        return response([
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
+    }
 }

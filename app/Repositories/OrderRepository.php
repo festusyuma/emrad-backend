@@ -2,6 +2,7 @@
 
 namespace Emrad\Repositories;
 
+use DB;
 use Emrad\Models\Order;
 use Emrad\Models\OrderItems;
 use Emrad\Models\RetailerOrder;
@@ -71,16 +72,36 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         return $this->buildOwnerQuery($user_id, $filters)->sum('amount');
     }
 
-    private function buildOwnerQuery($user_id, $filters): \Illuminate\Database\Eloquent\Builder
+    public function saleHistoryByProductOwner($user_id, $group)
     {
-        return $this->itemsModel
-            ->with(['product', 'order'])
-            ->where($filters)
-            ->whereHas('product', function ($query) use ($user_id) {
-                $query->where('user_id', $user_id);
-            })
-            ->whereHas('order', function ($query) {
-                $query->where('payment_confirmed', true);
-            });
+        try {
+            return $this->buildOwnerQuery($user_id, [])
+                ->select(DB::raw("count(id) as `total`, DATE_FORMAT(created_at, '%d-%m-%Y') period"))
+                ->groupby('period')
+                ->get();
+        } catch (\Exception $e) {
+            error_log('repository error');
+            error_log($e->getMessage());
+            return null;
+        }
+    }
+
+    private function buildOwnerQuery($user_id, $filters): ?\Illuminate\Database\Eloquent\Builder
+    {
+        try {
+            return $this->itemsModel
+                ->with(['product', 'order'])
+                ->where($filters)
+                ->whereHas('product', function ($query) use ($user_id) {
+                    $query->where('user_id', $user_id);
+                })
+                ->whereHas('order', function ($query) {
+                    $query->where('payment_confirmed', true);
+                });
+        } catch (\Exception $e) {
+            error_log('repository error');
+            error_log($e->getMessage());
+            return null;
+        }
     }
 }

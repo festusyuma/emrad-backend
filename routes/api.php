@@ -47,6 +47,7 @@ Route::group(['prefix' => 'v1'], function () {
 
     Route::group(['prefix' => 'distributor', 'middleware' => ['auth:api', 'role:Distributor']], function () {
         Route::get('/stats', 'Distributor\IndexController@getStats')->name('distributor-stats');
+        Route::get('/history', 'Distributor\IndexController@getHistory')->name('distributor-history');
 
         Route::group(['prefix' => 'products'], function () {
             Route::post('/', 'Distributor\ProductsController@createProduct')->name('create-product');
