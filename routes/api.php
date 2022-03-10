@@ -55,6 +55,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::group(['prefix' => 'orders'], function () {
             Route::get('/', 'Distributor\OrdersController@getOrders')->name('list-orders');
+            Route::get('/stats', 'Distributor\OrdersController@getStats')->name('get-stats');
             Route::put('/{product}', 'Distributor\OrdersController@fulfillOrder')->name('fulfill-order');
         });
     });

@@ -15,9 +15,27 @@ class OrdersController extends Controller
         $this->orderServices = $orderServices;
     }
 
+    public function getStats(Request $request) {
+        $result = $this->orderServices->fetchStats();
+
+        return response([
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
+    }
+
     public function getOrders(Request $request) {
         $limit = $request->get('size', 10);
-        $result = $this->orderServices->fetchOrders($limit);
+        $filters = [];
+        $status = strtolower($request->get('status', 'all'));
+
+        if (strtolower($status) && $status != 'all') {
+            if ($status === 'confirmed') $filters[] = ['confirmed', true];
+            if ($status === 'pending') $filters[] = ['confirmed', false];
+        }
+
+        $result = $this->orderServices->fetchOrders($limit, $filters);
 
         return response([
             'status' => $result->success,

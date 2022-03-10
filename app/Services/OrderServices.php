@@ -218,19 +218,21 @@ class OrderServices
         }
     }
 
-    public function getStockBalance($product_id): array
+    public function getStockBalance($product_id): CustomResponse
     {
-        $count = RetailerInventory::where('product_id', $product_id)->count();
-        $isInInventory = $count > 0;
+        try {
+            $product = Product::find( $product_id);
+            if (!$product) return CustomResponse::badRequest('invalid product id');
 
-        if($count > 0) {
-            $inventory = RetailerInventory::where('product_id', $product_id)->first();
-            $stockBalance = $inventory->quantity;
-        } else {
-            $stockBalance = "Product not in stock";
+            $stock = $product->size;
+
+            return CustomResponse::success([
+                'isInInventory' => $stock > 0,
+                'stockBalance' => $stock]
+            );
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
         }
-
-        return [$isInInventory, $stockBalance];
     }
 
     public function getSingleRetailerOrder($order_id, $user_id): CustomResponse
@@ -296,11 +298,13 @@ class OrderServices
     {
         try {
             $retailerInventory = RetailerInventory::firstOrNew([
-                'product_id' => $item->product_id
+                'product_id' => $item->product_id,
+                'user_id' => $user_id
             ]);
 
             if ($retailerInventory->quantity) $retailerInventory->quantity += $item->quantity;
-            else $retailerInventory = $item->quantity;
+            else $retailerInventory->quantity = $item->quantity;
+
             $retailerInventory->save();
 
             return CustomResponse::success();
