@@ -58,18 +58,20 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function fetchByProductOwner($user_id, $limit, $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        return $this->itemsModel
-            ->with(['product', 'order'])
-            ->where($filters)
-            ->whereHas('product', function ($query) use ($user_id) {
-                $query->where('user_id', $user_id);
-            })
-            ->whereHas('order', function ($query) {
-                $query->where('payment_confirmed', true);
-            })->paginate($limit);
+        return $this->buildOwnerQuery($user_id, $filters)->paginate($limit);
     }
 
     public function countByProductOwner($user_id, $filters = []): int
+    {
+        return $this->buildOwnerQuery($user_id, $filters)->count();
+    }
+
+    public function countAmountProductOwner($user_id, $filters)
+    {
+        return $this->buildOwnerQuery($user_id, $filters)->sum('amount');
+    }
+
+    private function buildOwnerQuery($user_id, $filters): \Illuminate\Database\Eloquent\Builder
     {
         return $this->itemsModel
             ->with(['product', 'order'])
@@ -79,6 +81,6 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             })
             ->whereHas('order', function ($query) {
                 $query->where('payment_confirmed', true);
-            })->count();
+            });
     }
 }

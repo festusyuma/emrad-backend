@@ -23,24 +23,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Product extends Model
 {
-
-    /**
-     * scope for quering product
-     *
-     * @param $query
-     * @param QueryFilter $filters
-     */
-    public function scopeFilter($query, QueryFilter $filters)
+    public function scopeFilter($query, QueryFilter $filters): \Illuminate\Database\Eloquent\Builder
     {
         return $filters->apply($query);
     }
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(\Emrad\Models\Category::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(\Emrad\User::class);
     }

@@ -29,4 +29,9 @@ class Wallet extends Model
     {
         return $this->hasMany(Card::class);
     }
+
+    public function creditHistory(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WalletCreditHistory::class);
+    }
 }

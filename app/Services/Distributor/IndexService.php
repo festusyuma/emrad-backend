@@ -25,9 +25,10 @@ class IndexService
         try {
             $totalProducts = $this->productRepository->countAllByUser(auth()->id());
             $totalSales = $this->orderRepository->countByProductOwner(auth()->id(), [['confirmed', true]]);
+            $totalIncome = $this->orderRepository->countAmountProductOwner(auth()->id(), [['confirmed', true]]);
 
             $stats = [
-                'income' => 0,
+                'income' => $totalIncome,
                 'products' => $totalProducts,
                 'sales' => $totalSales
             ];

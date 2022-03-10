@@ -4,6 +4,7 @@ namespace Emrad\Services;
 
 use Emrad\Models\Order;
 use Emrad\Models\OrderItems;
+use Emrad\Repositories\Contracts\WalletRepositoryInterface;
 use Emrad\Services\InventoryServices;
 use Emrad\Models\Product;
 use Emrad\User;
@@ -21,15 +22,18 @@ class OrderServices
 {
     public OrderRepositoryInterface $orderRepositoryInterface;
     public TransactionService $transactionService;
+    public WalletRepositoryInterface $walletRepository;
 
     public function __construct(
         OrderRepositoryInterface $orderRepositoryInterface,
-        TransactionService $transactionService
+        TransactionService $transactionService,
+        WalletRepositoryInterface $walletRepository
     )
     {
 
         $this->orderRepositoryInterface = $orderRepositoryInterface;
         $this->transactionService = $transactionService;
+        $this->walletRepository = $walletRepository;
     }
 
     public function createRetailerOrder($order, $user_id): RetailerOrder
@@ -279,6 +283,10 @@ class OrderServices
             if (!$item) return CustomResponse::badRequest('invalid item id');
             if ($item->confirmed) return CustomResponse::failed('order has already been confirmed');
 
+            $product = $item->product()->first();
+            $owner_wallet = $this->walletRepository->getUserWallet($product->user_id);
+            if (!$owner_wallet) return CustomResponse::failed('an error occurred while confirming order');
+
             $order = $this->orderRepositoryInterface->findByUser($item->order_id, $user_id);
             if (!$order) return CustomResponse::badRequest('invalid order item');
             if (!$order->payment_confirmed) return CustomResponse::failed('your payment has not been confirmed');
@@ -286,6 +294,12 @@ class OrderServices
             $item->confirmed = true;
             $updateInventoryRes = $this->updateInventory($item, $user_id);
             if (!$updateInventoryRes->success) return $updateInventoryRes;
+
+            $this->walletRepository->creditWallet(
+                $owner_wallet,
+                $item->amount,
+                config('walletcredittype.sale')
+            );
 
             $item->save();
             return CustomResponse::success();

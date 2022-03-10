@@ -28,11 +28,16 @@ class WalletRepository extends BaseRepository implements WalletRepositoryInterfa
         }
     }
 
-    public function creditWallet($wallet, $amount): ?Wallet
+    public function creditWallet($wallet, $amount, $type = ''): ?Wallet
     {
         try {
             $wallet->balance += $amount;
             $wallet->save();
+
+            $wallet->creditHistory()->create([
+                'amount' => $amount,
+                'type' => $type
+            ]);
 
             return $wallet;
         } catch (\Exception $e) {
