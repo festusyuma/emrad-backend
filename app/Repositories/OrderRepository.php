@@ -90,7 +90,6 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         try {
             return $this->itemsModel
-                ->with(['product', 'order'])
                 ->where($filters)
                 ->whereHas('product', function ($query) use ($user_id) {
                     $query->where('user_id', $user_id);
