@@ -78,4 +78,24 @@ class ProductsServices
             return CustomResponse::serverError($e);
         }
     }
+
+    public function fetchProductStats(): CustomResponse
+    {
+        try {
+            $totalProducts = $this->productRepository->countAllByUser(auth()->id());
+            $approvedProducts = $this->productRepository->countAllByUser(auth()->id(), [['approved', true]]);
+            $unApprovedProducts = $totalProducts - $approvedProducts;
+
+            $stats = [
+                'total' => $totalProducts,
+                'approved' => $approvedProducts,
+                'pending' => $unApprovedProducts
+            ];
+
+            return CustomResponse::success($stats);
+        } catch (\Exception $e) {
+            dd($e);
+            return CustomResponse::serverError($e);
+        }
+    }
 }

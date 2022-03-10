@@ -19,10 +19,18 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         $this->model = $product;
     }
 
-    public function paginateAllByUser($user_id, $limit, $relations = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function paginateAllByUser($user_id, $limit, $relations = [], $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         return $this->model::with($relations)
             ->where('user_id', $user_id)
             ->orderBy('created_at', 'DESC')->paginate($limit);
+    }
+
+    public function countAllByUser($user_id, $filters = []): int
+    {
+        return $this->model::where('user_id', $user_id)
+            ->where($filters)
+            ->orderBy('created_at', 'DESC')
+            ->count();
     }
 }

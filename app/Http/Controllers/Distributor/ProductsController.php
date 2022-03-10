@@ -42,4 +42,15 @@ class ProductsController extends Controller
             'data' => $result->data
         ], $result->status);
     }
+
+    public function getStats(Request $request)
+    {
+        $result = $this->productsServices->fetchProductStats();
+
+        return response([
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
+    }
 }
