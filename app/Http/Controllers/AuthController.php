@@ -37,34 +37,15 @@ class AuthController extends Controller
     }
 
 
-    public function register(CreateUser $request): \Illuminate\Http\JsonResponse
+    public function register(CreateUser $request)
     {
-        $pathToFile = config('app.url')."/default-user-icon.jpg";
-        $company = CompaniesServicesFacade::createCompany($request);
-        $user = UsersServicesFacade::createUser(
-            $company->id,
-            $request->firstName,
-            $request->lastName,
-            $request->gender,
-            $pathToFile,
-            $request->phoneNumber,
-            $request->email,
-            $request->password,
-            $request->address,
-            $request->rememberToken
-        );
+        $result = $this->authService->register($request);
 
-
-        event(new NewCompanyCreated($user, $company));
-        $user->assignRole($request->userType);
-
-        $message = 'Please confirm yourself by clicking on verify user button sent to your email';
-
-        return response()->json([
-            'status' => 'success',
-            'message'=>$message,
-            'data' => []
-        ], 201);
+        return response([
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
     }
 
     public function logout(): \Illuminate\Http\JsonResponse {

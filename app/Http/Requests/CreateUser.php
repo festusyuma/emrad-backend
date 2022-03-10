@@ -42,6 +42,10 @@ class CreateUser extends FormRequest
     }
 
     protected function failedValidation(Validator $validator) {
-        throw new HttpResponseException(response()->json($validator->errors()->all(), 422));
+        return response([
+            'status' => false,
+            'message' => explode(", ", response()->json($validator->errors()->all())),
+            'data' => null
+        ], 400);
     }
 }
