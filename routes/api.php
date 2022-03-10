@@ -46,17 +46,19 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     Route::group(['prefix' => 'distributor', 'middleware' => ['auth:api', 'role:Distributor']], function () {
+        Route::get('/stats', 'Distributor\IndexController@getStats')->name('distributor-stats');
+
         Route::group(['prefix' => 'products'], function () {
             Route::post('/', 'Distributor\ProductsController@createProduct')->name('create-product');
             Route::get('/', 'Distributor\ProductsController@getProducts')->name('list-products');
-            Route::get('/stats', 'Distributor\ProductsController@getStats')->name('get-stats');
+            Route::get('/stats', 'Distributor\ProductsController@getStats')->name('products-stats');
             Route::get('/{product}', 'ProductsController@getSingleProduct')->name('product-details');
             Route::put('/{product}', 'ProductsController@updateProduct');
         });
 
         Route::group(['prefix' => 'orders'], function () {
             Route::get('/', 'Distributor\OrdersController@getOrders')->name('list-orders');
-            Route::get('/stats', 'Distributor\OrdersController@getStats')->name('get-stats');
+            Route::get('/stats', 'Distributor\OrdersController@getStats')->name('orders-stats');
             Route::put('/{product}', 'Distributor\OrdersController@fulfillOrder')->name('fulfill-order');
         });
     });
