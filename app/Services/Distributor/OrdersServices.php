@@ -20,8 +20,11 @@ class OrdersServices
             $totalOrders = $this->orderRepository->countByProductOwner(auth()->id());
             $totalConfirmed = $this->orderRepository->countByProductOwner(auth()->id(), [['confirmed', true]]);
             $totalPending = $totalOrders - $totalConfirmed;
+            $stockSold = $this->orderRepository->countStockByProductOwner(auth()->id());
+
             $data = [
                 'total' => $totalOrders,
+                'soldStock' => $stockSold,
                 'confirmed' => $totalConfirmed,
                 'pending' => $totalPending
             ];
@@ -36,6 +39,16 @@ class OrdersServices
     {
         try {
             $orders = $this->orderRepository->fetchByProductOwner(auth()->id(), $limit, $filters);
+            return CustomResponse::success($orders);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
+    }
+
+    public function fetchTopRetailers($filters = []): CustomResponse
+    {
+        try {
+            $orders = $this->orderRepository->topRetailersByProductOwner(auth()->id(), $filters);
             return CustomResponse::success($orders);
         } catch (\Exception $e) {
             return CustomResponse::serverError($e);

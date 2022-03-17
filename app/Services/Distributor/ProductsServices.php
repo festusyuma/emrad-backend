@@ -3,6 +3,7 @@
 namespace Emrad\Services\Distributor;
 
 use Emrad\Models\Product;
+use Emrad\Repositories\Contracts\OrderRepositoryInterface;
 use Emrad\Repositories\Contracts\ProductRepositoryInterface;
 use Emrad\Util\CustomResponse;
 use Illuminate\Http\Request;
@@ -11,10 +12,15 @@ use Illuminate\Support\Facades\Validator;
 class ProductsServices
 {
     private ProductRepositoryInterface $productRepository;
+    private OrderRepositoryInterface $orderRepository;
 
-    public function __construct(ProductRepositoryInterface $productRepository)
+    public function __construct(
+        ProductRepositoryInterface $productRepository,
+        OrderRepositoryInterface $orderRepository
+    )
     {
         $this->productRepository = $productRepository;
+        $this->orderRepository = $orderRepository;
     }
 
     public function createProduct(Request $request): CustomResponse
@@ -83,18 +89,21 @@ class ProductsServices
     {
         try {
             $totalProducts = $this->productRepository->countAllByUser(auth()->id());
+            $totalStock = $this->productRepository->countAllStockByUser(auth()->id());
             $approvedProducts = $this->productRepository->countAllByUser(auth()->id(), [['approved', true]]);
             $unApprovedProducts = $totalProducts - $approvedProducts;
+            $stockSold = $this->orderRepository->countStockByProductOwner(auth()->id());
 
             $stats = [
                 'total' => $totalProducts,
+                'stock' => $totalStock,
+                'sold' => $stockSold,
                 'approved' => $approvedProducts,
                 'pending' => $unApprovedProducts
             ];
 
             return CustomResponse::success($stats);
         } catch (\Exception $e) {
-            dd($e);
             return CustomResponse::serverError($e);
         }
     }

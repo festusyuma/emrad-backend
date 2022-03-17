@@ -53,4 +53,15 @@ class OrdersController extends Controller
             'data' => $result->data
         ], $result->status);
     }
+
+    public function getTopRetailers(Request $request) {
+        $filters = [];
+        $result = $this->orderServices->fetchTopRetailers($filters);
+
+        return response([
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
+    }
 }

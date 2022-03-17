@@ -33,4 +33,12 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             ->orderBy('created_at', 'DESC')
             ->count();
     }
+
+    public function countAllStockByUser($user_id, $filters = []): int
+    {
+        return $this->model::where('user_id', $user_id)
+            ->where($filters)
+            ->orderBy('created_at', 'DESC')
+            ->sum('size');
+    }
 }

@@ -67,6 +67,11 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         return $this->buildOwnerQuery($user_id, $filters)->count();
     }
 
+    public function countStockByProductOwner($user_id, $filters = []): int
+    {
+        return $this->buildOwnerQuery($user_id, $filters)->sum('quantity');
+    }
+
     public function countAmountProductOwner($user_id, $filters)
     {
         return $this->buildOwnerQuery($user_id, $filters)->sum('amount');
@@ -79,6 +84,23 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                 ->select(DB::raw("count(id) as `total`, DATE_FORMAT(created_at, '%d-%m-%Y') period"))
                 ->groupby('period')
                 ->get();
+        } catch (\Exception $e) {
+            error_log('repository error');
+            error_log($e->getMessage());
+            return null;
+        }
+    }
+
+    public function topRetailersByProductOwner($user_id, $filters)
+    {
+        try {
+            $res =  $this->buildOwnerQuery($user_id, [])
+                ->leftJoin('orders', 'orders.id', '=', 'order_id')
+                ->select(DB::raw('sum(quantity) as `total`, sum(orders.amount) as `total_amount`, orders.user_id'))
+                ->groupBy('orders.user_id');
+
+            return $res->get();
+
         } catch (\Exception $e) {
             error_log('repository error');
             error_log($e->getMessage());
