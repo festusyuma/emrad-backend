@@ -119,6 +119,11 @@ class OrderServices
             }
 
             if ($charge->status == 'success') {
+                $credit_owners = $this->creditOwners($order->id);
+                if (!$credit_owners->success) {
+                    return $credit_owners;
+                }
+
                 $order->payment_confirmed = true;
                 $charge->verified = true;
                 $charge->save();
@@ -239,6 +244,27 @@ class OrderServices
         }
     }
 
+    public function creditOwners($order_id): CustomResponse
+    {
+        try {
+            $order = Order::find($order_id);
+            foreach ($order->items()->get() as $item) {
+                $product = $item->product()->first();
+                $owner_wallet = $this->walletRepository->getUserWallet($product->user_id);
+
+                $this->walletRepository->creditWallet(
+                    $owner_wallet,
+                    $item->amount,
+                    config('walletcredittype.sale')
+                );
+            }
+
+            return CustomResponse::success();
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
+    }
+
     public function getSingleRetailerOrder($order_id, $user_id): CustomResponse
     {
         try {
@@ -283,10 +309,6 @@ class OrderServices
             if (!$item) return CustomResponse::badRequest('invalid item id');
             if ($item->confirmed) return CustomResponse::failed('order has already been confirmed');
 
-            $product = $item->product()->first();
-            $owner_wallet = $this->walletRepository->getUserWallet($product->user_id);
-            if (!$owner_wallet) return CustomResponse::failed('an error occurred while confirming order');
-
             $order = $this->orderRepositoryInterface->findByUser($item->order_id, $user_id);
             if (!$order) return CustomResponse::badRequest('invalid order item');
             if (!$order->payment_confirmed) return CustomResponse::failed('your payment has not been confirmed');
@@ -294,12 +316,6 @@ class OrderServices
             $item->confirmed = true;
             $updateInventoryRes = $this->updateInventory($item, $user_id);
             if (!$updateInventoryRes->success) return $updateInventoryRes;
-
-            $this->walletRepository->creditWallet(
-                $owner_wallet,
-                $item->amount,
-                config('walletcredittype.sale')
-            );
 
             $item->save();
             return CustomResponse::success();
