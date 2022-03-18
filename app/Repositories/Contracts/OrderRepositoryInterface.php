@@ -9,5 +9,5 @@ interface OrderRepositoryInterface extends BaseRepositoryInterface {
     public function countStockByProductOwner($user_id, $filters);
     public function countAmountProductOwner($user_id, $filters);
     public function saleHistoryByProductOwner($user_id, $group);
-    public function topRetailersByProductOwner($user_id, $filters);
+    public function topRetailersByProductOwner($user_id, $filters, $limit);
 }

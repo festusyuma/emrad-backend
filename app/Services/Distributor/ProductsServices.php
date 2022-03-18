@@ -30,7 +30,7 @@ class ProductsServices
                 $data = $request->validate([
                     'name' => 'required|string',
                     'description' => 'required|string',
-                    'thumbnail' => 'string',
+                    'thumbnail' => 'string|nullable',
                     'stock' => 'required|integer|min:1',
                     'sku' => 'required|string',
                     'price' => 'required|numeric|min:0',

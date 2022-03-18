@@ -59,7 +59,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function fetchByProductOwner($user_id, $limit, $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        return $this->buildOwnerQuery($user_id, $filters)->with(['product', 'order'])->paginate($limit);
+        return $this->buildOwnerQuery($user_id, $filters)
+            ->with(['product', 'order'])
+            ->orderBy('created_at', 'DESC')
+            ->paginate($limit);
     }
 
     public function countByProductOwner($user_id, $filters = []): int
@@ -91,15 +94,22 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         }
     }
 
-    public function topRetailersByProductOwner($user_id, $filters)
+    public function topRetailersByProductOwner($user_id, $filters, $limit = 10)
     {
         try {
-            $res =  $this->buildOwnerQuery($user_id, [])
+            return $this->buildOwnerQuery($user_id, [])
                 ->leftJoin('orders', 'orders.id', '=', 'order_id')
-                ->select(DB::raw('sum(quantity) as `total`, sum(orders.amount) as `total_amount`, orders.user_id'))
-                ->groupBy('orders.user_id');
-
-            return $res->get();
+                ->leftJoin('users', 'users.id', '=', 'orders.user_id')
+                ->leftJoin('companies', 'companies.id', '=', 'users.company_id')
+                ->select(
+                    DB::raw('sum(quantity) as `total`, sum(orders.amount) as `total_amount`, orders.user_id'),
+                    DB::raw('concat(users.first_name, " ", users.last_name) as `full_name`'),
+                    DB::raw('companies.name as `company_name`'),
+                )
+                ->groupBy('orders.user_id', 'full_name', 'company_name')
+                ->orderBy('total_amount', 'DESC')
+                ->limit($limit)
+                ->get();
 
         } catch (\Exception $e) {
             error_log('repository error');
