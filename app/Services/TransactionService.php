@@ -310,10 +310,34 @@ class TransactionService
             $order = Order::where('transaction_id', $transaction_id)->first();
             if (!$order) return CustomResponse::failed('error fetching order');
 
+            $credit_owners = $this->creditOwners($order->id);
+            if (!$credit_owners->success) return $credit_owners;
+
             $order->payment_confirmed = true;
             $order->save();
 
             return CustomResponse::success($order);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
+    }
+
+    public function creditOwners($order_id): CustomResponse
+    {
+        try {
+            $order = Order::find($order_id);
+            foreach ($order->items()->get() as $item) {
+                $product = $item->product()->first();
+                $owner_wallet = $this->walletRepo->getUserWallet($product->user_id);
+
+                $this->walletRepo->creditWallet(
+                    $owner_wallet,
+                    $item->amount,
+                    config('walletcredittype.sale')
+                );
+            }
+
+            return CustomResponse::success();
         } catch (\Exception $e) {
             return CustomResponse::serverError($e);
         }
