@@ -13,12 +13,12 @@ class RetailerSale extends Model
         'product_id', 'user_id', 'quantity', 'fmcg_selling_price', 'amount_sold', 'sale_amount', 'created_by'
     ];
 
-    public function company()
+    public function company(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(\Emrad\Models\Company::class);
     }
 
-    public function product()
+    public function product(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(\Emrad\Models\Product::class);
     }

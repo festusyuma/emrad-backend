@@ -35,7 +35,6 @@ class OrdersController extends Controller
             if ($status === 'confirmed') $filters[] = ['confirmed', true];
             if ($status === 'pending') $filters[] = ['confirmed', false];
         }
-        if ($customerId) $filters[] = ['order.user_id', $customerId];
 
         $result = $this->orderServices->fetchOrders($limit, $filters);
 

@@ -2,6 +2,7 @@
 
 namespace Emrad\Services;
 
+use Emrad\Models\Product;
 use Emrad\Services\InventoryServices;
 use Emrad\Models\RetailerSale;
 use Emrad\Models\StockHistory;
@@ -89,7 +90,6 @@ class SaleServices
                     throw new Exception("Stock empty, please re-stock inventory");
 
                 $retailerSale = $this->createRetailerSale($sale, $user_id);
-
                 $updateInventory = $this->updateInventory($retailerSale, $user_id);
 
                 if(!$updateInventory)
@@ -159,7 +159,6 @@ class SaleServices
             $stockHistory = new StockHistory;
 
             $retailerInventory->quantity = $retailerInventory->quantity - $retailerSale->quantity;
-            $retailerInventory->is_in_stock = $retailerSale->quantity == 0 ? 0 : 1;
             $retailerInventory->save();
 
             $newStockBalance = $retailerInventory->quantity;
@@ -180,27 +179,17 @@ class SaleServices
     }
 
 
-    /**
-     * Check inventory quantity
-     * @return bool
-     */
-    public function checkInventoryQuantity($sale)
+    public function checkInventoryQuantity($sale): bool
     {
         $inventory = RetailerInventory::where('product_id', $sale['product_id'])->firstOrFail();
-        return $inventory->is_in_stock;
+        return $inventory->quantity > 0;
     }
 
-    /**
-     * Fetch fmcg selling price
-     *
-     * @param $product_id
-     * @return $selling_price
-     */
+
     public function getFmcgSellingPrice($product_id)
     {
-        $inventory = RetailerInventory::where('product_id', $product_id)->firstOrFail();
-        $sellingPrice = $inventory->selling_price;
-        return $sellingPrice;
+        $product = Product::find($product_id);
+        return $product ? $product->selling_price : 0;
     }
 
 

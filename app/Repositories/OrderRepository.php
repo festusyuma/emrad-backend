@@ -59,12 +59,6 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function fetchByProductOwnerAndCustomer($user_id, $customer_id, $limit, $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        /*dd($this->buildOwnerQuery($user_id, $filters)
-            ->with(['product', 'order'])
-            ->whereHas('order', function ($query) use ($customer_id) {
-                $query->where('user_id', $customer_id);
-            })
-            ->orderBy('created_at', 'DESC')->toSql());*/
         return $this->buildOwnerQuery($user_id, $filters)
             ->with(['product', 'order'])
             ->whereHas('order', function ($query) use ($customer_id) {
@@ -76,7 +70,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function fetchByProductOwner($user_id, $limit, $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        return $this->buildOwnerQuery($user_id, $filters)
+        $query = $this->buildOwnerQuery($user_id, $filters);
+        if (!$query) return OrderItems::where('id', '<', 0)->paginate($limit);
+
+        return $query
             ->with(['product', 'order'])
             ->orderBy('created_at', 'DESC')
             ->paginate($limit);
@@ -84,7 +81,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function countByProductOwner($user_id, $filters = []): int
     {
-        return $this->buildOwnerQuery($user_id, $filters)->count();
+        $query = $this->buildOwnerQuery($user_id, $filters);
+        return $query ? $query->count() : 0;
     }
 
     public function countByProductOwnerAndCustomer($user_id, $customer_id, $filters = []): int
@@ -98,18 +96,23 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function countStockByProductOwner($user_id, $filters = []): int
     {
-        return $this->buildOwnerQuery($user_id, $filters)->sum('quantity');
+        $query = $this->buildOwnerQuery($user_id, $filters);
+        return $query ? $query->sum('quantity') : 0;
     }
 
     public function countAmountProductOwner($user_id, $filters)
     {
-        return $this->buildOwnerQuery($user_id, $filters)->sum('amount');
+        $query = $this->buildOwnerQuery($user_id, $filters);
+        return $query ? $query->sum('amount') : 0;
     }
 
     public function saleHistoryByProductOwner($user_id, $group)
     {
         try {
-            return $this->buildOwnerQuery($user_id, [])
+            $query = $this->buildOwnerQuery($user_id, []);
+            if (!$query) return [];
+
+            return $query
                 ->select(DB::raw("count(id) as `total`, DATE_FORMAT(created_at, '%d-%m-%Y') period"))
                 ->groupby('period')
                 ->get();
@@ -150,7 +153,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             return $this->itemsModel
                 ->where($filters)
                 ->whereHas('product', function ($query) use ($user_id) {
-                    $query->withTrashed()->where('user_id', $user_id);
+                    $query->where('user_id', $user_id);
                 })
                 ->whereHas('order', function ($query) {
                     $query->where('payment_confirmed', true);

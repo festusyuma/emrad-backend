@@ -29,17 +29,19 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
 
     public function countAllByUser($user_id, $filters = []): int
     {
-        return $this->model::where('user_id', $user_id)
+        $query = $this->model::where('user_id', $user_id)
             ->where($filters)
-            ->orderBy('created_at', 'DESC')
-            ->count();
+            ->orderBy('created_at', 'DESC');
+
+       return $query ? $query->count() : 0;
     }
 
     public function countAllStockByUser($user_id, $filters = []): int
     {
-        return $this->model::where('user_id', $user_id)
+        $query = $this->model::where('user_id', $user_id)
             ->where($filters)
-            ->orderBy('created_at', 'DESC')
-            ->sum('size');
+            ->orderBy('created_at', 'DESC');
+
+        return $query ? $query->sum('size') : 0;
     }
 }

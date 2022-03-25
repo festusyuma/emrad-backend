@@ -62,11 +62,7 @@ class RetailerSaleController extends Controller
     }
 
 
-    /**
-     * Create new multiple retailer-sales in database.
-     *
-     * @param MakeRetailSale $request
-     */
+
     public function makeRetailerSale(MakeRetailerSaleRequest $request)
     {
         $sales = $request->sales;

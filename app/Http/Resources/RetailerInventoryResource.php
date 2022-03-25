@@ -20,7 +20,7 @@ class RetailerInventoryResource extends JsonResource
             'costPrice' => $this->cost_price,
             'sellingPrice' => $this->selling_price,
             'quantity' => $this->quantity,
-            'isInStock' => $this->is_in_stock,
+            'isInStock' => $this->quantity > 0,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at
         ];

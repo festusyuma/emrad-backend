@@ -44,7 +44,7 @@ class AuthService
                 $request->firstName,
                 $request->lastName,
                 $request->gender,
-                $pathToFile,
+                'https://w7.pngwing.com/pngs/419/473/png-transparent-computer-icons-user-profile-login-user-heroes-sphere-black-thumbnail.png',
                 $request->phoneNumber,
                 $request->email,
                 $request->password,

@@ -80,9 +80,21 @@ class ProductsServices
             if (isset($data['sellingPrice'])) $product->selling_price = $data['sellingPrice'];
             if (isset($data['sku'])) $product->sku = $data['sku'];
             if (isset($data['categoryId'])) $product->category_id = $data['categoryId'];
+
+            $message = 'successful';
+            if ($data['thumbnail']) {
+                try {
+                    $result = cloudinary()->uploadFile($data['thumbnail']);
+                    $uploadedUrl = $result->getSecurePath();
+                    $product->image = $uploadedUrl;
+                    $product->save();
+                } catch (\Exception $e) {
+                    $message = 'successful, but could not upload thumbnail';
+                }
+            }
             $product->save();
 
-            return CustomResponse::success($product);
+            return CustomResponse::success($product, $message);
         } catch (\Exception $e) {
             return CustomResponse::serverError($e);
         }
