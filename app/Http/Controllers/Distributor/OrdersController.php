@@ -29,13 +29,28 @@ class OrdersController extends Controller
         $limit = $request->get('size', 10);
         $filters = [];
         $status = strtolower($request->get('status', 'all'));
+        $customerId = $request->get('customer_id', null);
 
         if (strtolower($status) && $status != 'all') {
             if ($status === 'confirmed') $filters[] = ['confirmed', true];
             if ($status === 'pending') $filters[] = ['confirmed', false];
         }
+        if ($customerId) $filters[] = ['order.user_id', $customerId];
 
         $result = $this->orderServices->fetchOrders($limit, $filters);
+
+        return response([
+            'status' => $result->success,
+            'message' => $result->message,
+            'data' => $result->data
+        ], $result->status);
+    }
+
+    public function getOrdersByCustomer(Request $request, $id) {
+        $limit = $request->get('size', 10);
+        $filters = [];
+
+        $result = $this->orderServices->fetchCustomerOrders($id, $limit, $filters);
 
         return response([
             'status' => $result->success,

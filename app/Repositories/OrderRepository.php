@@ -57,6 +57,23 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     }
 
+    public function fetchByProductOwnerAndCustomer($user_id, $customer_id, $limit, $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        /*dd($this->buildOwnerQuery($user_id, $filters)
+            ->with(['product', 'order'])
+            ->whereHas('order', function ($query) use ($customer_id) {
+                $query->where('user_id', $customer_id);
+            })
+            ->orderBy('created_at', 'DESC')->toSql());*/
+        return $this->buildOwnerQuery($user_id, $filters)
+            ->with(['product', 'order'])
+            ->whereHas('order', function ($query) use ($customer_id) {
+                $query->where('user_id', $customer_id);
+            })
+            ->orderBy('created_at', 'DESC')
+            ->paginate($limit);
+    }
+
     public function fetchByProductOwner($user_id, $limit, $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         return $this->buildOwnerQuery($user_id, $filters)
@@ -68,6 +85,15 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     public function countByProductOwner($user_id, $filters = []): int
     {
         return $this->buildOwnerQuery($user_id, $filters)->count();
+    }
+
+    public function countByProductOwnerAndCustomer($user_id, $customer_id, $filters = []): int
+    {
+        return $this->buildOwnerQuery($user_id, $filters)
+            ->whereHas('order', function ($query) use ($customer_id) {
+                $query->where('user_id', $customer_id);
+            })
+            ->count();
     }
 
     public function countStockByProductOwner($user_id, $filters = []): int
@@ -124,7 +150,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             return $this->itemsModel
                 ->where($filters)
                 ->whereHas('product', function ($query) use ($user_id) {
-                    $query->where('user_id', $user_id);
+                    $query->withTrashed()->where('user_id', $user_id);
                 })
                 ->whereHas('order', function ($query) {
                     $query->where('payment_confirmed', true);

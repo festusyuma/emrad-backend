@@ -41,7 +41,10 @@ class InventoryRepository extends BaseRepository implements InventoryRepositoryI
    * @return void
    */
     public function paginateAllByUser($user_id, $limit, $relations = []){
-        return $this->model::with($relations)->where('user_id', $user_id)->orderBy('id', 'DESC')->paginate($limit);
+        return $this->model::with($relations)
+            ->where('user_id', $user_id)
+            ->orderBy('id', 'DESC')
+            ->paginate($limit);
     }
 
     /**

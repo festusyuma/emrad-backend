@@ -45,6 +45,16 @@ class OrdersServices
         }
     }
 
+    public function fetchCustomerOrders($customerId, $limit, $filters = []): CustomResponse
+    {
+        try {
+            $orders = $this->orderRepository->fetchByProductOwnerAndCustomer(auth()->id(), $customerId, $limit, $filters);
+            return CustomResponse::success($orders);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
+    }
+
     public function fetchTopRetailers($filters = []): CustomResponse
     {
         try {
