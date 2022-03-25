@@ -23,6 +23,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     {
         return $this->model::with($relations)
             ->where('user_id', $user_id)
+            ->where($filters)
             ->orderBy('created_at', 'DESC')->paginate($limit);
     }
 

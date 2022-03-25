@@ -70,6 +70,36 @@ class ProductsServices
         }
     }
 
+    public function updateProduct($data, Product $product): CustomResponse
+    {
+        try {
+            if (isset($data['name'])) $product->name = $data['name'];
+            if (isset($data['description'])) $product->description = $data['description'];
+            if (isset($data['stock'])) $product->size = $data['stock'];
+            if (isset($data['price'])) $product->price = $data['price'];
+            if (isset($data['sellingPrice'])) $product->selling_price = $data['sellingPrice'];
+            if (isset($data['sku'])) $product->sku = $data['sku'];
+            if (isset($data['categoryId'])) $product->category_id = $data['categoryId'];
+            $product->save();
+
+            return CustomResponse::success($product);
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
+    }
+
+    public function deleteProduct(Product $product): CustomResponse
+    {
+        try {
+            $product->delete();
+            $product->save();
+
+            return CustomResponse::success();
+        } catch (\Exception $e) {
+            return CustomResponse::serverError($e);
+        }
+    }
+
     public function fetchProducts($limit=10): CustomResponse
     {
         try {
@@ -77,7 +107,7 @@ class ProductsServices
             $products = $this->productRepository->paginateAllByUser(
                 auth()->id(),
                 $limit,
-                ['category']
+                ['category'],
             );
             return CustomResponse::success($products);
         } catch (\Exception $e) {

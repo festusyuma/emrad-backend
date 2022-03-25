@@ -54,7 +54,8 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/', 'Distributor\ProductsController@getProducts')->name('list-products');
             Route::get('/stats', 'Distributor\ProductsController@getStats')->name('products-stats');
             Route::get('/{product}', 'ProductsController@getSingleProduct')->name('product-details');
-            Route::put('/{product}', 'ProductsController@updateProduct');
+            Route::put('/{product}', 'Distributor\ProductsController@updateProduct');
+            Route::delete('/{product}', 'Distributor\ProductsController@deleteProduct');
         });
 
         Route::group(['prefix' => 'orders'], function () {

@@ -102,14 +102,7 @@ class ProductsController extends Controller
                         ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Emrad\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function updateProduct(UpdateProductRequest $request, Product $product)
+    public function updateProduct(Request $request, Product $product)
     {
         $pathToFile = $this->filesServices->uploadBase64($request->image, 's3');
 

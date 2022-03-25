@@ -8,35 +8,31 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateProductRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    public function authorize(): bool
     {
-        return $this->route('product')->merchant_id == auth('api')->user()->merchant->id ? true : false;
+        return $this->route('product')->user_id == auth('api')->id();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
             'categoryId' => 'required',
-            'productName' => 'required|unique:products,name'.$this->product->name,
-            'productSku' => 'required|unique:products,sku',
-            'productPrice' => 'required',
-            'productSellingPrice' => 'required',
-            'productSize' => 'nullable',
+            'name' => 'required',
+//            'sku' => 'required|unique:products,sku',
+            'price' => 'required',
+            'sellingPrice' => 'required',
+            'size' => 'nullable',
         ];
     }
 
 
     protected function failedValidation(Validator $validator) {
-        throw new HttpResponseException(response()->json($validator->errors()->all(), 422));
+        throw new HttpResponseException(
+            response([
+                'status' => false,
+                'message' => implode(', ', $validator->errors()->all()),
+                'data' => null
+            ], 400)
+        );
     }
 }
