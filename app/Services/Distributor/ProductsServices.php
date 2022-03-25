@@ -92,7 +92,6 @@ class ProductsServices
     {
         try {
             $product->delete();
-            $product->save();
 
             return CustomResponse::success();
         } catch (\Exception $e) {
